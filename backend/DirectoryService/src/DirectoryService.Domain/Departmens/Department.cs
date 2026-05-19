@@ -47,9 +47,15 @@ public class Department
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public void SetParent(Department? parent)
+    public void SetParent(Department parent)
     {
-        ParentId = parent?.Id;
+        if(this == parent)
+        {
+            throw new ArgumentException("Department не может быть родителем" +
+                "для самого себя", nameof(parent));
+        }
+
+        ParentId = parent.Id;
         Path = Path.Create([.. parent?.Path.Slugs ?? [], Slug]);
         UpdatedAt = DateTime.UtcNow;
     }

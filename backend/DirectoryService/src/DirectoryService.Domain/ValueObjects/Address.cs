@@ -94,7 +94,7 @@ public partial record Address
                 nameof(value));
         }
 
-        return new Address(postalCode: valueParts[0].Trim(),
+        return Address.Create(postalCode: valueParts[0].Trim(),
                            country: valueParts[1].Trim(),
                            region: valueParts[2].Trim(),
                            city: valueParts[3].Trim(),
@@ -108,11 +108,11 @@ public partial record Address
     private static partial Regex PostalCodePattern { get; }
 
 
-    [GeneratedRegex(@"^[а-я|А-Я|a-z|A-Z| ]$", RegexOptions.Compiled)]
+    [GeneratedRegex(@"^[а-я|А-Я|a-z|A-Z| ]+$", RegexOptions.Compiled)]
     private static partial Regex NamePattern { get; }
 
 
-    [GeneratedRegex(@"^[0-9|а-я|a-z]$", RegexOptions.Compiled)]
+    [GeneratedRegex(@"^[0-9|а-я|a-z]+$", RegexOptions.Compiled)]
     private static partial Regex NumberPattern { get; }
 
     public override string ToString()

@@ -13,6 +13,13 @@ public record Name
 
     public static Name Create(string value)
     {
+        if(string.IsNullOrWhiteSpace(value))
+        {
+            throw new ArgumentException(
+               $"name не может быть пустым",
+               nameof(value));
+        }
+
         if (value.Length < MIN_LENGTH || value.Length > MAX_LENGTH)
             throw new ArgumentException(
                $"name (от {MIN_LENGTH} до {MAX_LENGTH} символов)",

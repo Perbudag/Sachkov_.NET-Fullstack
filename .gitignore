@@ -1,0 +1,121 @@
+# Visual Studio 2015/2017 cache/options directory
+.vs/
+
+# VS Code files for those working on multiple tools
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Environment files with sensitive data
+.env
+*.env
+.env.*
+!.env.example
+frontend/.env.local
+
+# NuGet configuration with credentials
+nuget.config
+backend/nuget.config
+
+# Docker volumes
+postgres_data/
+minio_data/
+seq_data/
+
+# Database backups
+backups/
+
+# Claude Code (local permissions are personal)
+.claude/settings.local.json
+.claude/agent-memory/
+.claude/scheduled_tasks.lock
+*/.claude/agent-memory/
+
+# Python (skill-runner venv + caches)
+**/.venv/
+**/__pycache__/
+*.py[cod]
+*.pyo
+
+# .NET test runner output
+**/TestResults/
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.lscache
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa]rm/
+[Aa]rm64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Bb]in\\[Dd]ebug/
+[Bb]in\\[Rr]elease/
+[Oo]bj\\[Dd]ebug/
+[Oo]bj\\[Rr]elease/
+
+# .NET
+*.cache
+*.dll
+*.exe
+*.pdb
+*.suo
+*.user
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node modules
+node_modules/
+**/node_modules/
+
+# Husky internals (auto-generated wrappers)
+**/.husky/_/
+
+# Frontend local workspace
+frontend/project/
+.collaborator
+
+# MemPalace (local AI memory)
+mempalace.yaml
+entities.json
+
+# Temp screenshots and debug artifacts in root
+/*.png
+/*.html
+/*.svg
+/screenshots/*
+!/screenshots/.gitkeep
+
+# Playwright MCP snapshots
+.playwright-mcp/
+
+# Git worktrees (parallel agent workspaces)
+.worktrees/
+.claude/worktrees/
+
+# Next.js build trace (created when running from root dir)
+/.next/
+
+# Stray agent-memory directory
+.claire/

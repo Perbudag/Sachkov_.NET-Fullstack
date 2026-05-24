@@ -10,7 +10,7 @@ public static class DependencyInjectionExtensions
     public static IServiceCollection AddInfrastructurePostgres(this IServiceCollection services, IConfigurationManager configurations)
     {
         services.AddDbContext<AppDbContext>(options => 
-            options.UseNpgsql(configurations.GetConnectionString("postgres")));
+            options.UseNpgsql(configurations.GetConnectionString("Postgresql")));
 
         return services;
     }

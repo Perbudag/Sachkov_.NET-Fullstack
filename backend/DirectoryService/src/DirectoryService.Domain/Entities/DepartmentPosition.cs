@@ -1,4 +1,4 @@
-﻿namespace DirectoryService.Domain.Relationships;
+﻿namespace DirectoryService.Domain.Entities;
 
 public class DepartmentPosition
 {

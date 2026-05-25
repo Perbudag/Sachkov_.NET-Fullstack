@@ -1,5 +1,4 @@
-﻿using DirectoryService.Domain.Relationships;
-using DirectoryService.Domain.ValueObjects;
+﻿using DirectoryService.Domain.ValueObjects;
 using Path = DirectoryService.Domain.ValueObjects.Path;
 
 namespace DirectoryService.Domain.Entities;
@@ -7,9 +6,6 @@ namespace DirectoryService.Domain.Entities;
 
 public class Department
 {
-    private readonly List<DepartmentLocation> _locations = [];
-    private readonly List<DepartmentPosition> _positions = [];
-
     private Department(Name name, Slug slug, Department? parent)
     {
         Id = Guid.CreateVersion7();
@@ -33,9 +29,6 @@ public class Department
     public Guid? ParentId { get; private set; }
     public DateTime CreatedAt { get; }
     public DateTime UpdatedAt { get; private set; }
-
-    public IReadOnlyList<DepartmentLocation> Locations => _locations;
-    public IReadOnlyList<DepartmentPosition> Positions => _positions;
 
 
     public static Department Create(Name name, Slug slug, Department? parent)
@@ -68,43 +61,5 @@ public class Department
         ParentId = parent.Id;
         Path = Path.Create([.. parent?.Path.Slugs ?? [], Slug]);
         UpdatedAt = DateTime.UtcNow;
-    }
-
-    public void AddLocation(Location location)
-    {
-        _locations.Add(DepartmentLocation.Create(Id, location.Id));
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    public bool RemoveLocation(Location location)
-    {
-        var findedLocation = _locations.FirstOrDefault(l => l.LocationId == location.Id);
-
-        if (findedLocation != null)
-        {
-            UpdatedAt = DateTime.UtcNow;
-            return _locations.Remove(findedLocation);
-        }
-
-        return false;
-    }
-
-    public void AddPosition(Position position)
-    {
-        _positions.Add(DepartmentPosition.Create(Id, position.Id));
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    public bool RemovePosition(Position position)
-    {
-        var findedPosition = _positions.FirstOrDefault(p => p.PositionId == position.Id);
-
-        if (findedPosition != null)
-        {
-            UpdatedAt = DateTime.UtcNow;
-            return _positions.Remove(findedPosition);
-        }
-
-        return false;
     }
 }

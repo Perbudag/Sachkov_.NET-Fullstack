@@ -39,7 +39,7 @@ public class LocationConfiguration : IEntityTypeConfiguration<Location>
             .IsRequired()
             .HasDefaultValueSql("timezone('utc', now())");
 
-        builder.HasMany(l => l.Departments)
+        builder.HasMany<DepartmentLocation>()
             .WithOne()
             .HasForeignKey(dl => dl.LocationId)
             .OnDelete(DeleteBehavior.Cascade);

@@ -32,7 +32,7 @@ public class PositionConfigurations : IEntityTypeConfiguration<Position>
             .IsRequired()
             .HasDefaultValueSql("timezone('utc', now())");
 
-        builder.HasMany(l => l.Departments)
+        builder.HasMany<DepartmentPosition>()
             .WithOne()
             .HasForeignKey(dl => dl.PositionId)
             .OnDelete(DeleteBehavior.Cascade);

@@ -1,12 +1,9 @@
-﻿using DirectoryService.Domain.Relationships;
-using DirectoryService.Domain.ValueObjects;
+﻿using DirectoryService.Domain.ValueObjects;
 
 namespace DirectoryService.Domain.Entities;
 
 public class Location
 {
-    private readonly List<DepartmentLocation> _departments = [];
-
     private Location(Name name, Address address)
     {
         Id = Guid.CreateVersion7();
@@ -26,7 +23,6 @@ public class Location
     public Address Address { get; private set; } = null!;
     public DateTime CreatedAt { get; }
     public DateTime UpdatedAt { get; private set; }
-    public IReadOnlyList<DepartmentLocation> Departments => _departments;
 
 
     public static Location Create(Name name, Address address)
@@ -44,24 +40,5 @@ public class Location
     {
         Address = address;
         UpdatedAt = DateTime.UtcNow;
-    }
-
-    public void AddDepartment(Department department)
-    {
-        _departments.Add(DepartmentLocation.Create(department.Id, Id));
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    public bool RemoveDepartment(Department department)
-    {
-        var findedDepartment = _departments.FirstOrDefault(d => d.DepartmentId == department.Id);
-
-        if(findedDepartment != null)
-        {
-            UpdatedAt = DateTime.UtcNow;
-            return _departments.Remove(findedDepartment);
-        }
-
-        return false;
     }
 }

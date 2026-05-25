@@ -54,11 +54,12 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
             .HasForeignKey(d => d.ParentId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasMany(d => d.Locations)
+        builder.HasMany<DepartmentLocation>()
             .WithOne()
+            .HasForeignKey(dp => dp.DepartmentId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasMany(d => d.Positions)
+        builder.HasMany<DepartmentPosition>()
             .WithOne()
             .HasForeignKey(dp => dp.DepartmentId)
             .OnDelete(DeleteBehavior.Cascade);

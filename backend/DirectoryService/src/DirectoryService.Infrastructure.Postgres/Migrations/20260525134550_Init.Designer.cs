@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DirectoryService.Infrastructure.Postgres.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260525120403_Init")]
+    [Migration("20260525134550_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -70,6 +70,66 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                     b.HasIndex("ParentId");
 
                     b.ToTable("departments", (string)null);
+                });
+
+            modelBuilder.Entity("DirectoryService.Domain.Entities.DepartmentLocation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("department_location_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("timezone('utc', now())");
+
+                    b.Property<Guid>("DepartmentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("department_id");
+
+                    b.Property<Guid>("LocationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("location_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.HasIndex("LocationId");
+
+                    b.ToTable("departments_locations", (string)null);
+                });
+
+            modelBuilder.Entity("DirectoryService.Domain.Entities.DepartmentPosition", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("department_position_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("timezone('utc', now())");
+
+                    b.Property<Guid>("DepartmentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("department_id");
+
+                    b.Property<Guid>("PositionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("position_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.HasIndex("PositionId");
+
+                    b.ToTable("departments_positions", (string)null);
                 });
 
             modelBuilder.Entity("DirectoryService.Domain.Entities.Location", b =>
@@ -137,66 +197,6 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                     b.ToTable("positions", (string)null);
                 });
 
-            modelBuilder.Entity("DirectoryService.Domain.Relationships.DepartmentLocation", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("department_location_id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("timezone('utc', now())");
-
-                    b.Property<Guid>("DepartmentId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("department_id");
-
-                    b.Property<Guid>("LocationId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("location_id");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DepartmentId");
-
-                    b.HasIndex("LocationId");
-
-                    b.ToTable("departments_locations", (string)null);
-                });
-
-            modelBuilder.Entity("DirectoryService.Domain.Relationships.DepartmentPosition", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("department_position_Id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("timezone('utc', now())");
-
-                    b.Property<Guid>("DepartmentId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("department_id");
-
-                    b.Property<Guid>("PositionId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("position_id");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DepartmentId");
-
-                    b.HasIndex("PositionId");
-
-                    b.ToTable("departments_positions", (string)null);
-                });
-
             modelBuilder.Entity("DirectoryService.Domain.Entities.Department", b =>
                 {
                     b.HasOne("DirectoryService.Domain.Entities.Department", null)
@@ -205,51 +205,34 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("DirectoryService.Domain.Relationships.DepartmentLocation", b =>
+            modelBuilder.Entity("DirectoryService.Domain.Entities.DepartmentLocation", b =>
                 {
                     b.HasOne("DirectoryService.Domain.Entities.Department", null)
-                        .WithMany("Locations")
+                        .WithMany()
                         .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("DirectoryService.Domain.Entities.Location", null)
-                        .WithMany("Departments")
+                        .WithMany()
                         .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("DirectoryService.Domain.Relationships.DepartmentPosition", b =>
+            modelBuilder.Entity("DirectoryService.Domain.Entities.DepartmentPosition", b =>
                 {
                     b.HasOne("DirectoryService.Domain.Entities.Department", null)
-                        .WithMany("Positions")
+                        .WithMany()
                         .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("DirectoryService.Domain.Entities.Position", null)
-                        .WithMany("Departments")
+                        .WithMany()
                         .HasForeignKey("PositionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("DirectoryService.Domain.Entities.Department", b =>
-                {
-                    b.Navigation("Locations");
-
-                    b.Navigation("Positions");
-                });
-
-            modelBuilder.Entity("DirectoryService.Domain.Entities.Location", b =>
-                {
-                    b.Navigation("Departments");
-                });
-
-            modelBuilder.Entity("DirectoryService.Domain.Entities.Position", b =>
-                {
-                    b.Navigation("Departments");
                 });
 #pragma warning restore 612, 618
         }

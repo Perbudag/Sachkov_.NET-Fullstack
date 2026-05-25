@@ -1,4 +1,4 @@
-﻿namespace DirectoryService.Domain.Departmens;
+﻿namespace DirectoryService.Domain.Entities;
 
 public sealed class DepartmentLocation
 {
@@ -10,6 +10,9 @@ public sealed class DepartmentLocation
         DepartmentId = departmentId;
         LocationId = locationId;
     }
+
+    // EF Core
+    private DepartmentLocation() { }
 
 
     public Guid Id { get; }

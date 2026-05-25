@@ -1,6 +1,6 @@
 ﻿using DirectoryService.Domain.ValueObjects;
 
-namespace DirectoryService.Domain.Locations;
+namespace DirectoryService.Domain.Entities;
 
 public class Location
 {
@@ -15,11 +15,15 @@ public class Location
         UpdatedAt = DateTime.UtcNow;
     }
 
+    // EF Core
+    private Location() {}
+
     public Guid Id { get; }
-    public Name Name { get; private set; }
-    public Address Address { get; private set; }
+    public Name Name { get; private set; } = null!;
+    public Address Address { get; private set; } = null!;
     public DateTime CreatedAt { get; }
     public DateTime UpdatedAt { get; private set; }
+
 
     public static Location Create(Name name, Address address)
     {

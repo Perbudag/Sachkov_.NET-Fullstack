@@ -1,6 +1,6 @@
 ﻿using DirectoryService.Domain.ValueObjects;
 
-namespace DirectoryService.Domain.Positions;
+namespace DirectoryService.Domain.Entities;
 
 public class Position
 {
@@ -14,9 +14,11 @@ public class Position
         UpdatedAt = DateTime.UtcNow;
     }
 
+    // EF Core
+    private Position() { }
 
     public Guid Id { get; }
-    public Name Name { get; private set; }
+    public Name Name { get; private set; } = null!;
     public DateTime CreatedAt { get; }
     public DateTime UpdatedAt { get; private set; }
 

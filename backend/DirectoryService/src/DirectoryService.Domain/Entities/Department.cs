@@ -1,7 +1,7 @@
 ﻿using DirectoryService.Domain.ValueObjects;
 using Path = DirectoryService.Domain.ValueObjects.Path;
 
-namespace DirectoryService.Domain.Departmens;
+namespace DirectoryService.Domain.Entities;
 
 
 public class Department
@@ -19,10 +19,13 @@ public class Department
         UpdatedAt = DateTime.UtcNow;
     }
 
+    // EF Core
+    private Department() {}
+
     public Guid Id { get; }
-    public Name Name { get; private set; }
-    public Slug Slug { get; private set; }
-    public Path Path { get; private set; }
+    public Name Name { get; private set; } = null!;
+    public Slug Slug { get; private set; } = null!;
+    public Path Path { get; private set; } = null!;
     public Guid? ParentId { get; private set; }
     public DateTime CreatedAt { get; }
     public DateTime UpdatedAt { get; private set; }
@@ -49,7 +52,7 @@ public class Department
 
     public void SetParent(Department parent)
     {
-        if(this == parent)
+        if (this == parent)
         {
             throw new ArgumentException("Department не может быть родителем" +
                 "для самого себя", nameof(parent));

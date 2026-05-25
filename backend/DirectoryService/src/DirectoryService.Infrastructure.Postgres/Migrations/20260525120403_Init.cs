@@ -93,14 +93,14 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                 name: "departments_positions",
                 columns: table => new
                 {
-                    department_position_Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    department_position_id = table.Column<Guid>(type: "uuid", nullable: false),
                     department_id = table.Column<Guid>(type: "uuid", nullable: false),
                     position_id = table.Column<Guid>(type: "uuid", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "timezone('utc', now())")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_departments_positions", x => x.department_position_Id);
+                    table.PrimaryKey("PK_departments_positions", x => x.department_position_id);
                     table.ForeignKey(
                         name: "FK_departments_positions_departments_department_id",
                         column: x => x.department_id,

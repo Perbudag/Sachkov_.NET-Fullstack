@@ -169,7 +169,7 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
-                        .HasColumnName("department_position_Id");
+                        .HasColumnName("department_position_id");
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()

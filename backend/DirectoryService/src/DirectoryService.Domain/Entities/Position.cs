@@ -46,7 +46,7 @@ public class Position
 
     public bool RemoveDepartment(Department department)
     {
-        var findedDepartment = _departments.FirstOrDefault(d => d.Id == department.Id);
+        var findedDepartment = _departments.FirstOrDefault(d => d.DepartmentId == department.Id);
 
         if (findedDepartment != null)
         {

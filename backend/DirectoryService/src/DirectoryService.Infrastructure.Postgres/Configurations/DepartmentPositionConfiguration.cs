@@ -10,7 +10,7 @@ public class DepartmentPositionConfiguration : IEntityTypeConfiguration<Departme
     {
         builder.ToTable("departments_positions");
 
-        builder.Property(dp => dp.Id).HasColumnName("department_position_Id");
+        builder.Property(dp => dp.Id).HasColumnName("department_position_id");
         builder.HasKey(dp => dp.Id);
 
         builder.Property(dp => dp.DepartmentId)

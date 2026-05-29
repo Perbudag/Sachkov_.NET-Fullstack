@@ -65,6 +65,6 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
             .OnDelete(DeleteBehavior.Cascade);
 
 
-        builder.HasIndex(l => l.Name).IsUnique();
+        builder.HasIndex(d => d.Name).IsUnique();
     }
 }

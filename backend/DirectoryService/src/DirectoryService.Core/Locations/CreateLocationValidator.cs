@@ -9,7 +9,8 @@ namespace DirectoryService.Core.Locations
     {
         public CreateLocationValidator()
         {
-            RuleFor(l => l.Name.Trim())
+            RuleFor(l => l.Name)
+                .NotNull()
                 .MinimumLength(Name.MIN_LENGTH)
                 .Length(Name.MAX_LENGTH)
                 .WithMessage($"Имя должно содержать от {Name.MIN_LENGTH} до {Name.MAX_LENGTH} символов");

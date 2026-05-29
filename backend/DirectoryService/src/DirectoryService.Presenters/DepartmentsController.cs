@@ -9,7 +9,7 @@ namespace DirectoryService.Presenters;
 public class DepartmentsController : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken = default)
     {
         DepartmentResponse[] response = [new DepartmentResponse(
             Guid.CreateVersion7(),
@@ -23,7 +23,7 @@ public class DepartmentsController : ControllerBase
 
 
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetById([FromRoute] Guid id)
+    public async Task<IActionResult> GetById([FromRoute] Guid id, CancellationToken cancellationToken = default)
     {
         var response = new DepartmentResponse(
             Guid.CreateVersion7(),
@@ -37,7 +37,7 @@ public class DepartmentsController : ControllerBase
 
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateDepartmentRequest request)
+    public async Task<IActionResult> Create([FromBody] CreateDepartmentRequest request, CancellationToken cancellationToken = default)
     {
         var response = new DepartmentResponse(
             Guid.CreateVersion7(),
@@ -52,7 +52,7 @@ public class DepartmentsController : ControllerBase
 
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateDepartmentRequest request)
+    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateDepartmentRequest request, CancellationToken cancellationToken = default)
     {
         var response = new DepartmentResponse(
             id,
@@ -67,7 +67,7 @@ public class DepartmentsController : ControllerBase
 
 
     [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete([FromRoute] Guid id)
+    public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken = default)
     {
         return Ok();
     }

@@ -65,13 +65,13 @@ public partial record Address
 
         if (!NumberPattern.IsMatch(house))
         {
-            throw new ArgumentException("Номера дома должен состоять из цифр" +
+            throw new ArgumentException("Номер дома должен состоять из цифр" +
                 "и/или прописных букв латинского и кириллического алфавита.", nameof(house));
         }
 
         if (apartment != null && !NumberPattern.IsMatch(apartment))
         {
-            throw new ArgumentException("Номера квартиры должен состоять из цифр" +
+            throw new ArgumentException("Номер квартиры должен состоять из цифр" +
                 "и/или прописных букв латинского и кириллического алфавита.", nameof(apartment));
         }
 

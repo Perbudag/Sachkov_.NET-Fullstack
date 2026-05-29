@@ -56,3 +56,18 @@ dotnet_diagnostic.CA1515.severity = none
 # S6964: Игнорировать жалобу "Value type property used as input in a controller action should be 
 # nullable, required or annotated with the JsonRequiredAttribute to avoid under-posting."
 dotnet_diagnostic.S6964.severity = none
+
+# CA1848: Использование делегатов LoggerMessage
+dotnet_diagnostic.CA1848.severity = none
+
+#CA1873: избегайте потенциально дорогого ведения журнала
+dotnet_diagnostic.CA1873.severity = none
+
+# CA1852: запечатывать внутренние типы
+dotnet_diagnostic.CA1852.severity = none
+
+# CA1861: избегайте массивов констант в качестве аргументов
+dotnet_diagnostic.CA1861.severity = none
+
+# CA1031: Не перехватывайте типы общих исключений
+dotnet_diagnostic.CA1031.severity = none

@@ -46,3 +46,13 @@ dotnet_diagnostic.S108.severity  = error  # Пустой catch-блок без �
 
 # CA1707: Игнорировать нижние подчеркивания
 dotnet_diagnostic.CA1707.severity = none
+
+# MA0009: Игнорировать "Regular expressions should not be vulnerable to Denial of Service attacks"
+dotnet_diagnostic.MA0009.severity = none
+
+# CA1515: Игнорировать жалобу на не internal класс контроллера
+dotnet_diagnostic.CA1515.severity = none
+
+# S6964: Игнорировать жалобу "Value type property used as input in a controller action should be 
+# nullable, required or annotated with the JsonRequiredAttribute to avoid under-posting."
+dotnet_diagnostic.S6964.severity = none

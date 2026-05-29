@@ -9,13 +9,15 @@
     <!-- Паттерн Result<T, Error> для бизнес-ошибок -->
     <PackageVersion Include="CSharpFunctionalExtensions" Version="3.6.0" />
     <!-- База данных -->
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Core" Version="2.3.10" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.8" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.8" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.8" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.8" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.8" />
-    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
+    <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.2" />
     <PackageVersion Include="Dapper" Version="2.1.66" />
     <!-- Валидация и авторегистрация DI -->
     <PackageVersion Include="FluentValidation" Version="12.1.1" />
@@ -28,8 +30,8 @@
     <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="10.0.7" />
     <!-- Анализаторы (версии здесь, подключение в Directory.Build.props) -->
     <PackageVersion Include="Roslynator.Analyzers" Version="4.15.0" />
-    <PackageVersion Include="Meziantou.Analyzer" Version="3.0.94" />
+    <PackageVersion Include="Meziantou.Analyzer" Version="3.0.98" />
     <PackageVersion Include="AsyncFixer" Version="2.1.0" />
-    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.26.0.140279" />
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.27.0.140913" />
   </ItemGroup>
 </Project>

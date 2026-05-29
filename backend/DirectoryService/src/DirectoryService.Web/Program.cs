@@ -1,3 +1,4 @@
+using DirectoryService.Core;
 using DirectoryService.Infrastructure.Postgres;
 using Scalar.AspNetCore;
 
@@ -11,6 +12,7 @@ builder.Services.AddControllers();
 builder.Services.AddHealthChecks();
 
 builder.Services.AddInfrastructurePostgres(builder.Configuration);
+builder.Services.AddCore(builder.Configuration);
 
 var app = builder.Build();
 

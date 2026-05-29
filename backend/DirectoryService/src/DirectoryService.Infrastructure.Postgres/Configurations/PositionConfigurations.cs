@@ -36,5 +36,8 @@ public class PositionConfigurations : IEntityTypeConfiguration<Position>
             .WithOne()
             .HasForeignKey(dl => dl.PositionId)
             .OnDelete(DeleteBehavior.Cascade);
+
+
+        builder.HasIndex(l => l.Name).IsUnique();
     }
 }

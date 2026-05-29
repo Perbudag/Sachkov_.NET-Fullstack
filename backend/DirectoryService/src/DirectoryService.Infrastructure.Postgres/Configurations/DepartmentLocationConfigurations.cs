@@ -25,5 +25,7 @@ public class DepartmentLocationConfigurations : IEntityTypeConfiguration<Departm
             .HasColumnName("created_at")
             .IsRequired()
             .HasDefaultValueSql("timezone('utc', now())");
+
+        builder.HasIndex(dl => new { dl.DepartmentId, dl.LocationId }).IsUnique();
     }
 }

@@ -43,5 +43,8 @@ public class LocationConfiguration : IEntityTypeConfiguration<Location>
             .WithOne()
             .HasForeignKey(dl => dl.LocationId)
             .OnDelete(DeleteBehavior.Cascade);
+
+
+        builder.HasIndex(l => l.Name).IsUnique();
     }
 }

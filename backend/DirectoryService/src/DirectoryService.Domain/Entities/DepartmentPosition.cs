@@ -12,7 +12,7 @@ public class DepartmentPosition
     }
 
     // EF Core
-    public DepartmentPosition() { }
+    private DepartmentPosition() { }
 
 
     public Guid Id { get; }

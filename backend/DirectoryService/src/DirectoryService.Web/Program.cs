@@ -14,9 +14,6 @@ builder.Services.AddInfrastructurePostgres(builder.Configuration);
 
 var app = builder.Build();
 
-
-app.MapGet("/", () => "Hello World!");
-
 app.MapControllers();
 
 app.UseHealthChecks("/health");

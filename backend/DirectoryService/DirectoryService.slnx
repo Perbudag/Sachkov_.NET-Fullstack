@@ -4,6 +4,7 @@
     <Project Path="src/DirectoryService.Core/DirectoryService.Core.csproj" />
     <Project Path="src/DirectoryService.Domain/DirectoryService.Domain.csproj" />
     <Project Path="src/DirectoryService.Infrastructure.Postgres/DirectoryService.Infrastructure.Postgres.csproj" />
+    <Project Path="src/DirectoryService.Presenters/DirectoryService.Presenters.csproj" Id="56d718c9-a4c4-4a08-9468-03559b3c202c" />
     <Project Path="src/DirectoryService.Web/DirectoryService.Web.csproj" />
   </Folder>
 </Solution>

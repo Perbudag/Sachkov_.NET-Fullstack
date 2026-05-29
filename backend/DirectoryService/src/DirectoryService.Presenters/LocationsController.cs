@@ -64,6 +64,6 @@ public class LocationsController : ControllerBase
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete([FromRoute] Guid id)
     {
-        return Ok("delete request");
+        return Ok();
     }
 }

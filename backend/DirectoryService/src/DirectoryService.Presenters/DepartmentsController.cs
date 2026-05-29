@@ -51,11 +51,11 @@ public class DepartmentsController : ControllerBase
     }
 
 
-    [HttpPut]
-    public async Task<IActionResult> Update([FromBody] UpdateDepartmentRequest request)
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateDepartmentRequest request)
     {
         var response = new DepartmentResponse(
-            request.Id,
+            id,
             request.Name,
             request.Slug,
             "TestParentSlug." + request.Slug,

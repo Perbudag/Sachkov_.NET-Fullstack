@@ -1,6 +1,5 @@
 ﻿namespace DirectoryService.Contracts.Departments;
 
-public record UpdateDepartmentRequest(Guid Id,
-                                      string Name,
+public record UpdateDepartmentRequest(string Name,
                                       string Slug,
                                       Guid? ParentId);

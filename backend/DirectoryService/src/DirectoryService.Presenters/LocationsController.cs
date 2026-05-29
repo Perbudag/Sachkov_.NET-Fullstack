@@ -41,7 +41,7 @@ public class LocationsController : ControllerBase
         var response = new LocationResponse(
             Guid.CreateVersion7(),
             request.Name,
-            request.Addess
+            request.Address
             );
 
         return Ok(response);
@@ -49,12 +49,12 @@ public class LocationsController : ControllerBase
 
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update([FromBody] UpdateLocationRequest request)
+    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateLocationRequest request)
     {
         var response = new LocationResponse(
-            request.Id,
+            id,
             request.Name,
-            request.Addess
+            request.Address
             );
 
         return Ok(response);

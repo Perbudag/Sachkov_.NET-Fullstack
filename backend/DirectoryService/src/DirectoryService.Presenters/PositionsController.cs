@@ -44,11 +44,11 @@ public class PositionsController : ControllerBase
     }
 
 
-    [HttpPut]
-    public async Task<IActionResult> Update([FromBody] UpdatePositionRequest request, CancellationToken cancellationToken = default)
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdatePositionRequest request, CancellationToken cancellationToken = default)
     {
         var response = new PositionResponse(
-            request.Id,
+            id,
             request.Name
         );
 

@@ -2,4 +2,4 @@
 
 namespace DirectoryService.Contracts.Locations;
 
-public record UpdateLocationRequest(Guid Id, string Name, AddressDto Addess);
+public record UpdateLocationRequest(string Name, AddressDto Address);

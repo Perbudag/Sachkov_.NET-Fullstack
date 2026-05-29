@@ -2,4 +2,4 @@
 
 namespace DirectoryService.Contracts.Locations;
 
-public record CreateLocationRequest(string Name, AddressDto Addess);
+public record CreateLocationRequest(string Name, AddressDto Address);

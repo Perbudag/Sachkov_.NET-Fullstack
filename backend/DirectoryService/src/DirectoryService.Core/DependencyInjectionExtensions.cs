@@ -11,7 +11,7 @@ public static class DependencyInjectionExtensions
     {
         services.AddValidatorsFromAssembly(typeof(DependencyInjectionExtensions).Assembly);
 
-        services.AddScoped<ILocationsService, ILocationsService>();
+        services.AddScoped<ILocationsService, LocationsService>();
 
         return services;
     }

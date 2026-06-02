@@ -80,10 +80,10 @@ public partial record Address
 
     public static Address Create(string value)
     {
-        var valueParts = value.Replace(", ", "|", StringComparison.Ordinal)
-                              .Replace(", г. ", "|", StringComparison.Ordinal)
+        var valueParts = value.Replace(", г. ", "|", StringComparison.Ordinal)
                               .Replace(", ул. ", "|", StringComparison.Ordinal)
                               .Replace(", д. ", "|", StringComparison.Ordinal)
+                              .Replace(", ", "|", StringComparison.Ordinal)
                               .Split('|');
 
         if (valueParts.Length < 6)

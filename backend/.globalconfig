@@ -71,3 +71,9 @@ dotnet_diagnostic.CA1861.severity = none
 
 # CA1031: Не перехватывайте типы общих исключений
 dotnet_diagnostic.CA1031.severity = none
+
+# CA1716: идентификаторы не должны совпадать с ключевыми словами
+dotnet_diagnostic.CA1716.severity = none
+
+# CA2000: удалите объекты до того, как будет потеряна область действия
+dotnet_diagnostic.CA2000.severity = none

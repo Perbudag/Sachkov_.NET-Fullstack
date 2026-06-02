@@ -31,6 +31,11 @@ internal class LocationsService : ILocationsService
 
         var name = Name.Create(request.Name);
 
+        if(!await _repository.ExistsByNameAsync(name, cancellationToken))
+        {
+            throw new ValidationException($"A location named \"{name}\" already exists");
+        }
+
         var address = Address.Create(
             request.Address.PostalCode,
             request.Address.Country,

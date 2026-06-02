@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace DirectoryService.Core.Shared.Validators;
 
-internal class AddressDtoValidator : AbstractValidator<AddressDto>
+public class AddressDtoValidator : AbstractValidator<AddressDto>
 {
     private readonly Regex _postalCodePattern = new Regex("^[0-9A-Z -]{4,8}$");
     private readonly Regex _namePattern = new Regex("^[а-яА-Яa-zA-Z ]+$");

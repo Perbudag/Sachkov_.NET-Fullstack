@@ -10,13 +10,6 @@ namespace DirectoryService.Presenters;
 [ApiController]
 public class LocationsController : ControllerBase
 {
-    private readonly ILocationsService _locationsService;
-
-    public LocationsController(ILocationsService locationsService)
-    {
-        _locationsService = locationsService;
-    }
-
     [HttpGet]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken = default)
     {
@@ -44,11 +37,14 @@ public class LocationsController : ControllerBase
 
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateLocationRequest request, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> Create(
+        [FromServices] ILocationsService locationsService,
+        [FromBody] CreateLocationRequest request,
+        CancellationToken cancellationToken = default)
     {
         try
         {
-            var response = await _locationsService.CreateAsync(request, cancellationToken);
+            var response = await locationsService.CreateAsync(request, cancellationToken);
 
             return Ok(response);
         }

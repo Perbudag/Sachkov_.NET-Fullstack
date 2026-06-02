@@ -3,16 +3,19 @@ using DirectoryService.Core.Locations;
 using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.ValueObjects;
 using DirectoryService.Infrastructure.Postgres.Database;
+using Microsoft.Extensions.Logging;
 
 namespace DirectoryService.Infrastructure.Postgres.Repositories;
 
 internal class DapperLocationsRepository : ILocationsRepository
 {
     private readonly IDbConnectionFactory _connectionFactory;
+    private readonly ILogger<DapperLocationsRepository> _logger;
 
-    public DapperLocationsRepository(IDbConnectionFactory connectionFactory)
+    public DapperLocationsRepository(IDbConnectionFactory connectionFactory, ILogger<DapperLocationsRepository> logger)
     {
         _connectionFactory = connectionFactory;
+        _logger = logger;
     }
 
     public async Task AddAsync(Location location, CancellationToken cancellationToken)
@@ -47,7 +50,15 @@ internal class DapperLocationsRepository : ILocationsRepository
             UpdatedAt = location.UpdatedAt,
         };
 
-        await connection.ExecuteAsync(sql, value);
+        try
+        {
+            await connection.ExecuteAsync(sql, value);
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError(ex, "Failed to create location with id: {Id}", value.Id);
+            throw;
+        }
     }
 
     public async Task<bool> ExistsByNameAsync(Name name, CancellationToken cancellationToken)

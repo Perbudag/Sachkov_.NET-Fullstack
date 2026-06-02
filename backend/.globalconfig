@@ -77,3 +77,6 @@ dotnet_diagnostic.CA1716.severity = none
 
 # CA2000: удалите объекты до того, как будет потеряна область действия
 dotnet_diagnostic.CA2000.severity = none
+
+# S2139 Either log this exception and handle it, or rethrow it with some contextual information.
+dotnet_diagnostic.S2139.severity = none

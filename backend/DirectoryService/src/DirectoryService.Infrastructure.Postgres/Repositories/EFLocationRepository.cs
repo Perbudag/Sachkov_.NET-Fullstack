@@ -3,7 +3,6 @@ using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace DirectoryService.Infrastructure.Postgres.Repositories;
 
@@ -29,6 +28,7 @@ internal class EFLocationRepository : ILocationsRepository
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to create location with id: {Id}", location.Id);
+            throw;
         }
     }
 

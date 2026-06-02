@@ -57,6 +57,7 @@ internal class DapperLocationsRepository : ILocationsRepository
         catch(Exception ex)
         {
             _logger.LogError(ex, "Failed to create location with id: {Id}", value.Id);
+            throw;
         }
     }
 

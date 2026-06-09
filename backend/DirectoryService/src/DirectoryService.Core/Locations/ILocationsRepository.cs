@@ -8,5 +8,5 @@ public interface ILocationsRepository
     Task AddAsync(Location location, CancellationToken cancellationToken);
     Task<IEnumerable<Location>> GetByIdsAsync(IEnumerable<Guid> locationIds, CancellationToken cancellationToken);
     Task<bool> ExistsByNameAsync(Name name, CancellationToken cancellationToken);
-    Task SaveAync(CancellationToken cancellationToken);
+    Task SaveAsync(CancellationToken cancellationToken);
 }

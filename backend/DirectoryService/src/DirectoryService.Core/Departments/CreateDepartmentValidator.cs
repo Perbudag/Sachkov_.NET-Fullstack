@@ -20,7 +20,7 @@ public class CreateDepartmentValidator : AbstractValidator<CreateDepartmentReque
             .NotNull()
             .MinimumLength(Slug.MIN_LENGTH)
             .MaximumLength(Slug.MAX_LENGTH)
-            .WithMessage($"Slug должен содержать от {Name.MIN_LENGTH} до {Name.MAX_LENGTH} символов")
+            .WithMessage($"Slug должен содержать от {Slug.MIN_LENGTH} до {Slug.MAX_LENGTH} символов")
             .Matches("^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$")
             .WithMessage($"Slug может состоять из латинских букв, цифр и дефисов, " +
                           "а также, не начинается и не заканчивается дефисом");

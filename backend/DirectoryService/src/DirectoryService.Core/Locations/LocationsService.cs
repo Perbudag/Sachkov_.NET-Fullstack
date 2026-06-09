@@ -50,7 +50,7 @@ internal class LocationsService : ILocationsService
 
         await _repository.AddAsync(location, cancellationToken);
 
-        await _repository.SaveAync(cancellationToken);
+        await _repository.SaveAsync(cancellationToken);
 
         _logger.LogInformation("Location created with name \"{Name}\".", name);
 

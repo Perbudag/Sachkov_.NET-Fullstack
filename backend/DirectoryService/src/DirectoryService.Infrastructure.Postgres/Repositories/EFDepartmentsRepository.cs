@@ -3,6 +3,7 @@ using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Xml.Linq;
 
 namespace DirectoryService.Infrastructure.Postgres.Repositories;
 
@@ -26,7 +27,7 @@ internal class EFDepartmentsRepository : IDepartmentsRepository
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to create location with id: {Id}", department.Id);
+            _logger.LogError(ex, "Failed to create department with id: {Id}", department.Id);
             throw;
         }
     }
@@ -41,6 +42,11 @@ internal class EFDepartmentsRepository : IDepartmentsRepository
     public async Task<bool> ExistsByNameAsync(Name name, CancellationToken cancellationToken)
     {
         return await _context.Departments.AnyAsync(d => d.Name == name, cancellationToken);
+    }
+
+    public async Task<bool> ExistsChildWithSlugAsync(Department parent, Slug slug, CancellationToken cancellationToken)
+    {
+        return await _context.Departments.AnyAsync(d => d.ParentId == parent.Id && d.Slug == slug, cancellationToken);
     }
 
     public async Task<Department?> GetByIdAsync(Guid? departmentId, CancellationToken cancellationToken)

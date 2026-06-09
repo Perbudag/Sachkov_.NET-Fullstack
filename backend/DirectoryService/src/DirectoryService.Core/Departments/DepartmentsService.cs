@@ -67,6 +67,12 @@ internal class DepartmentsService : IDepartmentsService
 
         var slug = Slug.Create(request.Slug);
 
+        if (parent != null && await _departmentsRepository.ExistsChildWithSlugAsync(parent, slug, cancellationToken))
+        {
+            throw new ValidationException($"The department with id \"{parent.Id}\" " +
+                $"already has a child element with Slug \"{slug}\"");
+        }
+
         var department = Department.Create(name, slug, parent);
 
         await _departmentsRepository.AddAsync(department, cancellationToken);

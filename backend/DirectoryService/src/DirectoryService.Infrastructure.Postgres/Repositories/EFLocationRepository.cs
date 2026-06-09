@@ -41,7 +41,7 @@ internal class EFLocationRepository : ILocationsRepository
         return await _context.Locations.Where(l => locationIds.Contains(l.Id)).ToListAsync(cancellationToken);
     }
 
-    public async Task SaveAync(CancellationToken cancellationToken)
+    public async Task SaveAsync(CancellationToken cancellationToken)
     {
         await _context.SaveChangesAsync(cancellationToken);
     }

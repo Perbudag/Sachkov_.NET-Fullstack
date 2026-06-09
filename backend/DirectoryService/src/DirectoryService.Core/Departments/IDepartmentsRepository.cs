@@ -1,0 +1,13 @@
+﻿using DirectoryService.Domain.Entities;
+using DirectoryService.Domain.ValueObjects;
+
+namespace DirectoryService.Core.Departments;
+
+public interface IDepartmentsRepository
+{
+    Task AddAsync(Department department, CancellationToken cancellationToken);
+    Task AddLocations(Department department, IEnumerable<Location> locations, CancellationToken cancellationToken);
+    Task<bool> ExistsByNameAsync(Name name, CancellationToken cancellationToken);
+    Task<Department?> GetByIdAsync(Guid? departmentId, CancellationToken cancellationToken);
+    Task SaveAsync(CancellationToken cancellationToken);
+}

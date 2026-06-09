@@ -48,8 +48,9 @@ internal class LocationsService : ILocationsService
 
         var location = Location.Create(name, address);
 
-        // Если пользователь с именем request.Name уже существует бд вызовет исключение
         await _repository.AddAsync(location, cancellationToken);
+
+        await _repository.SaveAync(cancellationToken);
 
         _logger.LogInformation("Location created with name \"{Name}\".", name);
 

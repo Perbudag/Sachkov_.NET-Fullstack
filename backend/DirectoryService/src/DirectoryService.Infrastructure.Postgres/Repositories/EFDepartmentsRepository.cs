@@ -3,7 +3,6 @@ using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Xml.Linq;
 
 namespace DirectoryService.Infrastructure.Postgres.Repositories;
 

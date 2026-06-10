@@ -1,4 +1,5 @@
-﻿using DirectoryService.Contracts.Departments;
+﻿using DirectoryService.Core.Departments;
+using DirectoryService.Contracts.Departments;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DirectoryService.Presenters;
@@ -37,17 +38,14 @@ public class DepartmentsController : ControllerBase
 
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateDepartmentRequest request, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> Create(
+        [FromServices] IDepartmentsService departmentsService,
+        [FromBody] CreateDepartmentRequest request, 
+        CancellationToken cancellationToken = default)
     {
-        var response = new DepartmentResponse(
-            Guid.CreateVersion7(),
-            request.Name,
-            request.Slug,
-            "TestParentSlug." + request.Slug,
-            request.ParentId
-            );
+        var departmentId = await departmentsService.CreateAsync(request, cancellationToken);
 
-        return Ok(response);
+        return Ok(departmentId);
     }
 
 

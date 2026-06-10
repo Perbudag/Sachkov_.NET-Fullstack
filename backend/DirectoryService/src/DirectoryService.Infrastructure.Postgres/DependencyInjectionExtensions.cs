@@ -1,4 +1,5 @@
-﻿using DirectoryService.Core.Locations;
+﻿using DirectoryService.Core.Departments;
+using DirectoryService.Core.Locations;
 using DirectoryService.Infrastructure.Postgres.Database;
 using DirectoryService.Infrastructure.Postgres.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,8 @@ public static class DependencyInjectionExtensions
     {
         services.AddSingleton<IDbConnectionFactory, NpgsqlDbConnectionFactory>();
 
-        services.AddScoped<ILocationsRepository, DapperLocationsRepository>();
+        services.AddScoped<ILocationsRepository, EFLocationRepository>();
+        services.AddScoped<IDepartmentsRepository, EFDepartmentsRepository>();
 
         services.AddDbContext<AppDbContext>(options => 
             options.UseNpgsql(configurations.GetConnectionString("Postgresql"))

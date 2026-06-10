@@ -8,12 +8,12 @@ namespace DirectoryService.Infrastructure.Postgres.Repositories;
 
 internal class EFLocationRepository : ILocationsRepository
 {
-    private readonly AppDbContext _appDbContext;
+    private readonly AppDbContext _context;
     private readonly ILogger<EFLocationRepository> _logger;
 
     public EFLocationRepository(AppDbContext appDbContext, ILogger<EFLocationRepository> logger)
     {
-        _appDbContext = appDbContext;
+        _context = appDbContext;
         _logger = logger;
     }
 
@@ -21,9 +21,8 @@ internal class EFLocationRepository : ILocationsRepository
     {
         try
         {
-            await _appDbContext.Locations.AddAsync(location, cancellationToken);
+            await _context.Locations.AddAsync(location, cancellationToken);
 
-            await _appDbContext.SaveChangesAsync(cancellationToken);
         }
         catch (Exception ex)
         {
@@ -34,6 +33,16 @@ internal class EFLocationRepository : ILocationsRepository
 
     public async Task<bool> ExistsByNameAsync(Name name, CancellationToken cancellationToken)
     {
-        return await _appDbContext.Locations.AnyAsync(location => location.Name == name, cancellationToken);
+        return await _context.Locations.AnyAsync(location => location.Name == name, cancellationToken);
+    }
+
+    public async Task<IEnumerable<Location>> GetByIdsAsync(IEnumerable<Guid> locationIds, CancellationToken cancellationToken)
+    {
+        return await _context.Locations.Where(l => locationIds.Contains(l.Id)).ToListAsync(cancellationToken);
+    }
+
+    public async Task SaveAsync(CancellationToken cancellationToken)
+    {
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }

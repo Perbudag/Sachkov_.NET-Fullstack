@@ -40,7 +40,7 @@ public class DepartmentsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(
         [FromServices] IDepartmentsService departmentsService,
-        [FromBody] CreateDepartmentRequest request, 
+        [FromBody] CreateDepartmentRequest request,
         CancellationToken cancellationToken = default)
     {
         var departmentId = await departmentsService.CreateAsync(request, cancellationToken);
@@ -49,16 +49,14 @@ public class DepartmentsController : ControllerBase
     }
 
 
-    [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateDepartmentRequest request, CancellationToken cancellationToken = default)
+    [HttpPatch("{id:guid}")]
+    public async Task<IActionResult> Update(
+        [FromServices] IDepartmentsService departmentsService,
+        [FromRoute] Guid id,
+        [FromBody] UpdateDepartmentRequest request,
+        CancellationToken cancellationToken = default)
     {
-        var response = new DepartmentResponse(
-            id,
-            request.Name,
-            request.Slug,
-            "TestParentSlug." + request.Slug,
-            request.ParentId
-            );
+        var response = await departmentsService.UpdateAsync(id, request, cancellationToken);
 
         return Ok(response);
     }
@@ -68,5 +66,45 @@ public class DepartmentsController : ControllerBase
     public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken = default)
     {
         return Ok();
+    }
+
+
+    [HttpPost("{departmentId:guid}/locations/{locationId:guid}")]
+    public async Task<IActionResult> AddLocation(
+        [FromServices] IDepartmentsService departmentsService,
+        [FromRoute] Guid departmentId,
+        [FromRoute] Guid locationId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await departmentsService.AddLocationAsync(departmentId, locationId, cancellationToken);
+
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+
+    [HttpDelete("{departmentId:guid}/locations/{locationId:guid}")]
+    public async Task<IActionResult> RemoveLocation(
+        [FromServices] IDepartmentsService departmentsService,
+        [FromRoute] Guid departmentId,
+        [FromRoute] Guid locationId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await departmentsService.RemoveLocationAsync(departmentId, locationId, cancellationToken);
+
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 }

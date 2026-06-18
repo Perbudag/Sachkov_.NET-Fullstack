@@ -9,4 +9,5 @@ public interface ILocationsRepository
     Task<IEnumerable<Location>> GetByIdsAsync(IEnumerable<Guid> locationIds, CancellationToken cancellationToken);
     Task<bool> ExistsByNameAsync(Name name, CancellationToken cancellationToken);
     Task SaveAsync(CancellationToken cancellationToken);
+    Task<Location?> GetByIdAsync(Guid locationId, CancellationToken cancellationToken);
 }

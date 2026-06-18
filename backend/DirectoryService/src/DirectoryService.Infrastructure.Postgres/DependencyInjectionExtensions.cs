@@ -15,8 +15,8 @@ public static class DependencyInjectionExtensions
     {
         services.AddSingleton<IDbConnectionFactory, NpgsqlDbConnectionFactory>();
 
-        services.AddScoped<ILocationsRepository, EFLocationRepository>();
-        services.AddScoped<IDepartmentsRepository, EFDepartmentsRepository>();
+        services.AddScoped<ILocationsRepository, LocationRepository>();
+        services.AddScoped<IDepartmentsRepository, DepartmentsRepository>();
 
         services.AddDbContext<AppDbContext>(options => 
             options.UseNpgsql(configurations.GetConnectionString("Postgresql"))

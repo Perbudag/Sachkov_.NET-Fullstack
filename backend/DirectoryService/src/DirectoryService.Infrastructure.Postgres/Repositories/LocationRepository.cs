@@ -6,12 +6,12 @@ using Microsoft.Extensions.Logging;
 
 namespace DirectoryService.Infrastructure.Postgres.Repositories;
 
-internal class EFLocationRepository : ILocationsRepository
+internal class LocationRepository : ILocationsRepository
 {
     private readonly AppDbContext _context;
-    private readonly ILogger<EFLocationRepository> _logger;
+    private readonly ILogger<LocationRepository> _logger;
 
-    public EFLocationRepository(AppDbContext appDbContext, ILogger<EFLocationRepository> logger)
+    public LocationRepository(AppDbContext appDbContext, ILogger<LocationRepository> logger)
     {
         _context = appDbContext;
         _logger = logger;
@@ -34,6 +34,11 @@ internal class EFLocationRepository : ILocationsRepository
     public async Task<bool> ExistsByNameAsync(Name name, CancellationToken cancellationToken)
     {
         return await _context.Locations.AnyAsync(location => location.Name == name, cancellationToken);
+    }
+
+    public async Task<Location?> GetByIdAsync(Guid locationId, CancellationToken cancellationToken)
+    {
+        return await _context.Locations.FirstOrDefaultAsync(l => l.Id == locationId, cancellationToken);
     }
 
     public async Task<IEnumerable<Location>> GetByIdsAsync(IEnumerable<Guid> locationIds, CancellationToken cancellationToken)

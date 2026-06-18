@@ -6,9 +6,10 @@ namespace DirectoryService.Core.Departments;
 public interface IDepartmentsRepository
 {
     Task AddAsync(Department department, CancellationToken cancellationToken);
-    Task AddLocations(Department department, IEnumerable<Location> locations, CancellationToken cancellationToken);
     Task<bool> ExistsByNameAsync(Name name, CancellationToken cancellationToken);
     Task<bool> ExistsChildWithSlugAsync(Department parent, Slug slug, CancellationToken cancellationToken);
     Task<Department?> GetByIdAsync(Guid? departmentId, CancellationToken cancellationToken);
+    Task AddLocationsAsync(Department department, IEnumerable<Location> locations, CancellationToken cancellationToken);
+    Task RemoveLocationsAsync(Department department, IEnumerable<Location> locations, CancellationToken cancellationToken);
     Task SaveAsync(CancellationToken cancellationToken);
 }

@@ -6,12 +6,12 @@ using Microsoft.Extensions.Logging;
 
 namespace DirectoryService.Infrastructure.Postgres.Repositories;
 
-internal class EFDepartmentsRepository : IDepartmentsRepository
+internal class DepartmentsRepository : IDepartmentsRepository
 {
     private readonly AppDbContext _context;
-    private readonly ILogger<EFDepartmentsRepository> _logger;
+    private readonly ILogger<DepartmentsRepository> _logger;
 
-    public EFDepartmentsRepository(AppDbContext context, ILogger<EFDepartmentsRepository> logger)
+    public DepartmentsRepository(AppDbContext context, ILogger<DepartmentsRepository> logger)
     {
         _context = context;
         _logger = logger;
@@ -31,13 +31,6 @@ internal class EFDepartmentsRepository : IDepartmentsRepository
         }
     }
 
-    public async Task AddLocations(Department department, IEnumerable<Location> locations, CancellationToken cancellationToken)
-    {
-        var departmentLocations = locations.Select(l => DepartmentLocation.Create(department.Id, l.Id));
-
-        await _context.DepartmentLocations.AddRangeAsync(departmentLocations, cancellationToken);
-    }
-
     public async Task<bool> ExistsByNameAsync(Name name, CancellationToken cancellationToken)
     {
         return await _context.Departments.AnyAsync(d => d.Name == name, cancellationToken);
@@ -51,6 +44,22 @@ internal class EFDepartmentsRepository : IDepartmentsRepository
     public async Task<Department?> GetByIdAsync(Guid? departmentId, CancellationToken cancellationToken)
     {
         return await _context.Departments.FirstOrDefaultAsync(d => d.Id == departmentId, cancellationToken);
+    }
+
+    public async Task AddLocationsAsync(Department department, IEnumerable<Location> locations, CancellationToken cancellationToken)
+    {
+        var departmentLocations = locations.Select(l => DepartmentLocation.Create(department.Id, l.Id));
+
+        await _context.DepartmentLocations.AddRangeAsync(departmentLocations, cancellationToken);
+    }
+
+    public async Task RemoveLocationsAsync(Department department, IEnumerable<Location> locations, CancellationToken cancellationToken)
+    {
+        var departmentLocations = await _context.DepartmentLocations.Where(dl => dl.DepartmentId == department.Id && 
+            locations.Select(l => l.Id).Contains(dl.LocationId))
+            .ToListAsync(cancellationToken);
+
+        _context.DepartmentLocations.RemoveRange(departmentLocations);
     }
 
     public async Task SaveAsync(CancellationToken cancellationToken)

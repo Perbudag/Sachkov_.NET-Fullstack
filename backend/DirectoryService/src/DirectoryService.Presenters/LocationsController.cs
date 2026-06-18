@@ -55,7 +55,7 @@ public class LocationsController : ControllerBase
     }
 
 
-    [HttpPut("{id:guid}")]
+    [HttpPatch("{id:guid}")]
     public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateLocationRequest request, CancellationToken cancellationToken = default)
     {
         var response = new LocationResponse(

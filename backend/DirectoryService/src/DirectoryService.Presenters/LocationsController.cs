@@ -56,13 +56,13 @@ public class LocationsController : ControllerBase
 
 
     [HttpPatch("{id:guid}")]
-    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateLocationRequest request, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> Update(
+        [FromServices] ILocationsService locationsService,
+        [FromRoute] Guid id, 
+        [FromBody] UpdateLocationRequest request, 
+        CancellationToken cancellationToken = default)
     {
-        var response = new LocationResponse(
-            id,
-            request.Name,
-            request.Address
-            );
+        var response = await locationsService.UpdateAsync(id, request, cancellationToken);
 
         return Ok(response);
     }

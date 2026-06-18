@@ -117,6 +117,12 @@ internal class DepartmentsService : IDepartmentsService
         if(request.Name != null)
         {
             var name = Name.Create(request.Name);
+
+            if (await _departmentsRepository.ExistsByNameAsync(name, cancellationToken))
+            {
+                throw new ValidationException($"A department named \"{name}\" already exists");
+            }
+
             department.SetName(name);
         }
 

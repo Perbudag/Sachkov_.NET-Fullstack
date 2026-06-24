@@ -3,7 +3,7 @@ using DirectoryService.Contracts.Locations;
 using DirectoryService.Domain.ValueObjects;
 using FluentValidation;
 
-namespace DirectoryService.Core.Departments;
+namespace DirectoryService.Core.Services.Departments;
 
 public class CreateDepartmentValidator : AbstractValidator<CreateDepartmentRequest>
 {

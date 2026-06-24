@@ -1,5 +1,6 @@
 using DirectoryService.Core;
 using DirectoryService.Infrastructure.Postgres;
+using DirectoryService.Web.Middlewares;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,7 +15,11 @@ builder.Services.AddHealthChecks();
 builder.Services.AddInfrastructurePostgres(builder.Configuration);
 builder.Services.AddCore(builder.Configuration);
 
+builder.Services.AddScoped<ExceptionMiddleware>();
+
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.MapControllers();
 

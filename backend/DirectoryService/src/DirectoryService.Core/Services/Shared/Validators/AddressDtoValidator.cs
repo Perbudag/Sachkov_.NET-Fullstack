@@ -2,7 +2,7 @@
 using FluentValidation;
 using System.Text.RegularExpressions;
 
-namespace DirectoryService.Core.Shared.Validators;
+namespace DirectoryService.Core.Services.Shared.Validators;
 
 public class AddressDtoValidator : AbstractValidator<AddressDto>
 {

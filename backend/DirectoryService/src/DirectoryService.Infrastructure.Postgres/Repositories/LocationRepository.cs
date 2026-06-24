@@ -1,4 +1,4 @@
-﻿using DirectoryService.Core.Locations;
+﻿using DirectoryService.Core.Services.Locations;
 using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;

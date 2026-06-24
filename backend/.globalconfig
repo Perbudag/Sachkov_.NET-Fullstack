@@ -80,3 +80,9 @@ dotnet_diagnostic.CA2000.severity = none
 
 # S2139 Either log this exception and handle it, or rethrow it with some contextual information.
 dotnet_diagnostic.S2139.severity = none
+
+# CA1032: реализуйте стандартные конструкторы исключения
+dotnet_diagnostic.CA1032.severity = none
+
+# RCS1194: Implement exception constructors
+dotnet_diagnostic.RCS1194.severity = none

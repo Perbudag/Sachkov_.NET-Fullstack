@@ -1,12 +1,17 @@
 ﻿using DirectoryService.Contracts.Departments;
-using DirectoryService.Core.Locations;
+using DirectoryService.Core.Exceptions;
+using DirectoryService.Core.Extensions;
+using DirectoryService.Core.Fails;
+using DirectoryService.Core.Services.Departments.Fails.Exceptions;
+using DirectoryService.Core.Services.Locations;
+using DirectoryService.Core.Services.Locations.Fails.Exceptions;
 using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.ValueObjects;
 using DirectoryService.Presenters;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 
-namespace DirectoryService.Core.Departments;
+namespace DirectoryService.Core.Services.Departments;
 
 internal class DepartmentsService : IDepartmentsService
 {
@@ -35,7 +40,9 @@ internal class DepartmentsService : IDepartmentsService
         var validatiorResult = await _createValidator.ValidateAsync(request, cancellationToken);
         if (!validatiorResult.IsValid)
         {
-            throw new ValidationException(validatiorResult.Errors);
+            var errors = validatiorResult.ToErrors(Errors.DepartmentErrors.ValidationError);
+
+            throw new DepartmentsValidationException(errors);
         }
 
         Department? parent = null;
@@ -47,7 +54,9 @@ internal class DepartmentsService : IDepartmentsService
 
             if (parent == null)
             {
-                throw new ValidationException("Department with this id not found");
+                var error = Errors.DepartmentErrors.NotFoud();
+
+                throw new DepartmentsNotFoundException(error);
             }
         }
 
@@ -59,7 +68,9 @@ internal class DepartmentsService : IDepartmentsService
 
             if (notFoundLocationIds.Any())
             {
-                throw new ValidationException("Locations with this ids not found: " + string.Join(", ", notFoundLocationIds));
+                var error = Errors.LocationErrors.NotFoudMany(notFoundLocationIds);
+
+                throw new LocationsNotFoundException(error);
             }
         }
 
@@ -67,15 +78,18 @@ internal class DepartmentsService : IDepartmentsService
 
         if (await _departmentsRepository.ExistsByNameAsync(name, cancellationToken))
         {
-            throw new ValidationException($"A department named \"{name}\" already exists");
+            var error = Errors.DepartmentErrors.Conflict(name.ToString());
+
+            throw new DepartmentsConflictException(error);
         }
 
         var slug = Slug.Create(request.Slug);
 
         if (parent != null && await _departmentsRepository.ExistsChildWithSlugAsync(parent, slug, cancellationToken))
         {
-            throw new ValidationException($"The department with id \"{parent.Id}\" " +
-                $"already has a child element with Slug \"{slug}\"");
+            var error = Errors.DepartmentErrors.SlugConflict(parent.Id, slug.ToString());
+
+            throw new DepartmentsConflictException(error);
         }
 
         var department = Department.Create(name, slug, parent);
@@ -98,29 +112,37 @@ internal class DepartmentsService : IDepartmentsService
         var validatiorResult = await _updateValidator.ValidateAsync(request, cancellationToken);
         if (!validatiorResult.IsValid)
         {
-            throw new ValidationException(validatiorResult.Errors);
+            var errors = validatiorResult.ToErrors(Errors.DepartmentErrors.ValidationError);
+
+            throw new DepartmentsValidationException(errors);
         }
 
-        if(id == Guid.Empty)
+        if (id == Guid.Empty)
         {
-            throw new ValidationException("Id is required");
+            var error = Errors.SharedErrors.IsRequired("DepartmentId", "departments.validation.error");
+
+            throw new DepartmentsValidationException(error);
         }
 
         var department = await _departmentsRepository.GetByIdAsync(id, cancellationToken);
 
         if (department == null)
         {
-            throw new ValidationException("Department with this id not found");
+            var error = Errors.DepartmentErrors.NotFoud();
+
+            throw new DepartmentsNotFoundException(error);
         }
 
 
-        if(request.Name != null)
+        if (request.Name != null)
         {
             var name = Name.Create(request.Name);
 
             if (await _departmentsRepository.ExistsByNameAsync(name, cancellationToken))
             {
-                throw new ValidationException($"A department named \"{name}\" already exists");
+                var error = Errors.DepartmentErrors.Conflict(name.ToString());
+
+                throw new DepartmentsConflictException(error);
             }
 
             department.SetName(name);
@@ -129,21 +151,25 @@ internal class DepartmentsService : IDepartmentsService
         await _departmentsRepository.SaveAsync(cancellationToken);
 
         return new DepartmentResponse(id,
-            department.Name.ToString(), 
-            department.Slug.ToString(), 
-            department.Path.ToString(), 
+            department.Name.ToString(),
+            department.Slug.ToString(),
+            department.Path.ToString(),
             department.ParentId);
     }
 
     public async Task AddLocationAsync(Guid departmentId, Guid locationId, CancellationToken cancellationToken)
     {
-        if(departmentId == Guid.Empty)
+        if (departmentId == Guid.Empty)
         {
-            throw new ValidationException("DepartmentId is required");
+            var error = Errors.SharedErrors.IsRequired("DepartmentId", "departments.validation.error");
+
+            throw new DepartmentsValidationException(error);
         }
         if (locationId == Guid.Empty)
         {
-            throw new ValidationException("LocationId is required");
+            var error = Errors.SharedErrors.IsRequired("LocationId", "departments.validation.error");
+
+            throw new DepartmentsValidationException(error);
         }
 
         var department = await _departmentsRepository.GetByIdAsync(departmentId, cancellationToken);
@@ -151,11 +177,22 @@ internal class DepartmentsService : IDepartmentsService
 
         if (department == null)
         {
-            throw new ValidationException($"Department with id \"{departmentId}\" not found");
+            var error = Errors.DepartmentErrors.NotFoud();
+
+            throw new DepartmentsNotFoundException(error);
         }
         if (location == null)
         {
-            throw new ValidationException($"Location with id \"{locationId}\" not found");
+            var error = Errors.DepartmentErrors.LocationNotFoud();
+
+            throw new LocationsNotFoundException(error);
+        }
+
+        if(await _departmentsRepository.LocationExistsAsync(department, [location], cancellationToken))
+        {
+            var error = Errors.DepartmentErrors.LocationConflict();
+
+            throw new DepartmentsConflictException(error);
         }
 
         await _departmentsRepository.AddLocationsAsync(department, [location], cancellationToken);
@@ -166,11 +203,15 @@ internal class DepartmentsService : IDepartmentsService
     {
         if (departmentId == Guid.Empty)
         {
-            throw new ValidationException("DepartmentId is required");
+            var error = Errors.SharedErrors.IsRequired("DepartmentId", "departments.validation.error");
+
+            throw new DepartmentsValidationException(error);
         }
         if (locationId == Guid.Empty)
         {
-            throw new ValidationException("LocationId is required");
+            var error = Errors.SharedErrors.IsRequired("LocationId", "departments.validation.error");
+
+            throw new DepartmentsValidationException(error);
         }
 
         var department = await _departmentsRepository.GetByIdAsync(departmentId, cancellationToken);
@@ -178,11 +219,22 @@ internal class DepartmentsService : IDepartmentsService
 
         if (department == null)
         {
-            throw new ValidationException($"Department with id \"{departmentId}\" not found");
+            var error = Errors.DepartmentErrors.NotFoud();
+
+            throw new DepartmentsNotFoundException(error);
         }
         if (location == null)
         {
-            throw new ValidationException($"Location with id \"{locationId}\" not found");
+            var error = Errors.DepartmentErrors.LocationNotFoud();
+
+            throw new LocationsNotFoundException(error);
+        }
+
+        if (!await _departmentsRepository.LocationExistsAsync(department, [location], cancellationToken))
+        {
+            var error = Errors.DepartmentErrors.LocationNotFoud();
+
+            throw new DepartmentsConflictException(error);
         }
 
         await _departmentsRepository.RemoveLocationsAsync(department, [location], cancellationToken);

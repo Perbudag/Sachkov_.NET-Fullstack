@@ -1,4 +1,4 @@
-﻿using DirectoryService.Core.Departments;
+﻿using DirectoryService.Core.Services.Departments;
 using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
@@ -55,15 +55,21 @@ internal class DepartmentsRepository : IDepartmentsRepository
 
     public async Task RemoveLocationsAsync(Department department, IEnumerable<Location> locations, CancellationToken cancellationToken)
     {
-        var departmentLocations = await _context.DepartmentLocations.Where(dl => dl.DepartmentId == department.Id && 
+        var departmentLocations = await _context.DepartmentLocations.Where(dl => dl.DepartmentId == department.Id &&
             locations.Select(l => l.Id).Contains(dl.LocationId))
             .ToListAsync(cancellationToken);
 
         _context.DepartmentLocations.RemoveRange(departmentLocations);
+    }
+    public async Task<bool> LocationExistsAsync(Department department, IEnumerable<Location> locations, CancellationToken cancellationToken)
+    {
+        return await _context.DepartmentLocations.Where(dl => dl.DepartmentId == department.Id && locations.Select(l => l.Id).Contains(dl.LocationId)).AnyAsync(cancellationToken);
     }
 
     public async Task SaveAsync(CancellationToken cancellationToken)
     {
         await _context.SaveChangesAsync(cancellationToken);
     }
+
+
 }

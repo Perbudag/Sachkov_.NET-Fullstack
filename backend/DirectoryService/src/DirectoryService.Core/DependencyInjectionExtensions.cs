@@ -1,5 +1,5 @@
-﻿using DirectoryService.Core.Departments;
-using DirectoryService.Core.Locations;
+﻿using DirectoryService.Core.Services.Departments;
+using DirectoryService.Core.Services.Locations;
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

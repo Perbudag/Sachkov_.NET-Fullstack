@@ -1,6 +1,6 @@
-﻿using DirectoryService.Core.Departments;
-using DirectoryService.Contracts.Departments;
+﻿using DirectoryService.Contracts.Departments;
 using Microsoft.AspNetCore.Mvc;
+using DirectoryService.Core.Services.Departments;
 
 namespace DirectoryService.Presenters;
 
@@ -76,16 +76,9 @@ public class DepartmentsController : ControllerBase
         [FromRoute] Guid locationId,
         CancellationToken cancellationToken = default)
     {
-        try
-        {
-            await departmentsService.AddLocationAsync(departmentId, locationId, cancellationToken);
+        await departmentsService.AddLocationAsync(departmentId, locationId, cancellationToken);
 
-            return Ok();
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        return Ok();
     }
 
 
@@ -96,15 +89,8 @@ public class DepartmentsController : ControllerBase
         [FromRoute] Guid locationId,
         CancellationToken cancellationToken = default)
     {
-        try
-        {
-            await departmentsService.RemoveLocationAsync(departmentId, locationId, cancellationToken);
+        await departmentsService.RemoveLocationAsync(departmentId, locationId, cancellationToken);
 
-            return Ok();
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        return Ok();
     }
 }

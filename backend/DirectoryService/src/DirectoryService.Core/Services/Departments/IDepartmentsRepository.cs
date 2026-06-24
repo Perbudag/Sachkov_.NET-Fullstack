@@ -1,7 +1,7 @@
 ﻿using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.ValueObjects;
 
-namespace DirectoryService.Core.Departments;
+namespace DirectoryService.Core.Services.Departments;
 
 public interface IDepartmentsRepository
 {
@@ -12,4 +12,5 @@ public interface IDepartmentsRepository
     Task AddLocationsAsync(Department department, IEnumerable<Location> locations, CancellationToken cancellationToken);
     Task RemoveLocationsAsync(Department department, IEnumerable<Location> locations, CancellationToken cancellationToken);
     Task SaveAsync(CancellationToken cancellationToken);
+    Task<bool> LocationExistsAsync(Department department, IEnumerable<Location> locations, CancellationToken cancellationToken);
 }

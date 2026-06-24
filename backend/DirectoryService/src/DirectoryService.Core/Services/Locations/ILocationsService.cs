@@ -1,6 +1,6 @@
 ﻿using DirectoryService.Contracts.Locations;
 
-namespace DirectoryService.Core.Locations;
+namespace DirectoryService.Core.Services.Locations;
 
 public interface ILocationsService
 {

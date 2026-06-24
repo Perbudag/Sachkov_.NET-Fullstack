@@ -7,4 +7,5 @@
     <Project Path="src/DirectoryService.Presenters/DirectoryService.Presenters.csproj" Id="56d718c9-a4c4-4a08-9468-03559b3c202c" />
     <Project Path="src/DirectoryService.Web/DirectoryService.Web.csproj" />
   </Folder>
+  <Project Path="../Shared/Shared.csproj" />
 </Solution>

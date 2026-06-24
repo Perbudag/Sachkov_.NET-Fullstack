@@ -2,7 +2,7 @@
 using DirectoryService.Domain.Entities;
 using DirectoryService.Presenters;
 
-namespace DirectoryService.Core.Departments;
+namespace DirectoryService.Core.Services.Departments;
 
 public interface IDepartmentsService
 {

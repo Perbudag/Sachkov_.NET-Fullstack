@@ -1,7 +1,7 @@
 ﻿using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.ValueObjects;
 
-namespace DirectoryService.Core.Locations;
+namespace DirectoryService.Core.Services.Locations;
 
 public interface ILocationsRepository
 {

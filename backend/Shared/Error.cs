@@ -10,7 +10,7 @@ public record Error(
     )
 {
     public static Error Validation(string message, string? code = null, string? invalidField = null) =>
-        new(code ?? "valude.is.invalid", message, ErrorType.VALIDATION, invalidField);
+        new(code ?? "value.is.invalid", message, ErrorType.VALIDATION, invalidField);
 
     public static Error NotFoud(string message, string? code = null, Guid? id = null) =>
         new(code ?? "record.not.found", message, ErrorType.NOT_FOUND);
@@ -19,5 +19,5 @@ public record Error(
         new(code ?? "record.is.conflict", message, ErrorType.CONFLICT);
 
     public static Error Failure(string message, string? code = null) =>
-        new(code ?? "failure", message, ErrorType.FAILUDE);
+        new(code ?? "failure", message, ErrorType.FAILURE);
 }

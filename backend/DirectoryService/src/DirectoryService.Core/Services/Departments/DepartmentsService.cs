@@ -114,7 +114,7 @@ internal class DepartmentsService : IDepartmentsService
         {
             var errors = validatiorResult.ToErrors(Errors.DepartmentErrors.ValidationError);
 
-            throw new BadRequestException(errors);
+            throw new DepartmentsValidationException(errors);
         }
 
         if (id == Guid.Empty)
@@ -234,7 +234,7 @@ internal class DepartmentsService : IDepartmentsService
         {
             var error = Errors.DepartmentErrors.LocationNotFoud();
 
-            throw new LocationsNotFoundException(error);
+            throw new DepartmentsConflictException(error);
         }
 
         await _departmentsRepository.RemoveLocationsAsync(department, [location], cancellationToken);

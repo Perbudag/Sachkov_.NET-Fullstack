@@ -11,7 +11,7 @@ public partial class Errors
             Error.Validation(message, "departments.validation.error", invalidField);
 
         public static Error Conflict(string name) =>
-            Error.Conflict($"A location named \"{name}\" already exists", "departments.is.conflict");
+            Error.Conflict($"A department named \"{name}\" already exists", "departments.is.conflict");
 
         public static Error LocationConflict() =>
             Error.Conflict("There is already such a location within the department", "departments.is.conflict.location");

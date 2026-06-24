@@ -5,7 +5,7 @@ namespace DirectoryService.Core.Exceptions;
 
 public class BadRequestException : Exception
 {
-    public BadRequestException(params IEnumerable<Error> errors) : base(JsonSerializer.Serialize(errors))
+    public BadRequestException(IEnumerable<Error> errors) : base(JsonSerializer.Serialize(errors))
     {
         
     }

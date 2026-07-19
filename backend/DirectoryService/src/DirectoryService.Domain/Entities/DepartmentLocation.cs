@@ -1,4 +1,7 @@
-﻿namespace DirectoryService.Domain.Entities;
+﻿using CSharpFunctionalExtensions;
+using Shared;
+
+namespace DirectoryService.Domain.Entities;
 
 public sealed class DepartmentLocation
 {
@@ -23,17 +26,22 @@ public sealed class DepartmentLocation
     public DateTime CreatedAt { get; }
 
 
-    public static DepartmentLocation Create(Guid departmentId, Guid locationId)
+    public static Result<DepartmentLocation, Failure> Create(Guid departmentId, Guid locationId)
     {
+        var errors = new List<Error>();
+
         if (departmentId == Guid.Empty)
         {
-            throw new ArgumentException("departmentId не должен быть пустым.", nameof(departmentId));
+            errors.Add(Error.Validation("departmentId не должен быть пустым.", "department.location.validation.error", nameof(departmentId)));
         }
 
         if (locationId == Guid.Empty)
         {
-            throw new ArgumentException("locationId не должен быть пустым.", nameof(locationId));
+            errors.Add(Error.Validation("locationId не должен быть пустым.", "department.location.validation.error", nameof(locationId)));
         }
+
+        if (errors.Count > 0)
+            return new Failure(errors);
 
         return new DepartmentLocation(departmentId, locationId);
     }

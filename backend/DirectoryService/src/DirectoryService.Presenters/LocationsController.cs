@@ -1,6 +1,7 @@
 ﻿using DirectoryService.Contracts.Locations;
 using DirectoryService.Contracts.SharedDto;
 using DirectoryService.Core.Services.Locations;
+using DirectoryService.Presenters.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DirectoryService.Presenters;
@@ -44,6 +45,9 @@ public class LocationsController : ControllerBase
     {
         var response = await locationsService.CreateAsync(request, cancellationToken);
 
+        if (response.IsFailure)
+            return response.Error.ToResponse();
+
         return Ok(response);
     }
 
@@ -56,6 +60,9 @@ public class LocationsController : ControllerBase
         CancellationToken cancellationToken = default)
     {
         var response = await locationsService.UpdateAsync(id, request, cancellationToken);
+
+        if (response.IsFailure)
+            return response.Error.ToResponse();
 
         return Ok(response);
     }

@@ -1,8 +1,13 @@
-﻿using DirectoryService.Core.Services.Departments;
+﻿using CSharpFunctionalExtensions;
+using DirectoryService.Core.Fails;
+using DirectoryService.Core.Services.Departments;
+using DirectoryService.Core.Services.Departments.Fails.Exceptions;
 using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Shared;
+using System.Xml.Linq;
 
 namespace DirectoryService.Infrastructure.Postgres.Repositories;
 
@@ -17,59 +22,91 @@ internal class DepartmentsRepository : IDepartmentsRepository
         _logger = logger;
     }
 
-    public async Task AddAsync(Department department, CancellationToken cancellationToken)
+    public async Task<UnitResult<Failure>> AddAsync(Department department, CancellationToken cancellationToken)
     {
-        try
+        var errors = new List<Error>();
+
+        if (await _context.Departments.AnyAsync(d => d.Name == department.Name, cancellationToken))
         {
-            await _context.Departments.AddAsync(department, cancellationToken);
-
+            errors.Add(Errors.DepartmentErrors.Conflict(department.Name.ToString()));
         }
-        catch (Exception ex)
+
+        if (department.ParentId != null && await _context.Departments.AnyAsync(d => d.ParentId == department.ParentId && d.Slug == department.Slug, cancellationToken))
         {
-            _logger.LogError(ex, "Failed to create department with id: {Id}", department.Id);
-            throw;
+            errors.Add(Errors.DepartmentErrors.SlugConflict(department.ParentId.Value, department.Slug.ToString()));
         }
+
+        if (errors.Count > 0)
+        {
+            _logger.LogError("Failed to create department with id: {Id}", department.Id);
+
+            return new Failure(errors);
+        }
+
+        await _context.Departments.AddAsync(department, cancellationToken);
+
+        return UnitResult.Success<Failure>();
     }
 
-    public async Task<bool> ExistsByNameAsync(Name name, CancellationToken cancellationToken)
+    public async Task<Result<Department, Failure>> GetByNameAsync(Name name, CancellationToken cancellationToken)
     {
-        return await _context.Departments.AnyAsync(d => d.Name == name, cancellationToken);
+        var department = await _context.Departments.FirstOrDefaultAsync(d => d.Name == name, cancellationToken);
+
+        if (department == null)
+            return Errors.DepartmentErrors.NotFoudName().ToFailure();
+
+        return department;
     }
 
-    public async Task<bool> ExistsChildWithSlugAsync(Department parent, Slug slug, CancellationToken cancellationToken)
+    public async Task<Result<Department, Failure>> GetByIdAsync(Guid departmentId, CancellationToken cancellationToken)
     {
-        return await _context.Departments.AnyAsync(d => d.ParentId == parent.Id && d.Slug == slug, cancellationToken);
+        var department = await _context.Departments.FirstOrDefaultAsync(d => d.Id == departmentId, cancellationToken);
+
+        if (department == null)
+            return Errors.DepartmentErrors.NotFoud().ToFailure();
+
+        return department;
     }
 
-    public async Task<Department?> GetByIdAsync(Guid? departmentId, CancellationToken cancellationToken)
+    public async Task<UnitResult<Failure>> AddLocationsAsync(Department department, IEnumerable<Location> locations, CancellationToken cancellationToken)
     {
-        return await _context.Departments.FirstOrDefaultAsync(d => d.Id == departmentId, cancellationToken);
-    }
+        var departmentLocationsResults = locations.Select(l => DepartmentLocation.Create(department.Id, l.Id));
 
-    public async Task AddLocationsAsync(Department department, IEnumerable<Location> locations, CancellationToken cancellationToken)
-    {
-        var departmentLocations = locations.Select(l => DepartmentLocation.Create(department.Id, l.Id));
+        if (departmentLocationsResults.Any(dl => dl.IsFailure))
+            return new Failure(departmentLocationsResults.Where(dl => dl.IsFailure).SelectMany(dl => dl.Error));
+
+        var departmentLocations = departmentLocationsResults.Select(dl => dl.Value);
+
+        if(await _context.DepartmentLocations.AnyAsync(dl => 
+            dl.DepartmentId == department.Id && locations.Select(l => l.Id).Contains(dl.LocationId), cancellationToken))
+        {
+            return Errors.DepartmentErrors.LocationConflict().ToFailure();
+        }
 
         await _context.DepartmentLocations.AddRangeAsync(departmentLocations, cancellationToken);
+
+        return UnitResult.Success<Failure>();
     }
 
-    public async Task RemoveLocationsAsync(Department department, IEnumerable<Location> locations, CancellationToken cancellationToken)
+    public async Task<UnitResult<Failure>> RemoveLocationsAsync(Department department, IEnumerable<Location> locations, CancellationToken cancellationToken)
     {
         var departmentLocations = await _context.DepartmentLocations.Where(dl => dl.DepartmentId == department.Id &&
             locations.Select(l => l.Id).Contains(dl.LocationId))
             .ToListAsync(cancellationToken);
 
+        if (!await _context.DepartmentLocations.AnyAsync(dl =>
+           dl.DepartmentId == department.Id && locations.Select(l => l.Id).Contains(dl.LocationId), cancellationToken))
+        {
+            return Errors.DepartmentErrors.LocationNotFound().ToFailure();
+        }
+
         _context.DepartmentLocations.RemoveRange(departmentLocations);
-    }
-    public async Task<bool> LocationExistsAsync(Department department, IEnumerable<Location> locations, CancellationToken cancellationToken)
-    {
-        return await _context.DepartmentLocations.Where(dl => dl.DepartmentId == department.Id && locations.Select(l => l.Id).Contains(dl.LocationId)).AnyAsync(cancellationToken);
+
+        return UnitResult.Success<Failure>();
     }
 
     public async Task SaveAsync(CancellationToken cancellationToken)
     {
         await _context.SaveChangesAsync(cancellationToken);
     }
-
-
 }

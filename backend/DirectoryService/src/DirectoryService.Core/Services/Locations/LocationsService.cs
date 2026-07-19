@@ -1,4 +1,5 @@
-﻿using DirectoryService.Contracts.Locations;
+﻿using CSharpFunctionalExtensions;
+using DirectoryService.Contracts.Locations;
 using DirectoryService.Contracts.SharedDto;
 using DirectoryService.Core.Extensions;
 using DirectoryService.Core.Fails;
@@ -7,6 +8,7 @@ using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.ValueObjects;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
+using Shared;
 
 namespace DirectoryService.Core.Services.Locations;
 
@@ -28,24 +30,17 @@ internal class LocationsService : ILocationsService
         _updateLocationValidator = updateLocationValidator;
     }
 
-    public async Task<Guid> CreateAsync(CreateLocationRequest request, CancellationToken cancellationToken = default)
+    public async Task<Result<Guid, Failure>> CreateAsync(CreateLocationRequest request, CancellationToken cancellationToken = default)
     {
         var validationResult = await _createLocationValidator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
-            var errors = validationResult.ToErrors(Errors.LocationErrors.ValidationError);
-
-            throw new LocationsValidationException(errors);
+            return validationResult.ToErrors(Errors.LocationErrors.ValidationError);
         }
 
+        var errors = new List<Error>();
+        
         var name = Name.Create(request.Name);
-
-        if (await _repository.ExistsByNameAsync(name, cancellationToken))
-        {
-            var error = Errors.LocationErrors.Conflict(name.ToString());
-
-            throw new LocationsConflictException(error);
-        }
 
         var address = Address.Create(
             request.Address.PostalCode,
@@ -57,49 +52,61 @@ internal class LocationsService : ILocationsService
             request.Address.Apartment
             );
 
-        var location = Location.Create(name, address);
+        if (name.IsFailure)
+            errors.AddRange(name.Error);
 
-        await _repository.AddAsync(location, cancellationToken);
+        if(address.IsFailure)
+            errors.AddRange(address.Error);
+
+        if(errors.Count > 0)
+            return new Failure(errors);
+
+        var location = Location.Create(name.Value, address.Value);
+
+        if (location.IsFailure)
+            return location.Error;
+
+        var result = await _repository.AddAsync(location.Value, cancellationToken);
+
+        if(result.IsFailure)
+            return result.Error;
 
         await _repository.SaveAsync(cancellationToken);
 
         _logger.LogInformation("Location created with name \"{Name}\".", name);
 
-        return location.Id;
+        return location.Value.Id;
     }
 
-    public async Task<LocationResponse> UpdateAsync(Guid id, UpdateLocationRequest request, CancellationToken cancellationToken)
+    public async Task<Result<LocationResponse, Failure>> UpdateAsync(Guid id, UpdateLocationRequest request, CancellationToken cancellationToken)
     {
         var validationResult = await _updateLocationValidator.ValidateAsync(request, cancellationToken);
 
         if (!validationResult.IsValid)
         {
-            var errors = validationResult.ToErrors(Errors.LocationErrors.ValidationError);
-
-            throw new LocationsValidationException(errors);
+            return validationResult.ToErrors(Errors.LocationErrors.ValidationError);
         }
 
         var location = await _repository.GetByIdAsync(id, cancellationToken);
 
-        if (location == null)
+        if (location.IsFailure)
         {
-            var error = Errors.LocationErrors.NotFoud();
-
-            throw new LocationsNotFoundException(error);
+            return Errors.LocationErrors.NotFoud().ToFailure();
         }
 
         if (request.Name != null)
         {
             var name = Name.Create(request.Name);
 
-            if (await _repository.ExistsByNameAsync(name, cancellationToken))
-            {
-                var error = Errors.LocationErrors.Conflict(name.ToString());
+            if (name.IsFailure)
+                return name.Error;
 
-                throw new LocationsConflictException(error);
+            if ((await _repository.GetByNameAsync(name.Value, cancellationToken)).IsSuccess)
+            {
+                return Errors.LocationErrors.ConflictName(name.ToString()).ToFailure();
             }
 
-            location.SetName(name);
+            location.Value.SetName(name.Value);
         }
 
         if (request.Address != null)
@@ -115,23 +122,26 @@ internal class LocationsService : ILocationsService
                 request.Address.Apartment
                 );
 
-            location.SetAddress(address);
+            if(address.IsFailure)
+                return address.Error;
+
+            location.Value.SetAddress(address.Value);
         }
 
         await _repository.SaveAsync(cancellationToken);
 
         var addressDto = new AddressDto(
-            location.Address.PostalCode,
-            location.Address.Country,
-            location.Address.Region,
-            location.Address.City,
-            location.Address.Street,
-            location.Address.House,
-            location.Address.Apartment);
+            location.Value.Address.PostalCode,
+            location.Value.Address.Country,
+            location.Value.Address.Region,
+            location.Value.Address.City,
+            location.Value.Address.Street,
+            location.Value.Address.House,
+            location.Value.Address.Apartment);
 
         return new LocationResponse(
-            location.Id,
-            location.Name.ToString(),
+            location.Value.Id,
+            location.Value.Name.ToString(),
             addressDto);
     }
 }

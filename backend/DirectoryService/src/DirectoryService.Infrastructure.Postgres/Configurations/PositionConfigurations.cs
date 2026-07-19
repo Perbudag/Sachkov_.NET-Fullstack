@@ -20,7 +20,7 @@ public class PositionConfigurations : IEntityTypeConfiguration<Position>
             .HasMaxLength(Name.MAX_LENGTH)
             .HasConversion(
                 src => src.Value,
-                dst => Name.Create(dst));
+                dst => Name.Create(dst).Value);
 
         builder.Property(p => p.CreatedAt)
             .HasColumnName("created_at")

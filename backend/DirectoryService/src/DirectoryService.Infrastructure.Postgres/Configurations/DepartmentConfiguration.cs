@@ -21,7 +21,7 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
             .HasMaxLength(Name.MAX_LENGTH)
             .HasConversion(
                 src => src.Value,
-                dst => Name.Create(dst));
+                dst => Name.Create(dst).Value);
 
         builder.Property(d => d.Slug)
             .HasColumnName ("slug")
@@ -29,14 +29,14 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
             .HasMaxLength(Slug.MAX_LENGTH)
             .HasConversion(
                 src => src.Value,
-                dst => Slug.Create(dst));
+                dst => Slug.Create(dst).Value);
 
         builder.Property(d => d.Path)
             .HasColumnName("path")
             .IsRequired()
             .HasConversion(
                 src => src.ToString(),
-                dst => Path.Create(dst));
+                dst => Path.Create(dst).Value);
 
         builder.Property(d => d.CreatedAt)
             .HasColumnName("created_at")

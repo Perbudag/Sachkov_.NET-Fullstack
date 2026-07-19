@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using CSharpFunctionalExtensions;
+using Shared;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace DirectoryService.Domain.ValueObjects;
@@ -26,7 +28,7 @@ public partial record Address
     public string? Apartment { get; }  // Квартира / Офис (например, 42)
 
 
-    public static Address Create(string postalCode,
+    public static Result<Address, Failure> Create(string postalCode,
                                  string country,
                                  string region,
                                  string city,
@@ -34,51 +36,56 @@ public partial record Address
                                  string house,
                                  string? apartment)
     {
+        var errors = new List<Error>();
+
         if (!PostalCodePattern.IsMatch(postalCode))
         {
-            throw new ArgumentException("Неправильный формат почтового индекса.", nameof(postalCode));
+            errors.Add(Error.Validation("Неправильный формат почтового индекса.", "address.validation.error", nameof(postalCode)));
         }
 
         if (!NamePattern.IsMatch(country))
         {
-            throw new ArgumentException("Название страны может состаять только" +
-                " из букв и пробелов.", nameof(country));
+            errors.Add(Error.Validation("Название страны может состаять только" +
+                " из букв и пробелов.", "address.validation.error", nameof(country)));
         }
 
         if (!NamePattern.IsMatch(region))
         {
-            throw new ArgumentException("Название региона может состаять только" +
-                " из букв и пробелов.", nameof(region));
+            errors.Add(Error.Validation("Название региона может состаять только" +
+                " из букв и пробелов.", "address.validation.error", nameof(region)));
         }
 
         if (!NamePattern.IsMatch(city))
         {
-            throw new ArgumentException("Название города может состаять только" +
-                " из букв и пробелов.", nameof(city));
+            errors.Add(Error.Validation("Название города может состаять только" +
+                " из букв и пробелов.", "address.validation.error", nameof(city)));
         }
 
         if (!NamePattern.IsMatch(street))
         {
-            throw new ArgumentException("Название улицы может состаять только" +
-                " из букв и пробелов.", nameof(street));
+            errors.Add(Error.Validation("Название улицы может состаять только" +
+                " из букв и пробелов.", "address.validation.error", nameof(street)));
         }
 
         if (!NumberPattern.IsMatch(house))
         {
-            throw new ArgumentException("Номер дома должен состоять из цифр" +
-                "и/или прописных букв латинского и кириллического алфавита.", nameof(house));
+            errors.Add(Error.Validation("Номер дома должен состоять из цифр" +
+                "и/или прописных букв латинского и кириллического алфавита.", "address.validation.error", nameof(house)));
         }
 
         if (apartment != null && !NumberPattern.IsMatch(apartment))
         {
-            throw new ArgumentException("Номер квартиры должен состоять из цифр" +
-                "и/или прописных букв латинского и кириллического алфавита.", nameof(apartment));
+            errors.Add(Error.Validation("Номер квартиры должен состоять из цифр" +
+                "и/или прописных букв латинского и кириллического алфавита.", "address.validation.error", nameof(apartment)));
         }
+
+        if (errors.Count > 0)
+            return new Failure(errors);
 
         return new Address(postalCode, country, region, city, street, house, apartment);
     }
 
-    public static Address Create(string value)
+    public static Result<Address, Failure> Create(string value)
     {
         var valueParts = value.Replace(", г. ", "|", StringComparison.Ordinal)
                               .Replace(", ул. ", "|", StringComparison.Ordinal)
@@ -88,9 +95,8 @@ public partial record Address
 
         if (valueParts.Length < 6)
         {
-            throw new ArgumentException("Неправильный формат адреса. " +
-                "Правильный формат выглядит так: \"{PostalCode}, {Country}, {Region}, г. {City}, ул. {Street}, д. {House}(_опционально_: \", кв. {Apartment}\")\"",
-                nameof(value));
+            return Error.Validation("Неправильный формат адреса. " +
+                "Правильный формат выглядит так: \"{PostalCode}, {Country}, {Region}, г. {City}, ул. {Street}, д. {House}(_опционально_: \", кв. {Apartment}\")\"", "address.validation.error").ToFailure();
         }
 
         return Address.Create(postalCode: valueParts[0].Trim(),

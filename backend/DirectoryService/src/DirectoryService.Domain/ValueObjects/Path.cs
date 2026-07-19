@@ -1,4 +1,7 @@
-﻿namespace DirectoryService.Domain.ValueObjects;
+﻿using CSharpFunctionalExtensions;
+using Shared;
+
+namespace DirectoryService.Domain.ValueObjects;
 
 public record Path
 {
@@ -15,16 +18,17 @@ public record Path
     public IReadOnlyList<Slug> Slugs => _slugs;
 
 
-    public static Path Create(params IEnumerable<Slug> slugs) => new Path(slugs);
+    public static Result<Path, Failure> Create(params IEnumerable<Slug> slugs) => 
+        new Path(slugs);
 
-    public static Path Create(string value)
+    public static Result<Path, Failure> Create(string value)
     {
         var valueParts = value.Split(SEPARATOR);
         var slugs = new List<Slug>();
 
         foreach (var valuePart in valueParts)
         {
-            slugs.Add(Slug.Create(valuePart));
+            slugs.Add(Slug.Create(valuePart).Value);
         }
 
         return new Path(slugs);

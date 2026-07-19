@@ -32,7 +32,7 @@ internal class LocationRepository : ILocationsRepository
 
         await _context.Locations.AddAsync(location, cancellationToken);
 
-        return Result.Success<Failure>();
+        return UnitResult.Success<Failure>();
     }
 
     public async Task<Result<Location, Failure>> GetByIdAsync(Guid locationId, CancellationToken cancellationToken)

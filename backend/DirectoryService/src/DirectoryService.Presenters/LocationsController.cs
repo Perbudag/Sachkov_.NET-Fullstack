@@ -48,7 +48,7 @@ public class LocationsController : ControllerBase
         if (response.IsFailure)
             return response.Error.ToResponse();
 
-        return Ok(response);
+        return Ok(response.Value);
     }
 
 
@@ -64,7 +64,7 @@ public class LocationsController : ControllerBase
         if (response.IsFailure)
             return response.Error.ToResponse();
 
-        return Ok(response);
+        return Ok(response.Value);
     }
 
 

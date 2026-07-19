@@ -49,7 +49,7 @@ public class DepartmentsController : ControllerBase
         if (result.IsFailure)
             return result.Error.ToResponse();
 
-        return Ok(result);
+        return Ok(result.Value);
     }
 
 
@@ -65,7 +65,7 @@ public class DepartmentsController : ControllerBase
         if (result.IsFailure)
             return result.Error.ToResponse();
 
-        return Ok(result);
+        return Ok(result.Value);
     }
 
 

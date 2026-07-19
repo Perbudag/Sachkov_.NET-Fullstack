@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using CSharpFunctionalExtensions;
+using Shared;
+using System.Text.RegularExpressions;
 
 namespace DirectoryService.Domain.ValueObjects;
 
@@ -11,19 +13,15 @@ public record Name
 
     public string Value { get; }
 
-    public static Name Create(string value)
+    public static Result<Name, Failure> Create(string value)
     {
         if(string.IsNullOrWhiteSpace(value))
         {
-            throw new ArgumentException(
-               $"name не может быть пустым",
-               nameof(value));
+            return Error.Validation("name не может быть пустым", "name.validation.error").ToFailure();
         }
 
         if (value.Length < MIN_LENGTH || value.Length > MAX_LENGTH)
-            throw new ArgumentException(
-               $"name (от {MIN_LENGTH} до {MAX_LENGTH} символов)",
-               nameof(value));
+            return Error.Validation($"name (от {MIN_LENGTH} до {MAX_LENGTH} символов)", "name.validation.error").ToFailure();
 
         return new Name(value);
     }

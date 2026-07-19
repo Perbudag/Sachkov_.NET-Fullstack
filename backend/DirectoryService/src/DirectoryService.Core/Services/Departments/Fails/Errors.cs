@@ -23,7 +23,14 @@ public partial class Errors
         public static Error NotFoud() =>
             Error.NotFoud($"Department with this id not found", "departments.not.found");
 
-        public static Error LocationNotFoud() =>
+        public static Error NotFoudName() =>
+            Error.NotFoud($"Department with this name not found", "departments.not.found");
+        
+
+        public static Error NotFoudParent() =>
+            Error.NotFoud($"Parent department with this identifier was not found.", "departments.not.found.parent");
+
+        public static Error LocationNotFound() =>
             Error.NotFoud($"There is no such location within the department", "departments.not.found.location");
 
     }

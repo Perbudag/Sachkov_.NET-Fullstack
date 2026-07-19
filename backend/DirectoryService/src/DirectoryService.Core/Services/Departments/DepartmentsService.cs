@@ -1,4 +1,5 @@
-﻿using DirectoryService.Contracts.Departments;
+﻿using CSharpFunctionalExtensions;
+using DirectoryService.Contracts.Departments;
 using DirectoryService.Core.Exceptions;
 using DirectoryService.Core.Extensions;
 using DirectoryService.Core.Fails;
@@ -10,6 +11,7 @@ using DirectoryService.Domain.ValueObjects;
 using DirectoryService.Presenters;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
+using Shared;
 
 namespace DirectoryService.Core.Services.Departments;
 
@@ -35,14 +37,12 @@ internal class DepartmentsService : IDepartmentsService
     }
 
 
-    public async Task<Guid> CreateAsync(CreateDepartmentRequest request, CancellationToken cancellationToken)
+    public async Task<Result<Guid, Failure>> CreateAsync(CreateDepartmentRequest request, CancellationToken cancellationToken)
     {
         var validatiorResult = await _createValidator.ValidateAsync(request, cancellationToken);
         if (!validatiorResult.IsValid)
         {
-            var errors = validatiorResult.ToErrors(Errors.DepartmentErrors.ValidationError);
-
-            throw new DepartmentsValidationException(errors);
+            return validatiorResult.ToErrors(Errors.DepartmentErrors.ValidationError);
         }
 
         Department? parent = null;
@@ -50,194 +50,191 @@ internal class DepartmentsService : IDepartmentsService
 
         if (request.ParentId != null)
         {
-            parent = await _departmentsRepository.GetByIdAsync(request.ParentId, cancellationToken);
+            var parentResult = await _departmentsRepository.GetByIdAsync(request.ParentId.Value, cancellationToken);
 
-            if (parent == null)
+            if (parentResult.IsFailure)
             {
-                var error = Errors.DepartmentErrors.NotFoud();
-
-                throw new DepartmentsNotFoundException(error);
+                return Errors.DepartmentErrors.NotFoudParent().ToFailure();
             }
+
+            parent = parentResult.Value;
         }
 
         if (request.LocationIds.Any())
         {
-            locations = (await _locationsRepository.GetByIdsAsync(request.LocationIds, cancellationToken)).ToList();
+            var locationsResult = await _locationsRepository.GetByIdsAsync(request.LocationIds, cancellationToken);
+
+            if (locationsResult.IsFailure)
+                return locationsResult.Error;
+
+            locations = locationsResult.Value.ToList();
 
             var notFoundLocationIds = request.LocationIds.Where(lId => !locations.Select(l => l.Id).Contains(lId));
 
             if (notFoundLocationIds.Any())
             {
-                var error = Errors.LocationErrors.NotFoudMany(notFoundLocationIds);
-
-                throw new LocationsNotFoundException(error);
+                return Errors.LocationErrors.NotFoudMany(notFoundLocationIds).ToFailure();
             }
         }
 
+        var errors = new List<Error>();
+
         var name = Name.Create(request.Name);
-
-        if (await _departmentsRepository.ExistsByNameAsync(name, cancellationToken))
-        {
-            var error = Errors.DepartmentErrors.Conflict(name.ToString());
-
-            throw new DepartmentsConflictException(error);
-        }
-
         var slug = Slug.Create(request.Slug);
 
-        if (parent != null && await _departmentsRepository.ExistsChildWithSlugAsync(parent, slug, cancellationToken))
-        {
-            var error = Errors.DepartmentErrors.SlugConflict(parent.Id, slug.ToString());
+        if (name.IsFailure)
+            errors.AddRange(name.Error);
 
-            throw new DepartmentsConflictException(error);
-        }
+        if (slug.IsFailure)
+            errors.AddRange(slug.Error);
 
-        var department = Department.Create(name, slug, parent);
+        if (errors.Count > 0)
+            return new Failure(errors);
 
-        await _departmentsRepository.AddAsync(department, cancellationToken);
+
+        var department = Department.Create(name.Value, slug.Value, parent);
+
+        if (department.IsFailure)
+            return department.Error;
+
+        var addResult = await _departmentsRepository.AddAsync(department.Value, cancellationToken);
+
+        if (addResult.IsFailure)
+            return addResult.Error;
 
         if (locations != null && locations.Count > 0)
         {
-            await _departmentsRepository.AddLocationsAsync(department, locations, cancellationToken);
+            var addLocationResult = await _departmentsRepository.AddLocationsAsync(department.Value, locations, cancellationToken);
+
+            if (addLocationResult.IsFailure)
+                return addLocationResult.Error;
         }
 
         await _departmentsRepository.SaveAsync(cancellationToken);
         _logger.LogInformation("Department created with name \"{Name}\".", name);
 
-        return department.Id;
+        return department.Value.Id;
     }
 
-    public async Task<DepartmentResponse> UpdateAsync(Guid id, UpdateDepartmentRequest request, CancellationToken cancellationToken)
+    public async Task<Result<DepartmentResponse, Failure>> UpdateAsync(Guid id, UpdateDepartmentRequest request, CancellationToken cancellationToken)
     {
         var validatiorResult = await _updateValidator.ValidateAsync(request, cancellationToken);
         if (!validatiorResult.IsValid)
         {
-            var errors = validatiorResult.ToErrors(Errors.DepartmentErrors.ValidationError);
-
-            throw new DepartmentsValidationException(errors);
+            return validatiorResult.ToErrors(Errors.DepartmentErrors.ValidationError);
         }
 
         if (id == Guid.Empty)
         {
-            var error = Errors.SharedErrors.IsRequired("DepartmentId", "departments.validation.error");
-
-            throw new DepartmentsValidationException(error);
+            return Errors.SharedErrors.IsRequired("DepartmentId", "departments.validation.error").ToFailure();
         }
 
         var department = await _departmentsRepository.GetByIdAsync(id, cancellationToken);
 
-        if (department == null)
-        {
-            var error = Errors.DepartmentErrors.NotFoud();
-
-            throw new DepartmentsNotFoundException(error);
-        }
+        if (department.IsFailure)
+            return department.Error;
 
 
         if (request.Name != null)
         {
             var name = Name.Create(request.Name);
 
-            if (await _departmentsRepository.ExistsByNameAsync(name, cancellationToken))
-            {
-                var error = Errors.DepartmentErrors.Conflict(name.ToString());
+            if (name.IsFailure)
+                return name.Error;
 
-                throw new DepartmentsConflictException(error);
+            if ((await _departmentsRepository.GetByNameAsync(name.Value, cancellationToken)).IsSuccess)
+            {
+                return Errors.DepartmentErrors.Conflict(name.ToString()).ToFailure();
             }
 
-            department.SetName(name);
+            department.Value.SetName(name.Value);
         }
 
         await _departmentsRepository.SaveAsync(cancellationToken);
 
         return new DepartmentResponse(id,
-            department.Name.ToString(),
-            department.Slug.ToString(),
-            department.Path.ToString(),
-            department.ParentId);
+            department.Value.Name.ToString(),
+            department.Value.Slug.ToString(),
+            department.Value.Path.ToString(),
+            department.Value.ParentId);
     }
 
-    public async Task AddLocationAsync(Guid departmentId, Guid locationId, CancellationToken cancellationToken)
+    public async Task<UnitResult<Failure>> AddLocationAsync(Guid departmentId, Guid locationId, CancellationToken cancellationToken)
     {
+        var errors = new List<Error>();
+
         if (departmentId == Guid.Empty)
-        {
-            var error = Errors.SharedErrors.IsRequired("DepartmentId", "departments.validation.error");
+            errors.Add(Errors.SharedErrors.IsRequired("DepartmentId", "departments.validation.error"));
 
-            throw new DepartmentsValidationException(error);
-        }
         if (locationId == Guid.Empty)
-        {
-            var error = Errors.SharedErrors.IsRequired("LocationId", "departments.validation.error");
+            errors.Add(Errors.SharedErrors.IsRequired("LocationId", "departments.validation.error"));
 
-            throw new DepartmentsValidationException(error);
+        if (errors.Count > 0)
+            return new Failure(errors);
+
+        var departmentResult = await _departmentsRepository.GetByIdAsync(departmentId, cancellationToken);
+        var locationResult = await _locationsRepository.GetByIdAsync(locationId, cancellationToken);
+
+        if (departmentResult.IsFailure)
+        {
+            errors.Add(Errors.DepartmentErrors.NotFoud());
+        }
+        if (locationResult.IsFailure)
+        {
+            errors.Add(Errors.DepartmentErrors.LocationNotFound());
         }
 
-        var department = await _departmentsRepository.GetByIdAsync(departmentId, cancellationToken);
-        var location = await _locationsRepository.GetByIdAsync(locationId, cancellationToken);
+        if (errors.Count > 0)
+            return new Failure(errors);
 
-        if (department == null)
-        {
-            var error = Errors.DepartmentErrors.NotFoud();
+        var result = await _departmentsRepository.AddLocationsAsync(departmentResult.Value, [locationResult.Value], cancellationToken);
 
-            throw new DepartmentsNotFoundException(error);
-        }
-        if (location == null)
-        {
-            var error = Errors.DepartmentErrors.LocationNotFoud();
+        if (result.IsFailure)
+            return result.Error;
 
-            throw new LocationsNotFoundException(error);
-        }
-
-        if(await _departmentsRepository.LocationExistsAsync(department, [location], cancellationToken))
-        {
-            var error = Errors.DepartmentErrors.LocationConflict();
-
-            throw new DepartmentsConflictException(error);
-        }
-
-        await _departmentsRepository.AddLocationsAsync(department, [location], cancellationToken);
         await _departmentsRepository.SaveAsync(cancellationToken);
+
+        return UnitResult.Success<Failure>();
     }
 
-    public async Task RemoveLocationAsync(Guid departmentId, Guid locationId, CancellationToken cancellationToken)
+    public async Task<UnitResult<Failure>> RemoveLocationAsync(Guid departmentId, Guid locationId, CancellationToken cancellationToken)
     {
+
+        var errors = new List<Error>();
+
         if (departmentId == Guid.Empty)
-        {
-            var error = Errors.SharedErrors.IsRequired("DepartmentId", "departments.validation.error");
+            errors.Add(Errors.SharedErrors.IsRequired("DepartmentId", "departments.validation.error"));
 
-            throw new DepartmentsValidationException(error);
-        }
         if (locationId == Guid.Empty)
-        {
-            var error = Errors.SharedErrors.IsRequired("LocationId", "departments.validation.error");
+            errors.Add(Errors.SharedErrors.IsRequired("LocationId", "departments.validation.error"));
 
-            throw new DepartmentsValidationException(error);
+
+        if (errors.Count > 0)
+            return new Failure(errors);
+
+
+        var departmentResult = await _departmentsRepository.GetByIdAsync(departmentId, cancellationToken);
+        var locationResult = await _locationsRepository.GetByIdAsync(locationId, cancellationToken);
+
+        if (departmentResult.IsFailure)
+        {
+            errors.Add(Errors.DepartmentErrors.NotFoud());
+        }
+        if (locationResult.IsFailure)
+        {
+            errors.Add(Errors.DepartmentErrors.LocationNotFound());
         }
 
-        var department = await _departmentsRepository.GetByIdAsync(departmentId, cancellationToken);
-        var location = await _locationsRepository.GetByIdAsync(locationId, cancellationToken);
+        if (errors.Count > 0)
+            return new Failure(errors);
 
-        if (department == null)
-        {
-            var error = Errors.DepartmentErrors.NotFoud();
+        var result = await _departmentsRepository.RemoveLocationsAsync(departmentResult.Value, [locationResult.Value], cancellationToken);
 
-            throw new DepartmentsNotFoundException(error);
-        }
-        if (location == null)
-        {
-            var error = Errors.DepartmentErrors.LocationNotFoud();
+        if (result.IsFailure)
+            return result.Error;
 
-            throw new LocationsNotFoundException(error);
-        }
-
-        if (!await _departmentsRepository.LocationExistsAsync(department, [location], cancellationToken))
-        {
-            var error = Errors.DepartmentErrors.LocationNotFoud();
-
-            throw new DepartmentsConflictException(error);
-        }
-
-        await _departmentsRepository.RemoveLocationsAsync(department, [location], cancellationToken);
         await _departmentsRepository.SaveAsync(cancellationToken);
+
+        return UnitResult.Success<Failure>();
     }
 }

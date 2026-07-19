@@ -1,6 +1,7 @@
 ﻿using DirectoryService.Contracts.Departments;
 using Microsoft.AspNetCore.Mvc;
 using DirectoryService.Core.Services.Departments;
+using DirectoryService.Presenters.Extensions;
 
 namespace DirectoryService.Presenters;
 
@@ -43,9 +44,12 @@ public class DepartmentsController : ControllerBase
         [FromBody] CreateDepartmentRequest request,
         CancellationToken cancellationToken = default)
     {
-        var departmentId = await departmentsService.CreateAsync(request, cancellationToken);
+        var result = await departmentsService.CreateAsync(request, cancellationToken);
 
-        return Ok(departmentId);
+        if (result.IsFailure)
+            return result.Error.ToResponse();
+
+        return Ok(result.Value);
     }
 
 
@@ -56,9 +60,12 @@ public class DepartmentsController : ControllerBase
         [FromBody] UpdateDepartmentRequest request,
         CancellationToken cancellationToken = default)
     {
-        var response = await departmentsService.UpdateAsync(id, request, cancellationToken);
+        var result = await departmentsService.UpdateAsync(id, request, cancellationToken);
 
-        return Ok(response);
+        if (result.IsFailure)
+            return result.Error.ToResponse();
+
+        return Ok(result.Value);
     }
 
 
@@ -76,7 +83,10 @@ public class DepartmentsController : ControllerBase
         [FromRoute] Guid locationId,
         CancellationToken cancellationToken = default)
     {
-        await departmentsService.AddLocationAsync(departmentId, locationId, cancellationToken);
+        var result = await departmentsService.AddLocationAsync(departmentId, locationId, cancellationToken);
+
+        if (result.IsFailure)
+            return result.Error.ToResponse();
 
         return Ok();
     }
@@ -89,7 +99,10 @@ public class DepartmentsController : ControllerBase
         [FromRoute] Guid locationId,
         CancellationToken cancellationToken = default)
     {
-        await departmentsService.RemoveLocationAsync(departmentId, locationId, cancellationToken);
+        var result = await departmentsService.RemoveLocationAsync(departmentId, locationId, cancellationToken);
+
+        if (result.IsFailure)
+            return result.Error.ToResponse();
 
         return Ok();
     }

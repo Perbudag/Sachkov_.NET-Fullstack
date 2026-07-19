@@ -86,3 +86,6 @@ dotnet_diagnostic.CA1032.severity = none
 
 # RCS1194: Implement exception constructors
 dotnet_diagnostic.RCS1194.severity = none
+
+#CA2225: для перегрузок оператора существуют именованные аналоги
+dotnet_diagnostic.CA2225.severity = none

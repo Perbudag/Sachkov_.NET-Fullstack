@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using CSharpFunctionalExtensions;
+using Shared;
+using System.Text.RegularExpressions;
 
 namespace DirectoryService.Domain.ValueObjects
 {
@@ -11,17 +13,14 @@ namespace DirectoryService.Domain.ValueObjects
 
         public string Value { get; }
 
-        public static Slug Create(string value)
+        public static Result<Slug, Failure> Create(string value)
         {
             if (value.Length < MIN_LENGTH || value.Length > MAX_LENGTH)
-                throw new ArgumentException(
-                   $"slug (от {MIN_LENGTH} до {MAX_LENGTH} символов)",
-                   nameof(value));
+                return Error.Validation($"slug (от {MIN_LENGTH} до {MAX_LENGTH} символов)", "slug.validation.error").ToFailure();
 
             if (!SlugPattern.IsMatch(value))
-                throw new ArgumentException(
-                    "slug (только строчные латинские буквы, цифры и дефисы, " +
-                    "не начинается и не заканчивается дефисом)", nameof(value));
+                return Error.Validation("slug (только строчные латинские буквы, цифры и дефисы, " +
+                    "не начинается и не заканчивается дефисом)", "slug.validation.error").ToFailure();
 
             return new Slug(value);
         }

@@ -20,14 +20,14 @@ public class LocationConfiguration : IEntityTypeConfiguration<Location>
             .HasMaxLength(Name.MAX_LENGTH)
             .HasConversion(
                 src => src.Value,
-                dst => Name.Create(dst));
+                dst => Name.Create(dst).Value);
 
         builder.Property(l => l.Address)
             .HasColumnName("address")
             .IsRequired()
             .HasConversion(
                 src => src.ToString(),
-                dst => Address.Create(dst));
+                dst => Address.Create(dst).Value);
 
         builder.Property(l => l.CreatedAt)
             .HasColumnName("created_at")

@@ -20,4 +20,7 @@ public record Error(
 
     public static Error Failure(string message, string? code = null) =>
         new(code ?? "failure", message, ErrorType.FAILURE);
+
+
+    public Failure ToFailure() => this;
 }

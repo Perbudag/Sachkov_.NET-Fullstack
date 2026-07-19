@@ -1,4 +1,6 @@
-﻿using DirectoryService.Domain.ValueObjects;
+﻿using CSharpFunctionalExtensions;
+using DirectoryService.Domain.ValueObjects;
+using Shared;
 using Path = DirectoryService.Domain.ValueObjects.Path;
 
 namespace DirectoryService.Domain.Entities;
@@ -12,7 +14,7 @@ public class Department
 
         Name = name;
         Slug = slug;
-        Path = Path.Create([.. parent?.Path.Slugs ?? [], slug]);
+        Path = Path.Create([.. parent?.Path.Slugs ?? [], slug]).Value;
         ParentId = parent?.Id;
 
         CreatedAt = DateTime.UtcNow;
@@ -31,35 +33,43 @@ public class Department
     public DateTime UpdatedAt { get; private set; }
 
 
-    public static Department Create(Name name, Slug slug, Department? parent)
+    public static Result<Department, Failure> Create(Name name, Slug slug, Department? parent)
     {
         return new Department(name, slug, parent);
     }
 
 
-    public void SetName(Name name)
+    public UnitResult<Failure> SetName(Name name)
     {
         Name = name;
         UpdatedAt = DateTime.UtcNow;
+
+        return UnitResult.Success<Failure>();
     }
 
-    public void SetSlug(Slug slug)
+    public UnitResult<Failure> SetSlug(Slug slug)
     {
         Slug = slug;
-        Path = Path.Create([.. Path.Slugs.SkipLast(1) ?? [], slug]);
+        Path = Path.Create([.. Path.Slugs.SkipLast(1) ?? [], slug]).Value;
         UpdatedAt = DateTime.UtcNow;
+
+        return UnitResult.Success<Failure>();
     }
 
-    public void SetParent(Department parent)
+    public UnitResult<Failure> SetParent(Department parent)
     {
         if (this == parent)
         {
-            throw new ArgumentException("Department не может быть родителем" +
-                "для самого себя", nameof(parent));
+            var error = Error.Conflict("Department не может быть родителем" +
+                "для самого себя", "department.is.conflict");
+
+            return error.ToFailure();
         }
 
         ParentId = parent.Id;
-        Path = Path.Create([.. parent?.Path.Slugs ?? [], Slug]);
+        Path = Path.Create([.. parent?.Path.Slugs ?? [], Slug]).Value;
         UpdatedAt = DateTime.UtcNow;
+
+        return UnitResult.Success<Failure>();
     }
 }

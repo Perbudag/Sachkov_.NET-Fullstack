@@ -1,4 +1,6 @@
-﻿using DirectoryService.Domain.ValueObjects;
+﻿using CSharpFunctionalExtensions;
+using DirectoryService.Domain.ValueObjects;
+using Shared;
 
 namespace DirectoryService.Domain.Entities;
 
@@ -23,14 +25,16 @@ public class Position
     public DateTime UpdatedAt { get; private set; }
 
 
-    public static Position Create(Name name)
+    public static Result<Position, Failure> Create(Name name)
     {
         return new Position(name);
     }
 
-    public void SetName(Name name)
+    public UnitResult<Failure> SetName(Name name)
     {
         Name = name;
         UpdatedAt = DateTime.UtcNow;
+
+        return UnitResult.Success<Failure>();
     }
 }

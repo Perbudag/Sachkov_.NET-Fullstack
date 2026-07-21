@@ -1,7 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Core.Fails;
 using DirectoryService.Core.Services.Departments;
-using DirectoryService.Core.Services.Departments.Fails.Exceptions;
 using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;

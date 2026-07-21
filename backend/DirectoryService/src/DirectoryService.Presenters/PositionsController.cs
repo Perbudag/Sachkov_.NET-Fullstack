@@ -1,5 +1,8 @@
-﻿using DirectoryService.Contracts.Positions;
+﻿using CSharpFunctionalExtensions;
+using DirectoryService.Contracts.Positions;
+using DirectoryService.Presenters.Results;
 using Microsoft.AspNetCore.Mvc;
+using Shared;
 
 namespace DirectoryService.Presenters;
 
@@ -9,56 +12,48 @@ namespace DirectoryService.Presenters;
 public class PositionsController : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken = default)
+    public async Task<EndpointResult<PositionResponse[]>> GetAll(CancellationToken cancellationToken = default)
     {
-        PositionResponse[] response = [ new PositionResponse(
+        return Result.Success<PositionResponse[], Failure>([ new PositionResponse(
             Guid.CreateVersion7(),
             "testName"
-        )];
-
-        return Ok(response);
+        )]);
     }
 
 
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetById([FromRoute] Guid id, CancellationToken cancellationToken = default)
+    public async Task<EndpointResult<PositionResponse>> GetById([FromRoute] Guid id, CancellationToken cancellationToken = default)
     {
-        var response = new PositionResponse(
+        return Result.Success<PositionResponse, Failure>(new PositionResponse(
             id,
             "testName"
-        );
-
-        return Ok(response);
+        ));
     }
 
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreatePositionRequest request, CancellationToken cancellationToken = default)
+    public async Task<EndpointResult<PositionResponse>> Create([FromBody] CreatePositionRequest request, CancellationToken cancellationToken = default)
     {
-        var response = new PositionResponse(
+        return Result.Success<PositionResponse, Failure>(new PositionResponse(
             Guid.CreateVersion7(),
             request.Name
-        );
-
-        return Ok(response);
+        ));
     }
 
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdatePositionRequest request, CancellationToken cancellationToken = default)
+    public async Task<EndpointResult<PositionResponse>> Update([FromRoute] Guid id, [FromBody] UpdatePositionRequest request, CancellationToken cancellationToken = default)
     {
-        var response = new PositionResponse(
+        return Result.Success<PositionResponse, Failure>(new PositionResponse(
             id,
             request.Name
-        );
-
-        return Ok(response);
+        ));
     }
 
 
     [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken = default)
+    public async Task<EndpointResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken = default)
     {
-        return Ok();
+        return Result.Success<Failure>();
     }
 }

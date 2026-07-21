@@ -1,8 +1,10 @@
-﻿using DirectoryService.Contracts.Locations;
+﻿using CSharpFunctionalExtensions;
+using DirectoryService.Contracts.Locations;
 using DirectoryService.Contracts.SharedDto;
 using DirectoryService.Core.Services.Locations;
-using DirectoryService.Presenters.Extensions;
+using DirectoryService.Presenters.Results;
 using Microsoft.AspNetCore.Mvc;
+using Shared;
 
 namespace DirectoryService.Presenters;
 
@@ -12,65 +14,51 @@ namespace DirectoryService.Presenters;
 public class LocationsController : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken = default)
+    public async Task<EndpointResult<LocationResponse[]>> GetAll(CancellationToken cancellationToken = default)
     {
-        LocationResponse[] response = [new LocationResponse(
+        return Result.Success<LocationResponse[], Failure>([new LocationResponse(
             Guid.CreateVersion7(),
             "TestName",
             new AddressDto("352941", "Россия", "Кемеровская область", "Армавир", "Зеленый пер.", "103", "24")
-            )];
-
-        return Ok(response);
+            )]);
     }
 
 
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetById([FromRoute] Guid id, CancellationToken cancellationToken = default)
+    public async Task<EndpointResult<LocationResponse>> GetById([FromRoute] Guid id, CancellationToken cancellationToken = default)
     {
-        var response = new LocationResponse(
+        return Result.Success<LocationResponse, Failure>(new LocationResponse(
             Guid.CreateVersion7(),
             "TestName",
             new AddressDto("352941", "Россия", "Кемеровская область", "Армавир", "Зеленый пер.", "103", "24")
-            );
-
-        return Ok(response);
+            ));
     }
 
 
     [HttpPost]
-    public async Task<IActionResult> Create(
+    public async Task<EndpointResult<Guid>> Create(
         [FromServices] ILocationsService locationsService,
         [FromBody] CreateLocationRequest request,
         CancellationToken cancellationToken = default)
     {
-        var response = await locationsService.CreateAsync(request, cancellationToken);
-
-        if (response.IsFailure)
-            return response.Error.ToResponse();
-
-        return Ok(response.Value);
+        return await locationsService.CreateAsync(request, cancellationToken);
     }
 
 
     [HttpPatch("{id:guid}")]
-    public async Task<IActionResult> Update(
+    public async Task<EndpointResult<LocationResponse>> Update(
         [FromServices] ILocationsService locationsService,
         [FromRoute] Guid id,
         [FromBody] UpdateLocationRequest request,
         CancellationToken cancellationToken = default)
     {
-        var response = await locationsService.UpdateAsync(id, request, cancellationToken);
-
-        if (response.IsFailure)
-            return response.Error.ToResponse();
-
-        return Ok(response.Value);
+        return await locationsService.UpdateAsync(id, request, cancellationToken);
     }
 
 
     [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken = default)
+    public async Task<EndpointResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken = default)
     {
-        return Ok();
+        return Result.Success<Failure>();
     }
 }

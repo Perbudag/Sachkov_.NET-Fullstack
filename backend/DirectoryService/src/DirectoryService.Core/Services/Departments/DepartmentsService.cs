@@ -1,11 +1,8 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Departments;
-using DirectoryService.Core.Exceptions;
 using DirectoryService.Core.Extensions;
 using DirectoryService.Core.Fails;
-using DirectoryService.Core.Services.Departments.Fails.Exceptions;
 using DirectoryService.Core.Services.Locations;
-using DirectoryService.Core.Services.Locations.Fails.Exceptions;
 using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.ValueObjects;
 using DirectoryService.Presenters;

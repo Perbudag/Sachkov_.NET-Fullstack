@@ -3,7 +3,6 @@ using DirectoryService.Contracts.Locations;
 using DirectoryService.Contracts.SharedDto;
 using DirectoryService.Core.Extensions;
 using DirectoryService.Core.Fails;
-using DirectoryService.Core.Services.Locations.Fails.Exceptions;
 using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.ValueObjects;
 using FluentValidation;

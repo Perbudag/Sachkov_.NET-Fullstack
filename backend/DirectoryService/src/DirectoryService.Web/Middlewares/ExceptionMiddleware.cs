@@ -1,5 +1,4 @@
-﻿using DirectoryService.Core.Exceptions;
-using Shared;
+﻿using Shared;
 using System.Text.Json;
 
 namespace DirectoryService.Web.Middlewares;
@@ -21,30 +20,14 @@ public class ExceptionMiddleware : IMiddleware
         }
         catch (Exception ex)
         {
-            await HandleException(context, ex);
-        }
-    }
-
-    private async Task HandleException(HttpContext context, Exception exception)
-    {
 #pragma warning disable CA2254 // Шаблон должен быть статическим выражением
-        _logger.LogError(exception, exception.Message);
+            _logger.LogError(ex, ex.Message);
 #pragma warning restore CA2254 // Шаблон должен быть статическим выражением
 
-        var (code, errors) = exception switch
-        {
-            BadRequestException => (StatusCodes.Status400BadRequest, JsonSerializer.Deserialize<IEnumerable<Error>>(exception.Message)),
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
-            NotFoundException => (StatusCodes.Status404NotFound, JsonSerializer.Deserialize<IEnumerable<Error>>(exception.Message)),
-
-            ConflictException => (StatusCodes.Status409Conflict, JsonSerializer.Deserialize<IEnumerable<Error>>(exception.Message)),
-
-            _ => (StatusCodes.Status500InternalServerError, [Error.Failure("something went wrong")])
-        };
-
-        context.Response.ContentType = "application/json";
-        context.Response.StatusCode = code;
-
-        await context.Response.WriteAsJsonAsync(errors);
+            await context.Response.WriteAsJsonAsync(Envelope.Failure(Error.Failure("something went wrong")));
+        }
     }
 }

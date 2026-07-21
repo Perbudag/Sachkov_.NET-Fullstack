@@ -89,3 +89,10 @@ dotnet_diagnostic.RCS1194.severity = none
 
 #CA2225: для перегрузок оператора существуют именованные аналоги
 dotnet_diagnostic.CA2225.severity = none
+
+#CA1822: помечайте члены как статические
+dotnet_diagnostic.CA1822.severity = none
+
+
+#s1125
+dotnet_diagnostic.S1125.severity = none

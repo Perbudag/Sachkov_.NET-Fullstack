@@ -52,8 +52,17 @@ public class EndpointResult<TValue> : IResult, IEndpointMetadataProvider
 
 public class EndpointResult : EndpointResult<bool>
 {
-    public EndpointResult(UnitResult<Failure> result) : base(result.IsSuccess ? true : result.Error) { }
-    public EndpointResult(UnitResult<Error> result) : base(result.IsSuccess ? true : result.Error) { }
+    public EndpointResult(UnitResult<Failure> result) :
+        base(result.IsSuccess
+        ? Result.Success<bool, Failure>(true)
+        : Result.Failure<bool, Failure>(result.Error))
+    { }
+
+    public EndpointResult(UnitResult<Error> result) :
+        base(result.IsSuccess
+        ? Result.Success<bool, Failure>(true)
+        : Result.Failure<bool, Failure>(result.Error))
+    { }
 
 
     public static implicit operator EndpointResult(UnitResult<Failure> result) => new(result);

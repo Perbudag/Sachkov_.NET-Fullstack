@@ -1,11 +1,14 @@
 ﻿using CSharpFunctionalExtensions;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Metadata;
 using Shared;
+using System.Reflection;
 using IResult = Microsoft.AspNetCore.Http.IResult;
 
 namespace DirectoryService.Presenters.Results;
 
-public class EndpointResult<TValue> : IResult
+public class EndpointResult<TValue> : IResult, IEndpointMetadataProvider
 {
     private readonly IResult _result;
 
@@ -23,6 +26,20 @@ public class EndpointResult<TValue> : IResult
             ? new SuccessResult<TValue>(result.Value)
             : new FailureResult(result.Error);
 
+    }
+
+    public static void PopulateMetadata(MethodInfo method, EndpointBuilder builder)
+    {
+        ArgumentNullException.ThrowIfNull(method);
+        ArgumentNullException.ThrowIfNull(builder);
+
+        builder.Metadata.Add(new ProducesResponseTypeMetadata(200, typeof(Envelope<TValue>), ["application/json"]));
+
+        builder.Metadata.Add(new ProducesResponseTypeMetadata(400, typeof(Envelope<TValue>), ["application/json"]));
+        builder.Metadata.Add(new ProducesResponseTypeMetadata(404, typeof(Envelope<TValue>), ["application/json"]));
+        builder.Metadata.Add(new ProducesResponseTypeMetadata(409, typeof(Envelope<TValue>), ["application/json"]));
+
+        builder.Metadata.Add(new ProducesResponseTypeMetadata(500, typeof(Envelope<TValue>), ["application/json"]));
     }
 
     public Task ExecuteAsync(HttpContext httpContext) =>

@@ -1,8 +1,8 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Locations;
 using DirectoryService.Contracts.SharedDto;
-using DirectoryService.Core.Extensions;
 using DirectoryService.Core.Fails;
+using DirectoryService.Core.Validation;
 using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.ValueObjects;
 using FluentValidation;
@@ -34,10 +34,8 @@ internal class LocationsService : ILocationsService
         var validationResult = await _createLocationValidator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
-            return validationResult.ToErrors(Errors.LocationErrors.ValidationError);
+            return validationResult.ToErrors();
         }
-
-        var errors = new List<Error>();
         
         var name = Name.Create(request.Name);
 
@@ -51,19 +49,7 @@ internal class LocationsService : ILocationsService
             request.Address.Apartment
             );
 
-        if (name.IsFailure)
-            errors.AddRange(name.Error);
-
-        if(address.IsFailure)
-            errors.AddRange(address.Error);
-
-        if(errors.Count > 0)
-            return new Failure(errors);
-
         var location = Location.Create(name.Value, address.Value);
-
-        if (location.IsFailure)
-            return location.Error;
 
         var result = await _repository.AddAsync(location.Value, cancellationToken);
 
@@ -83,7 +69,7 @@ internal class LocationsService : ILocationsService
 
         if (!validationResult.IsValid)
         {
-            return validationResult.ToErrors(Errors.LocationErrors.ValidationError);
+            return validationResult.ToErrors();
         }
 
         var location = await _repository.GetByIdAsync(id, cancellationToken);
@@ -96,9 +82,6 @@ internal class LocationsService : ILocationsService
         if (request.Name != null)
         {
             var name = Name.Create(request.Name);
-
-            if (name.IsFailure)
-                return name.Error;
 
             if ((await _repository.GetByNameAsync(name.Value, cancellationToken)).IsSuccess)
             {
@@ -120,9 +103,6 @@ internal class LocationsService : ILocationsService
                 request.Address.House,
                 request.Address.Apartment
                 );
-
-            if(address.IsFailure)
-                return address.Error;
 
             location.Value.SetAddress(address.Value);
         }

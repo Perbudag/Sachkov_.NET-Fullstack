@@ -1,5 +1,6 @@
 ﻿using DirectoryService.Contracts.Departments;
 using DirectoryService.Contracts.Locations;
+using DirectoryService.Core.Validation;
 using DirectoryService.Domain.ValueObjects;
 using FluentValidation;
 
@@ -11,18 +12,9 @@ public class CreateDepartmentValidator : AbstractValidator<CreateDepartmentReque
     {
 
         RuleFor(d => d.Name)
-            .NotNull()
-            .MinimumLength(Name.MIN_LENGTH)
-            .MaximumLength(Name.MAX_LENGTH)
-            .WithMessage($"Имя должно содержать от {Name.MIN_LENGTH} до {Name.MAX_LENGTH} символов");
+            .MustBeValueObject(Name.Create);
 
         RuleFor(d => d.Slug)
-            .NotNull()
-            .MinimumLength(Slug.MIN_LENGTH)
-            .MaximumLength(Slug.MAX_LENGTH)
-            .WithMessage($"Slug должен содержать от {Slug.MIN_LENGTH} до {Slug.MAX_LENGTH} символов")
-            .Matches("^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$")
-            .WithMessage($"Slug может состоять из латинских букв, цифр и дефисов, " +
-                          "а также, не начинается и не заканчивается дефисом");
+            .MustBeValueObject(Slug.Create);
     }
 }

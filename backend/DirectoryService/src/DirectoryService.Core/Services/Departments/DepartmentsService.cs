@@ -1,8 +1,8 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Departments;
-using DirectoryService.Core.Extensions;
 using DirectoryService.Core.Fails;
 using DirectoryService.Core.Services.Locations;
+using DirectoryService.Core.Validation;
 using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.ValueObjects;
 using DirectoryService.Presenters;
@@ -39,7 +39,7 @@ internal class DepartmentsService : IDepartmentsService
         var validatiorResult = await _createValidator.ValidateAsync(request, cancellationToken);
         if (!validatiorResult.IsValid)
         {
-            return validatiorResult.ToErrors(Errors.DepartmentErrors.ValidationError);
+            return validatiorResult.ToErrors();
         }
 
         Department? parent = null;
@@ -74,25 +74,10 @@ internal class DepartmentsService : IDepartmentsService
             }
         }
 
-        var errors = new List<Error>();
-
         var name = Name.Create(request.Name);
         var slug = Slug.Create(request.Slug);
 
-        if (name.IsFailure)
-            errors.AddRange(name.Error);
-
-        if (slug.IsFailure)
-            errors.AddRange(slug.Error);
-
-        if (errors.Count > 0)
-            return new Failure(errors);
-
-
         var department = Department.Create(name.Value, slug.Value, parent);
-
-        if (department.IsFailure)
-            return department.Error;
 
         var addResult = await _departmentsRepository.AddAsync(department.Value, cancellationToken);
 
@@ -118,7 +103,7 @@ internal class DepartmentsService : IDepartmentsService
         var validatiorResult = await _updateValidator.ValidateAsync(request, cancellationToken);
         if (!validatiorResult.IsValid)
         {
-            return validatiorResult.ToErrors(Errors.DepartmentErrors.ValidationError);
+            return validatiorResult.ToErrors();
         }
 
         if (id == Guid.Empty)
@@ -135,9 +120,6 @@ internal class DepartmentsService : IDepartmentsService
         if (request.Name != null)
         {
             var name = Name.Create(request.Name);
-
-            if (name.IsFailure)
-                return name.Error;
 
             if ((await _departmentsRepository.GetByNameAsync(name.Value, cancellationToken)).IsSuccess)
             {

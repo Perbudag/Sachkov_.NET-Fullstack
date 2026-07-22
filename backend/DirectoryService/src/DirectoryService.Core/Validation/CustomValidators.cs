@@ -30,13 +30,13 @@ public static class CustomValidators
                     CustomState = item.Type,
                     ErrorCode = item.Code,
                     ErrorMessage = item.Message,
-                    PropertyName = context.DisplayName
+                    PropertyName = item.InvalidField ?? context.DisplayName
                 });
             }
         });
     }
 
-    public static IRuleBuilderOptions<T, TProperty> MustBeValueObject<T, TProperty>(
+    public static IRuleBuilderOptions<T, TProperty> WithError<T, TProperty>(
         this IRuleBuilderOptions<T, TProperty> ruleBuilder, Error error)
     {
         ruleBuilder.WithErrorCode(error.Code);

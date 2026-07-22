@@ -36,8 +36,6 @@ internal class LocationsService : ILocationsService
         {
             return validationResult.ToErrors();
         }
-
-        var errors = new List<Error>();
         
         var name = Name.Create(request.Name);
 
@@ -50,9 +48,6 @@ internal class LocationsService : ILocationsService
             request.Address.House,
             request.Address.Apartment
             );
-
-        if(errors.Count > 0)
-            return new Failure(errors);
 
         var location = Location.Create(name.Value, address.Value);
 

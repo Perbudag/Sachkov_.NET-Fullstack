@@ -38,36 +38,55 @@ public partial record Address
     {
         var errors = new List<Error>();
 
-        if (!PostalCodePattern.IsMatch(postalCode))
+        if (postalCode is null)
+            errors.Add(Error.Validation("Почтовый индекс не может быть пустым.", "address.validation.error", nameof(postalCode)));
+
+        if (country is null)
+            errors.Add(Error.Validation("Название страны не может быть пустым.", "address.validation.error", nameof(country)));
+
+        if (region is null)
+            errors.Add(Error.Validation("Название региона не может быть пустым.", "address.validation.error", nameof(region)));
+
+        if (city is null)
+            errors.Add(Error.Validation("Название города не может быть пустым.", "address.validation.error", nameof(city)));
+
+        if (street is null)
+            errors.Add(Error.Validation("Название улицы не может быть пустым.", "address.validation.error", nameof(street)));
+
+        if (house is null)
+            errors.Add(Error.Validation("Номер дома не может быть пустым.", "address.validation.error", nameof(house)));
+
+
+        if (postalCode != null && !PostalCodePattern.IsMatch(postalCode))
         {
             errors.Add(Error.Validation("Неправильный формат почтового индекса.", "address.validation.error", nameof(postalCode)));
         }
 
-        if (!NamePattern.IsMatch(country))
+        if (country != null && !NamePattern.IsMatch(country))
         {
             errors.Add(Error.Validation("Название страны может состаять только" +
                 " из букв и пробелов.", "address.validation.error", nameof(country)));
         }
 
-        if (!NamePattern.IsMatch(region))
+        if (region != null && !NamePattern.IsMatch(region))
         {
             errors.Add(Error.Validation("Название региона может состаять только" +
                 " из букв и пробелов.", "address.validation.error", nameof(region)));
         }
 
-        if (!NamePattern.IsMatch(city))
+        if (city != null && !NamePattern.IsMatch(city))
         {
             errors.Add(Error.Validation("Название города может состаять только" +
                 " из букв и пробелов.", "address.validation.error", nameof(city)));
         }
 
-        if (!NamePattern.IsMatch(street))
+        if (street != null && !NamePattern.IsMatch(street))
         {
             errors.Add(Error.Validation("Название улицы может состаять только" +
                 " из букв и пробелов.", "address.validation.error", nameof(street)));
         }
 
-        if (!NumberPattern.IsMatch(house))
+        if (house != null && !NumberPattern.IsMatch(house))
         {
             errors.Add(Error.Validation("Номер дома должен состоять из цифр" +
                 "и/или прописных букв латинского и кириллического алфавита.", "address.validation.error", nameof(house)));
@@ -82,7 +101,7 @@ public partial record Address
         if (errors.Count > 0)
             return new Failure(errors);
 
-        return new Address(postalCode, country, region, city, street, house, apartment);
+        return new Address(postalCode!, country!, region!, city!, street!, house!, apartment);
     }
 
     public static Result<Address, Failure> Create(string value)

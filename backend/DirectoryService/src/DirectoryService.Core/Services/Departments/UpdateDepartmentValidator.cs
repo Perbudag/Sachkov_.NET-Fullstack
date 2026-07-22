@@ -1,4 +1,5 @@
-﻿using DirectoryService.Domain.ValueObjects;
+﻿using DirectoryService.Core.Validation;
+using DirectoryService.Domain.ValueObjects;
 using DirectoryService.Presenters;
 using FluentValidation;
 
@@ -8,9 +9,7 @@ public class UpdateDepartmentValidator : AbstractValidator<UpdateDepartmentReque
 {
     public UpdateDepartmentValidator()
     {
-        RuleFor(d => d.Name)
-            .MinimumLength(Name.MIN_LENGTH)
-            .MaximumLength(Name.MAX_LENGTH)
-            .WithMessage($"Имя должно содержать от {Name.MIN_LENGTH} до {Name.MAX_LENGTH} символов");
+        RuleFor(d => d.Name!)
+            .MustBeValueObject(Name.Create);
     }
 }

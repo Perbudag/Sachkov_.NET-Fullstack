@@ -1,5 +1,5 @@
 ﻿using DirectoryService.Contracts.Locations;
-using DirectoryService.Core.Services.Shared.Validators;
+using DirectoryService.Core.Validation;
 using DirectoryService.Domain.ValueObjects;
 using FluentValidation;
 
@@ -10,11 +10,16 @@ public class CreateLocationValidator : AbstractValidator<CreateLocationRequest>
     public CreateLocationValidator()
     {
         RuleFor(l => l.Name)
-            .NotNull()
-            .MinimumLength(Name.MIN_LENGTH)
-            .MaximumLength(Name.MAX_LENGTH)
-            .WithMessage($"Имя должно содержать от {Name.MIN_LENGTH} до {Name.MAX_LENGTH} символов");
+            .MustBeValueObject(Name.Create);
 
-        RuleFor(l => l.Address).SetValidator(new AddressDtoValidator());
+        RuleFor(l => l.Address)
+            .MustBeValueObject(address => Address.Create(
+                address.PostalCode,
+                address.Country,
+                address.Region,
+                address.City,
+                address.Street,
+                address.House,
+                address.Apartment));
     }
 }

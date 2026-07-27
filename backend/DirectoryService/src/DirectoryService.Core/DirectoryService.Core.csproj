@@ -9,6 +9,8 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="Serilog" />
     <PackageReference Include="Serilog.AspNetCore" />
+    <PackageReference Include="Serilog.Enrichers.Environment" />
+    <PackageReference Include="Serilog.Enrichers.Thread" />
     <PackageReference Include="Serilog.Exceptions" />
     <PackageReference Include="Serilog.Exceptions.EntityFrameworkCore" />
     <PackageReference Include="Serilog.Extensions.Hosting" />

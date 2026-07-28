@@ -1,7 +1,9 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Locations;
 using DirectoryService.Contracts.SharedDto;
-using DirectoryService.Core.Services.Locations;
+using DirectoryService.Core.Abstractions;
+using DirectoryService.Core.Services.Locations.Create;
+using DirectoryService.Core.Services.Locations.Update;
 using DirectoryService.Presenters.Results;
 using Microsoft.AspNetCore.Mvc;
 using Shared;
@@ -37,22 +39,22 @@ public class LocationsController : ControllerBase
 
     [HttpPost]
     public async Task<EndpointResult<Guid>> Create(
-        [FromServices] ILocationsService locationsService,
+        [FromServices] ICommandHandler<Guid, CreateLocationCommand> handler,
         [FromBody] CreateLocationRequest request,
         CancellationToken cancellationToken = default)
     {
-        return await locationsService.CreateAsync(request, cancellationToken);
+        return await handler.HandleAsync(request, cancellationToken);
     }
 
 
     [HttpPatch("{id:guid}")]
     public async Task<EndpointResult<LocationResponse>> Update(
-        [FromServices] ILocationsService locationsService,
+        [FromServices] ICommandHandler<LocationResponse, UpdateLocationCommand> handler,
         [FromRoute] Guid id,
         [FromBody] UpdateLocationRequest request,
         CancellationToken cancellationToken = default)
     {
-        return await locationsService.UpdateAsync(id, request, cancellationToken);
+        return await handler.HandleAsync((id, request), cancellationToken);
     }
 
 

@@ -3,7 +3,7 @@ using DirectoryService.Core.Validation;
 using DirectoryService.Domain.ValueObjects;
 using FluentValidation;
 
-namespace DirectoryService.Core.Services.Locations;
+namespace DirectoryService.Core.Services.Locations.Update;
 
 public class UpdateLocationValidator : AbstractValidator<UpdateLocationRequest>
 {

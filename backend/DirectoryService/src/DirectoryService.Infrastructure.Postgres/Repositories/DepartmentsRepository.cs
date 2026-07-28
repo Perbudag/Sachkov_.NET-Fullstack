@@ -108,4 +108,9 @@ internal class DepartmentsRepository : IDepartmentsRepository
     {
         await _context.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task<Result<IEnumerable<Department>, Failure>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        return await _context.Departments.ToListAsync(cancellationToken);
+    }
 }

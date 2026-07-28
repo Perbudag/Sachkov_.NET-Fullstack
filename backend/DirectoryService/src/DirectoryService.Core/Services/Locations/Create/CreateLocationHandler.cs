@@ -54,7 +54,7 @@ internal class CreateLocationHandler : ICommandHandler<Guid, CreateLocationComma
 
         await _repository.SaveAsync(cancellationToken);
 
-        _logger.LogInformation("Location created with name \"{Name}\".", name);
+        _logger.LogInformation("Location created with name \"{Name}\".", name.Value);
 
         return location.Value.Id;
     }

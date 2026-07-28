@@ -61,7 +61,7 @@ internal class RemoveLocationInDepartmentHandler : ICommandHandler<RemoveLocatio
         await _departmentsRepository.SaveAsync(cancellationToken); 
         
         _logger.LogInformation("The location with ID {LocationId} has been removed from the department with ID {DepartmentId}.",
-            command.DepartmentId, command.LocationId);
+            command.LocationId, command.DepartmentId);
 
         return UnitResult.Success<Failure>();
     }

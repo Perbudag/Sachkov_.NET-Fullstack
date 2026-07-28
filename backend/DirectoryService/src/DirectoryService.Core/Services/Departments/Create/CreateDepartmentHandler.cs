@@ -89,7 +89,7 @@ internal class CreateDepartmentHandler : ICommandHandler<Guid, CreateDepartmentC
         }
 
         await _departmentsRepository.SaveAsync(cancellationToken);
-        _logger.LogInformation("Department created with name \"{Name}\".", name);
+        _logger.LogInformation("Department created with name \"{Name}\".", name.Value);
 
         return department.Value.Id;
     }

@@ -58,8 +58,8 @@ internal class AddLocationInDepartmentHandler : ICommandHandler<AddLocationInDep
 
         await _departmentsRepository.SaveAsync(cancellationToken);
 
-        _logger.LogInformation("A location with ID {LocationId} has been added to the department with ID {DepartmentId}.", 
-            command.DepartmentId, command.LocationId);
+        _logger.LogInformation("A location with ID {LocationId} has been added to the department with ID {DepartmentId}.",
+            command.LocationId, command.DepartmentId);
 
         return UnitResult.Success<Failure>();
     }

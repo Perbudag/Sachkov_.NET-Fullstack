@@ -74,7 +74,10 @@ internal class UpdateLocationHandler : ICommandHandler<LocationResponse, UpdateL
             location.Value.SetAddress(address.Value);
         }
 
-        await _transactionManager.SaveChangesAsync(cancellationToken);
+        var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
+
+        if (saveResult.IsFailure)
+            return saveResult.Error.ToFailure();
 
         var addressDto = new AddressDto(
             location.Value.Address.PostalCode,

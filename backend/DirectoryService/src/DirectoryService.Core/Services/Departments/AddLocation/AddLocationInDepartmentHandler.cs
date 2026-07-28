@@ -60,7 +60,10 @@ internal class AddLocationInDepartmentHandler : ICommandHandler<AddLocationInDep
         if (result.IsFailure)
             return result.Error;
 
-        await _transactionManager.SaveChangesAsync(cancellationToken);
+        var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
+
+        if (saveResult.IsFailure)
+            return saveResult.Error.ToFailure();
 
         _logger.LogInformation("A location with ID {LocationId} has been added to the department with ID {DepartmentId}.",
             command.LocationId, command.DepartmentId);

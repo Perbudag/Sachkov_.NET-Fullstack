@@ -61,8 +61,10 @@ internal class UpdateDepartmentHandler : ICommandHandler<DepartmentResponse, Upd
             department.Value.SetName(name.Value);
         }
 
-        await _transactionManager.SaveChangesAsync(cancellationToken);
+        var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
 
+        if (saveResult.IsFailure)
+            return saveResult.Error.ToFailure();
 
         _logger.LogInformation("The department with ID {Id} was updated.", command.Id);
 

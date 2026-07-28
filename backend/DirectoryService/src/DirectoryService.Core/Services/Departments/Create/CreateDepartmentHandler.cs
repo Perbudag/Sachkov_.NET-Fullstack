@@ -92,7 +92,10 @@ internal class CreateDepartmentHandler : ICommandHandler<Guid, CreateDepartmentC
                 return addLocationResult.Error;
         }
 
-        await _transactionManager.SaveChangesAsync(cancellationToken);
+        var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
+
+        if (saveResult.IsFailure)
+            return saveResult.Error.ToFailure();
 
         _logger.LogInformation("Department created with name \"{Name}\".", name.Value);
 

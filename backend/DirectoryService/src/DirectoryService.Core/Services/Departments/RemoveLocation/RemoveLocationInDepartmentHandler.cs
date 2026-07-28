@@ -62,8 +62,11 @@ internal class RemoveLocationInDepartmentHandler : ICommandHandler<RemoveLocatio
         if (result.IsFailure)
             return result.Error;
 
-        await _transactionManager.SaveChangesAsync(cancellationToken); 
-        
+        var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
+
+        if (saveResult.IsFailure)
+            return saveResult.Error.ToFailure();
+
         _logger.LogInformation("The location with ID {LocationId} has been removed from the department with ID {DepartmentId}.",
             command.LocationId, command.DepartmentId);
 

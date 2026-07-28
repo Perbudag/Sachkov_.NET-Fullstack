@@ -8,7 +8,6 @@ using DirectoryService.Domain.ValueObjects;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Shared;
-using System.Transactions;
 
 namespace DirectoryService.Core.Services.Locations.Create;
 
@@ -58,7 +57,10 @@ internal class CreateLocationHandler : ICommandHandler<Guid, CreateLocationComma
         if (result.IsFailure)
             return result.Error;
 
-        await _transactionManager.SaveChangesAsync(cancellationToken);
+        var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
+
+        if (saveResult.IsFailure)
+            return saveResult.Error.ToFailure();
 
         _logger.LogInformation("Location created with name \"{Name}\".", name.Value);
 

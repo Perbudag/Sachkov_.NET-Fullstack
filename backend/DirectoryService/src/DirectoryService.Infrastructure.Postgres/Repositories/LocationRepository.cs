@@ -59,9 +59,4 @@ internal class LocationRepository : ILocationsRepository
 
         return location;
     }
-
-    public async Task SaveAsync(CancellationToken cancellationToken)
-    {
-        await _context.SaveChangesAsync(cancellationToken);
-    }
 }

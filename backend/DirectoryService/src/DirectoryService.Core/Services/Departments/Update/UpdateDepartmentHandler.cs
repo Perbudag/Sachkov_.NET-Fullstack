@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Departments;
 using DirectoryService.Core.Abstractions;
+using DirectoryService.Core.Abstractions.Database;
 using DirectoryService.Core.Fails;
 using DirectoryService.Core.Services.Locations;
 using DirectoryService.Core.Validation;
@@ -16,14 +17,17 @@ internal class UpdateDepartmentHandler : ICommandHandler<DepartmentResponse, Upd
     private readonly ILogger<UpdateDepartmentHandler> _logger;
     private readonly IDepartmentsRepository _departmentsRepository;
     private readonly IValidator<UpdateDepartmentRequest> _validator;
+    private readonly ITransactionManager _transactionManager;
 
     public UpdateDepartmentHandler(ILogger<UpdateDepartmentHandler> logger,
                                    IDepartmentsRepository departmentsRepository,
-                                   IValidator<UpdateDepartmentRequest> validator)
+                                   IValidator<UpdateDepartmentRequest> validator,
+                                   ITransactionManager transactionManager)
     {
         _logger = logger;
         _departmentsRepository = departmentsRepository;
         _validator = validator;
+        _transactionManager = transactionManager;
     }
 
     public async Task<Result<DepartmentResponse, Failure>> HandleAsync(UpdateDepartmentCommand command, CancellationToken cancellationToken)
@@ -57,7 +61,7 @@ internal class UpdateDepartmentHandler : ICommandHandler<DepartmentResponse, Upd
             department.Value.SetName(name.Value);
         }
 
-        await _departmentsRepository.SaveAsync(cancellationToken);
+        await _transactionManager.SaveChangesAsync(cancellationToken);
 
 
         _logger.LogInformation("The department with ID {Id} was updated.", command.Id);

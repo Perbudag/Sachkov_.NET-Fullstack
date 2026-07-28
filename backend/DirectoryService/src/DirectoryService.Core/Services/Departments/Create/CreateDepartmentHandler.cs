@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Departments;
 using DirectoryService.Core.Abstractions;
+using DirectoryService.Core.Abstractions.Database;
 using DirectoryService.Core.Fails;
 using DirectoryService.Core.Services.Locations;
 using DirectoryService.Core.Validation;
@@ -18,16 +19,19 @@ internal class CreateDepartmentHandler : ICommandHandler<Guid, CreateDepartmentC
     private readonly IDepartmentsRepository _departmentsRepository;
     private readonly ILocationsRepository _locationsRepository;
     private readonly IValidator<CreateDepartmentRequest> _validator;
+    private readonly ITransactionManager _transactionManager;
 
     public CreateDepartmentHandler(ILogger<CreateDepartmentHandler> logger,
                                    IDepartmentsRepository departmentsRepository,
                                    ILocationsRepository locationsRepository,
-                                   IValidator<CreateDepartmentRequest> validator)
+                                   IValidator<CreateDepartmentRequest> validator,
+                                   ITransactionManager transactionManager)
     {
         _logger = logger;
         _departmentsRepository = departmentsRepository;
         _locationsRepository = locationsRepository;
         _validator = validator;
+        _transactionManager = transactionManager;
     }
 
     public async Task<Result<Guid, Failure>> HandleAsync(CreateDepartmentCommand command, CancellationToken cancellationToken)
@@ -88,7 +92,8 @@ internal class CreateDepartmentHandler : ICommandHandler<Guid, CreateDepartmentC
                 return addLocationResult.Error;
         }
 
-        await _departmentsRepository.SaveAsync(cancellationToken);
+        await _transactionManager.SaveChangesAsync(cancellationToken);
+
         _logger.LogInformation("Department created with name \"{Name}\".", name.Value);
 
         return department.Value.Id;

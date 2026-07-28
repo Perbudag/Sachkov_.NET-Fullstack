@@ -13,5 +13,4 @@ public interface IDepartmentsRepository
     Task<Result<Department, Failure>> GetByIdAsync(Guid departmentId, CancellationToken cancellationToken);
     Task<UnitResult<Failure>> AddLocationsAsync(Department department, IEnumerable<Location> locations, CancellationToken cancellationToken);
     Task<UnitResult<Failure>> RemoveLocationsAsync(Department department, IEnumerable<Location> locations, CancellationToken cancellationToken);
-    Task SaveAsync(CancellationToken cancellationToken);
 }

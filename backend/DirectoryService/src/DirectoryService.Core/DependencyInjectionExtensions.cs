@@ -1,5 +1,4 @@
-﻿using DirectoryService.Core.Services.Departments;
-using DirectoryService.Core.Services.Locations;
+﻿using DirectoryService.Core.Abstractions;
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,8 +11,21 @@ public static class DependencyInjectionExtensions
     {
         services.AddValidatorsFromAssembly(typeof(DependencyInjectionExtensions).Assembly);
 
-        services.AddScoped<ILocationsService, LocationsService>();
-        services.AddScoped<IDepartmentsService, DepartmentsService>();
+        var assembly = typeof(DependencyInjectionExtensions).Assembly;
+
+        services.Scan(scan => scan
+            .FromAssemblies(assembly)
+            .AddClasses(classes => classes
+                .AssignableToAny(typeof(ICommandHandler<,>), typeof(ICommandHandler<>)), false)
+            .AsImplementedInterfaces()
+            .WithScopedLifetime());
+
+        services.Scan(scan => scan
+            .FromAssemblies(assembly)
+            .AddClasses(classes => classes
+                .AssignableToAny(typeof(IQueryHandler<,>)), false)
+            .AsImplementedInterfaces()
+            .WithScopedLifetime());
 
         return services;
     }

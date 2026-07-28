@@ -1,9 +1,9 @@
-﻿using DirectoryService.Core.Validation;
+﻿using DirectoryService.Contracts.Departments;
+using DirectoryService.Core.Validation;
 using DirectoryService.Domain.ValueObjects;
-using DirectoryService.Presenters;
 using FluentValidation;
 
-namespace DirectoryService.Core.Services.Departments;
+namespace DirectoryService.Core.Services.Departments.Update;
 
 public class UpdateDepartmentValidator : AbstractValidator<UpdateDepartmentRequest>
 {

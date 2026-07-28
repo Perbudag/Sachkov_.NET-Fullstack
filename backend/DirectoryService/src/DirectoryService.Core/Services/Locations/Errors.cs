@@ -1,5 +1,4 @@
-﻿using DirectoryService.Domain.Entities;
-using Shared;
+﻿using Shared;
 
 namespace DirectoryService.Core.Fails;
 

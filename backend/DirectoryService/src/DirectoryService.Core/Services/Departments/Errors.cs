@@ -1,5 +1,4 @@
-﻿using DirectoryService.Domain.ValueObjects;
-using Shared;
+﻿using Shared;
 
 namespace DirectoryService.Core.Fails;
 

@@ -31,7 +31,7 @@ internal class TransactionManager : ITransactionManager
         }
         catch (Exception ex)
         {
-            return DbExceptionMapper.Map(ex, _logger, "Failed to save changes");
+            return DbExceptionMapper.Map(ex, _logger, "Failed to begin transaction");
         }
     }
 

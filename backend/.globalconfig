@@ -98,3 +98,6 @@ dotnet_diagnostic.S1125.severity = none
 
 #CA1000: не объявляйте статические элементы в универсальных типах
 dotnet_diagnostic.CA1000.severity = none
+
+#S3881: "IDisposable" should be implemented correctly
+dotnet_diagnostic.S3881.severity = none

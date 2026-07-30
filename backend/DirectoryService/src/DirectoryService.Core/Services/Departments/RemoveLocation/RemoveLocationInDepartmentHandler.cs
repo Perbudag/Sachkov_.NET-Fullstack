@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Core.Abstractions;
+using DirectoryService.Core.Abstractions.Database;
 using DirectoryService.Core.Fails;
 using DirectoryService.Core.Services.Locations;
 using DirectoryService.Domain.Entities;
@@ -13,14 +14,17 @@ internal class RemoveLocationInDepartmentHandler : ICommandHandler<RemoveLocatio
     private readonly ILogger<RemoveLocationInDepartmentHandler> _logger;
     private readonly IDepartmentsRepository _departmentsRepository;
     private readonly ILocationsRepository _locationsRepository;
+    private readonly ITransactionManager _transactionManager;
 
     public RemoveLocationInDepartmentHandler(ILogger<RemoveLocationInDepartmentHandler> logger,
                                              IDepartmentsRepository departmentsRepository,
-                                             ILocationsRepository locationsRepository)
+                                             ILocationsRepository locationsRepository,
+                                             ITransactionManager transactionManager)
     {
         _logger = logger;
         _departmentsRepository = departmentsRepository;
         _locationsRepository = locationsRepository;
+        _transactionManager = transactionManager;
     }
 
     public async Task<UnitResult<Failure>> HandleAsync(RemoveLocationInDepartmentCommand command, CancellationToken cancellationToken)
@@ -58,8 +62,11 @@ internal class RemoveLocationInDepartmentHandler : ICommandHandler<RemoveLocatio
         if (result.IsFailure)
             return result.Error;
 
-        await _departmentsRepository.SaveAsync(cancellationToken); 
-        
+        var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
+
+        if (saveResult.IsFailure)
+            return saveResult.Error.ToFailure();
+
         _logger.LogInformation("The location with ID {LocationId} has been removed from the department with ID {DepartmentId}.",
             command.LocationId, command.DepartmentId);
 

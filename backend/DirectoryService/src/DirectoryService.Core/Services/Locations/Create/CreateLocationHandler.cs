@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Locations;
 using DirectoryService.Core.Abstractions;
+using DirectoryService.Core.Abstractions.Database;
 using DirectoryService.Core.Validation;
 using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.ValueObjects;
@@ -15,14 +16,17 @@ internal class CreateLocationHandler : ICommandHandler<Guid, CreateLocationComma
     private readonly ILogger<CreateLocationHandler> _logger;
     private readonly ILocationsRepository _repository;
     private readonly IValidator<CreateLocationRequest> _validator;
+    private readonly ITransactionManager _transactionManager;
 
-    public CreateLocationHandler(ILogger<CreateLocationHandler> logger, 
-                                 ILocationsRepository repository, 
-                                 IValidator<CreateLocationRequest> validator)
+    public CreateLocationHandler(ILogger<CreateLocationHandler> logger,
+                                 ILocationsRepository repository,
+                                 IValidator<CreateLocationRequest> validator,
+                                 ITransactionManager transactionManager)
     {
         _logger = logger;
         _repository = repository;
         _validator = validator;
+        _transactionManager = transactionManager;
     }
 
     public async Task<Result<Guid, Failure>> HandleAsync(CreateLocationCommand command, CancellationToken cancellationToken)
@@ -46,13 +50,17 @@ internal class CreateLocationHandler : ICommandHandler<Guid, CreateLocationComma
             );
 
         var location = Location.Create(name.Value, address.Value);
+        
 
         var result = await _repository.AddAsync(location.Value, cancellationToken);
 
         if (result.IsFailure)
             return result.Error;
 
-        await _repository.SaveAsync(cancellationToken);
+        var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
+
+        if (saveResult.IsFailure)
+            return saveResult.Error.ToFailure();
 
         _logger.LogInformation("Location created with name \"{Name}\".", name.Value);
 

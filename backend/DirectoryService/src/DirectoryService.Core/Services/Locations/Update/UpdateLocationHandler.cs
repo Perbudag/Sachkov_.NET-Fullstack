@@ -2,6 +2,7 @@
 using DirectoryService.Contracts.Locations;
 using DirectoryService.Contracts.SharedDto;
 using DirectoryService.Core.Abstractions;
+using DirectoryService.Core.Abstractions.Database;
 using DirectoryService.Core.Fails;
 using DirectoryService.Core.Validation;
 using DirectoryService.Domain.ValueObjects;
@@ -16,14 +17,17 @@ internal class UpdateLocationHandler : ICommandHandler<LocationResponse, UpdateL
     private readonly ILogger<UpdateLocationHandler> _logger;
     private readonly ILocationsRepository _repository;
     private readonly IValidator<UpdateLocationRequest> _validator;
+    private readonly ITransactionManager _transactionManager;
 
-    public UpdateLocationHandler(ILogger<UpdateLocationHandler> logger, 
-                                 ILocationsRepository repository, 
-                                 IValidator<UpdateLocationRequest> validator)
+    public UpdateLocationHandler(ILogger<UpdateLocationHandler> logger,
+                                 ILocationsRepository repository,
+                                 IValidator<UpdateLocationRequest> validator,
+                                 ITransactionManager transactionManager)
     {
         _logger = logger;
         _repository = repository;
         _validator = validator;
+        _transactionManager = transactionManager;
     }
 
     public async Task<Result<LocationResponse, Failure>> HandleAsync(UpdateLocationCommand command, CancellationToken cancellationToken)
@@ -70,7 +74,10 @@ internal class UpdateLocationHandler : ICommandHandler<LocationResponse, UpdateL
             location.Value.SetAddress(address.Value);
         }
 
-        await _repository.SaveAsync(cancellationToken);
+        var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
+
+        if (saveResult.IsFailure)
+            return saveResult.Error.ToFailure();
 
         var addressDto = new AddressDto(
             location.Value.Address.PostalCode,

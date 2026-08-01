@@ -1,7 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Departments;
 using DirectoryService.Core.Abstractions;
-using DirectoryService.Domain.Entities;
 using Shared;
 
 namespace DirectoryService.Core.Services.Departments.GetAll;

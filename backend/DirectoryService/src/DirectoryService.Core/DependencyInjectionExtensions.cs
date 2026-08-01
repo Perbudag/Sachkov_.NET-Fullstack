@@ -10,6 +10,7 @@ public static class DependencyInjectionExtensions
     public static IServiceCollection AddCore(this IServiceCollection services, IConfigurationManager configurations)
     {
         services.AddValidatorsFromAssembly(typeof(DependencyInjectionExtensions).Assembly);
+        services.AddScoped<ISender, Sender>();
 
         var assembly = typeof(DependencyInjectionExtensions).Assembly;
 

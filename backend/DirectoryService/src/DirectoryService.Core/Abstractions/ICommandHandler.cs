@@ -4,7 +4,7 @@ using Shared;
 namespace DirectoryService.Core.Abstractions;
 
 
-public interface ICommandHandler<TResult, in TCommand> where TCommand : ICommand
+public interface ICommandHandler<TResult, in TCommand> where TCommand : class, ICommand<TCommand, TResult>
 {
     Task<Result<TResult, Failure>> HandleAsync(TCommand command, CancellationToken cancellationToken);
 }

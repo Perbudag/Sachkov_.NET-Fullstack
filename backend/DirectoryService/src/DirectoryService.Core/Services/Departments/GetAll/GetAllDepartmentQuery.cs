@@ -1,5 +1,6 @@
-﻿using DirectoryService.Core.Abstractions;
+﻿using DirectoryService.Contracts.Departments;
+using DirectoryService.Core.Abstractions;
 
 namespace DirectoryService.Core.Services.Departments.GetAll;
 
-public record GetAllDepartmentQuery() : IQuery;
+public record GetAllDepartmentQuery() : IQuery<GetAllDepartmentQuery, DepartmentResponse[]>;

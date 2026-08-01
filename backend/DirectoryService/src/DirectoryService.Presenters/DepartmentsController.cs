@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Departments;
+using DirectoryService.Core;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Services.Departments;
 using DirectoryService.Core.Services.Departments.AddLocation;
@@ -20,10 +21,10 @@ public class DepartmentsController : ControllerBase
 {
     [HttpGet]
     public async Task<EndpointResult<DepartmentResponse[]>> GetAll(
-        [FromServices] IQueryHandler<DepartmentResponse[], GetAllDepartmentQuery> handler,
+        [FromServices] ISender sender,
         CancellationToken cancellationToken = default)
     {
-        return await handler.HandleAsync(new(), cancellationToken);
+        return await sender.SendAsync(new GetAllDepartmentQuery(), cancellationToken);
     }
 
 
@@ -41,22 +42,22 @@ public class DepartmentsController : ControllerBase
 
     [HttpPost]
     public async Task<EndpointResult<Guid>> Create(
-        [FromServices] ICommandHandler<Guid, CreateDepartmentCommand> handler,
+        [FromServices] ISender sender,
         [FromBody] CreateDepartmentRequest request,
         CancellationToken cancellationToken = default)
     {
-        return await handler.HandleAsync(request, cancellationToken);
+        return await sender.SendAsync((CreateDepartmentCommand)request, cancellationToken);
     }
 
 
     [HttpPatch("{id:guid}")]
     public async Task<EndpointResult<DepartmentResponse>> Update(
-        [FromServices] ICommandHandler<DepartmentResponse, UpdateDepartmentCommand> handler,
+        [FromServices] ISender sender,
         [FromRoute] Guid id,
         [FromBody] UpdateDepartmentRequest request,
         CancellationToken cancellationToken = default)
     {
-        return await handler.HandleAsync((id, request), cancellationToken);
+        return await sender.SendAsync((UpdateDepartmentCommand)(id, request), cancellationToken);
     }
 
 
@@ -69,22 +70,22 @@ public class DepartmentsController : ControllerBase
 
     [HttpPost("{departmentId:guid}/locations/{locationId:guid}")]
     public async Task<EndpointResult> AddLocation(
-        [FromServices] ICommandHandler<AddLocationInDepartmentCommand> handler,
+        [FromServices] ISender sender,
         [FromRoute] Guid departmentId,
         [FromRoute] Guid locationId,
         CancellationToken cancellationToken = default)
     {
-        return await handler.HandleAsync((departmentId, locationId), cancellationToken);
+        return await sender.SendAsync((AddLocationInDepartmentCommand)(departmentId, locationId), cancellationToken);
     }
 
 
     [HttpDelete("{departmentId:guid}/locations/{locationId:guid}")]
     public async Task<EndpointResult> RemoveLocation(
-        [FromServices] ICommandHandler<RemoveLocationInDepartmentCommand> handler,
+        [FromServices] ISender sender,
         [FromRoute] Guid departmentId,
         [FromRoute] Guid locationId,
         CancellationToken cancellationToken = default)
     {
-        return await handler.HandleAsync((departmentId, locationId), cancellationToken);
+        return await sender.SendAsync((RemoveLocationInDepartmentCommand)(departmentId, locationId), cancellationToken);
     }
 }

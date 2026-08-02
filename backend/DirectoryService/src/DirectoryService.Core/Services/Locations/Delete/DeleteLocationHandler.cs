@@ -21,7 +21,7 @@ internal class DeleteLocationHandler : ICommandHandler<DeleteLocationCommand>
     {
         if (command.Id == Guid.Empty)
         {
-            return Errors.SharedErrors.IsRequired("Id", "departments.validation.error").ToFailure();
+            return Errors.SharedErrors.IsRequired("Id", "locations.validation.error").ToFailure();
         }
 
         var result = await _repository.RemoveAsync(command.Id, cancellationToken);

@@ -3,6 +3,7 @@ using DirectoryService.Contracts.Locations;
 using DirectoryService.Contracts.SharedDto;
 using DirectoryService.Core;
 using DirectoryService.Core.Services.Locations.Create;
+using DirectoryService.Core.Services.Locations.Delete;
 using DirectoryService.Core.Services.Locations.Update;
 using DirectoryService.Presenters.Results;
 using Microsoft.AspNetCore.Mvc;
@@ -59,8 +60,11 @@ public class LocationsController : ControllerBase
 
 
     [HttpDelete("{id:guid}")]
-    public async Task<EndpointResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken = default)
+    public async Task<EndpointResult> Delete(
+        [FromServices] ISender sender,
+        [FromRoute] Guid id, 
+        CancellationToken cancellationToken = default)
     {
-        return Result.Success<Failure>();
+        return await sender.SendAsync((DeleteLocationCommand)id, cancellationToken);
     }
 }

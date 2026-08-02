@@ -1,5 +1,9 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Positions;
+using DirectoryService.Core;
+using DirectoryService.Core.Services.Positions.Create;
+using DirectoryService.Core.Services.Positions.Delete;
+using DirectoryService.Core.Services.Positions.Update;
 using DirectoryService.Presenters.Results;
 using Microsoft.AspNetCore.Mvc;
 using Shared;
@@ -32,28 +36,32 @@ public class PositionsController : ControllerBase
 
 
     [HttpPost]
-    public async Task<EndpointResult<PositionResponse>> Create([FromBody] CreatePositionRequest request, CancellationToken cancellationToken = default)
+    public async Task<EndpointResult<Guid>> Create(
+        [FromServices] ISender sender,
+        [FromBody] CreatePositionRequest request,
+        CancellationToken cancellationToken = default)
     {
-        return Result.Success<PositionResponse, Failure>(new PositionResponse(
-            Guid.CreateVersion7(),
-            request.Name
-        ));
+        return await sender.SendAsync((CreatePositionCommand)request, cancellationToken);
     }
 
 
-    [HttpPut("{id:guid}")]
-    public async Task<EndpointResult<PositionResponse>> Update([FromRoute] Guid id, [FromBody] UpdatePositionRequest request, CancellationToken cancellationToken = default)
+    [HttpPatch("{id:guid}")]
+    public async Task<EndpointResult<PositionResponse>> Update(
+        [FromServices] ISender sender,
+        [FromRoute] Guid id,
+        [FromBody] UpdatePositionRequest request,
+        CancellationToken cancellationToken = default)
     {
-        return Result.Success<PositionResponse, Failure>(new PositionResponse(
-            id,
-            request.Name
-        ));
+        return await sender.SendAsync((UpdatePositionCommand)(id, request), cancellationToken);
     }
 
 
     [HttpDelete("{id:guid}")]
-    public async Task<EndpointResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken = default)
+    public async Task<EndpointResult> Delete(
+        [FromServices] ISender sender,
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken = default)
     {
-        return Result.Success<Failure>();
+        return await sender.SendAsync((DeletePositionCommand)id, cancellationToken);
     }
 }

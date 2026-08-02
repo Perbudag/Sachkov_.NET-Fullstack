@@ -11,4 +11,5 @@ public interface ILocationsRepository
     Task<Result<IEnumerable<Location>, Failure>> GetByIdsAsync(IEnumerable<Guid> locationIds, CancellationToken cancellationToken);
     Task<Result<Location, Failure>> GetByIdAsync(Guid locationId, CancellationToken cancellationToken);
     Task<Result<Location, Failure>> GetByNameAsync(Name name, CancellationToken cancellationToken);
+    Task<UnitResult<Failure>> RemoveAsync(Guid id, CancellationToken cancellationToken);
 }

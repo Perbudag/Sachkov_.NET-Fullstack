@@ -32,5 +32,14 @@ public partial class Errors
         public static Error LocationNotFound() =>
             Error.NotFoud($"There is no such location within the department", "departments.not.found.location");
 
+
+        public static Error LocatioNotFoudMany(IEnumerable<Guid> ids) =>
+            Error.NotFoud("Locations with this ids not found: " + string.Join(", ", ids), "departments.not.found.locations");
+
+        public static Error PositionNotFound() =>
+            Error.NotFoud($"There is no such position within the department", "departments.not.found.position");
+
+        public static Error PositionConflict() =>
+            Error.Conflict("There is already such a position within the department", "departments.is.conflict.position");
     }
 }

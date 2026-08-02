@@ -47,6 +47,11 @@ internal class DepartmentsRepository : IDepartmentsRepository
         return UnitResult.Success<Failure>();
     }
 
+    public async Task<Result<IEnumerable<Department>, Failure>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        return await _context.Departments.ToListAsync(cancellationToken);
+    }
+
     public async Task<Result<Department, Failure>> GetByNameAsync(Name name, CancellationToken cancellationToken)
     {
         var department = await _context.Departments.FirstOrDefaultAsync(d => d.Name == name, cancellationToken);
@@ -67,6 +72,18 @@ internal class DepartmentsRepository : IDepartmentsRepository
         return department;
     }
 
+    public async Task<UnitResult<Failure>> RemoveAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var department = await _context.Departments.FirstOrDefaultAsync(d => d.Id == id, cancellationToken);
+
+        if (department == null)
+            return Errors.DepartmentErrors.NotFoud().ToFailure();
+
+        _context.Departments.Remove(department);
+
+        return UnitResult.Success<Failure>();
+    }
+
     public async Task<UnitResult<Failure>> AddLocationsAsync(Department department, IEnumerable<Location> locations, CancellationToken cancellationToken)
     {
         var departmentLocationsResults = locations.Select(l => DepartmentLocation.Create(department.Id, l.Id));
@@ -76,7 +93,7 @@ internal class DepartmentsRepository : IDepartmentsRepository
 
         var departmentLocations = departmentLocationsResults.Select(dl => dl.Value);
 
-        if(await _context.DepartmentLocations.AnyAsync(dl => 
+        if (await _context.DepartmentLocations.AnyAsync(dl =>
             dl.DepartmentId == department.Id && locations.Select(l => l.Id).Contains(dl.LocationId), cancellationToken))
         {
             return Errors.DepartmentErrors.LocationConflict().ToFailure();
@@ -104,8 +121,40 @@ internal class DepartmentsRepository : IDepartmentsRepository
         return UnitResult.Success<Failure>();
     }
 
-    public async Task<Result<IEnumerable<Department>, Failure>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<UnitResult<Failure>> AddPositionsAsync(Department department, IEnumerable<Position> positions, CancellationToken cancellationToken)
     {
-        return await _context.Departments.ToListAsync(cancellationToken);
+        var departmentPositionsResults = positions.Select(p => DepartmentPosition.Create(department.Id, p.Id));
+
+        if (departmentPositionsResults.Any(dl => dl.IsFailure))
+            return new Failure(departmentPositionsResults.Where(dl => dl.IsFailure).SelectMany(dl => dl.Error));
+
+        var departmentPositions = departmentPositionsResults.Select(dl => dl.Value);
+
+        if (await _context.DepartmentsPositions.AnyAsync(dp =>
+            dp.DepartmentId == department.Id && positions.Select(p => p.Id).Contains(dp.PositionId), cancellationToken))
+        {
+            return Errors.DepartmentErrors.PositionConflict().ToFailure();
+        }
+
+        await _context.DepartmentsPositions.AddRangeAsync(departmentPositions, cancellationToken);
+
+        return UnitResult.Success<Failure>();
+    }
+
+    public async Task<UnitResult<Failure>> RemovePositionsAsync(Department department, IEnumerable<Position> positions, CancellationToken cancellationToken)
+    {
+        var departmentPositions = await _context.DepartmentsPositions.Where(dp => dp.DepartmentId == department.Id &&
+            positions.Select(p => p.Id).Contains(dp.PositionId))
+            .ToListAsync(cancellationToken);
+
+        if (!await _context.DepartmentsPositions.AnyAsync(dp =>
+           dp.DepartmentId == department.Id && positions.Select(p => p.Id).Contains(dp.PositionId), cancellationToken))
+        {
+            return Errors.DepartmentErrors.PositionNotFound().ToFailure();
+        }
+
+        _context.DepartmentsPositions.RemoveRange(departmentPositions);
+
+        return UnitResult.Success<Failure>();
     }
 }

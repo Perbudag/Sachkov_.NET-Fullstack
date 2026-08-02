@@ -70,7 +70,7 @@ internal class CreateDepartmentHandler : ICommandHandler<Guid, CreateDepartmentC
 
             if (notFoundLocationIds.Any())
             {
-                return Errors.DepartmentErrors.LocatioNotFoudMany(notFoundLocationIds).ToFailure();
+                return Errors.DepartmentErrors.LocationNotFoudMany(notFoundLocationIds).ToFailure();
             }
         }
 

@@ -48,7 +48,9 @@ internal class UpdatePositionHandler : ICommandHandler<PositionResponse, UpdateP
         {
             var name = Name.Create(command.Request.Name);
 
-            if ((await _repository.GetByNameAsync(name.Value, cancellationToken)).IsSuccess)
+            var checkNameResult = await _repository.GetByNameAsync(name.Value, cancellationToken);
+
+            if (checkNameResult.IsSuccess && checkNameResult.Value.Id != command.Id)
             {
                 return Errors.PositionsErrors.ConflictName(name.ToString()).ToFailure();
             }

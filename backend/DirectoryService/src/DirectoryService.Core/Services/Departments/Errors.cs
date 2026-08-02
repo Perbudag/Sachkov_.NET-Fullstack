@@ -33,7 +33,7 @@ public partial class Errors
             Error.NotFoud($"There is no such location within the department", "departments.not.found.location");
 
 
-        public static Error LocatioNotFoudMany(IEnumerable<Guid> ids) =>
+        public static Error LocationNotFoudMany(IEnumerable<Guid> ids) =>
             Error.NotFoud("Locations with this ids not found: " + string.Join(", ", ids), "departments.not.found.locations");
 
         public static Error PositionNotFound() =>

@@ -40,7 +40,7 @@ internal class PositionsRepository : IPositionsRepository
         var position = await _context.Positions.FirstOrDefaultAsync(l => l.Id == id, cancellationToken);
 
         if (position == null)
-            return Errors.LocationErrors.NotFoud().ToFailure();
+            return Errors.PositionsErrors.NotFoud().ToFailure();
 
         return position;
     }
@@ -55,7 +55,7 @@ internal class PositionsRepository : IPositionsRepository
         var position = await _context.Positions.FirstOrDefaultAsync(d => d.Name == name, cancellationToken);
 
         if (position == null)
-            return Errors.DepartmentErrors.NotFoudName().ToFailure();
+            return Errors.PositionsErrors.NotFoudName().ToFailure();
 
         return position;
     }

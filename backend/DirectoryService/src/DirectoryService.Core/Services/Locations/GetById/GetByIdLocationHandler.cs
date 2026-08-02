@@ -1,5 +1,4 @@
 ﻿using CSharpFunctionalExtensions;
-using DirectoryService.Contracts.Departments;
 using DirectoryService.Contracts.Locations;
 using DirectoryService.Contracts.SharedDto;
 using DirectoryService.Core.Abstractions;
@@ -25,7 +24,7 @@ internal class GetByIdLocationHandler : IQueryHandler<LocationResponse, GetByIdL
             return Errors.SharedErrors.IsRequired("Id", "locations.validation.error").ToFailure();
 
 
-        var respomse = await _context.LocationsRead
+        var response = await _context.LocationsRead
             .Where(d => d.Id == query.Id)
             .Select(d => new LocationResponse(
                 Id: d.Id,
@@ -42,10 +41,10 @@ internal class GetByIdLocationHandler : IQueryHandler<LocationResponse, GetByIdL
             .FirstOrDefaultAsync(cancellationToken);
 
 
-        if (respomse == null)
+        if (response == null)
             return Errors.LocationErrors.NotFoud().ToFailure();
 
 
-        return respomse;
+        return response;
     }
 }

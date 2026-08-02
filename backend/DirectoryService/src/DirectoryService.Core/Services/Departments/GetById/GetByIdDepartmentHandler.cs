@@ -23,7 +23,7 @@ internal class GetByIdDepartmentHandler : IQueryHandler<DepartmentResponse, GetB
             return Errors.SharedErrors.IsRequired("Id", "departments.validation.error").ToFailure();
 
 
-        var respomse = await _context.DepartmentsRead
+        var response = await _context.DepartmentsRead
             .Where(d => d.Id == query.Id)
             .Select(d => new DepartmentResponse(
                 Id: d.Id,
@@ -35,10 +35,10 @@ internal class GetByIdDepartmentHandler : IQueryHandler<DepartmentResponse, GetB
             .FirstOrDefaultAsync(cancellationToken);
 
 
-        if (respomse == null)
+        if (response == null)
             return Errors.DepartmentErrors.NotFoud().ToFailure();
 
 
-        return respomse;
+        return response;
     }
 }

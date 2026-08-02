@@ -1,5 +1,4 @@
 ﻿using CSharpFunctionalExtensions;
-using DirectoryService.Contracts.Departments;
 using DirectoryService.Contracts.Locations;
 using DirectoryService.Contracts.SharedDto;
 using DirectoryService.Core.Abstractions;
@@ -20,7 +19,7 @@ internal class GetAllLocationsHandler : IQueryHandler<LocationResponse[], GetAll
 
     public async Task<Result<LocationResponse[], Failure>> HandleAsync(GetAllLocationsQuery query, CancellationToken cancellationToken)
     {
-        var resonses = await _context.LocationsRead
+        var responses = await _context.LocationsRead
             .Select(d => new LocationResponse(
                 Id: d.Id,
                 Name: d.Name.ToString(),
@@ -36,6 +35,6 @@ internal class GetAllLocationsHandler : IQueryHandler<LocationResponse[], GetAll
             .ToArrayAsync(cancellationToken);
 
 
-        return resonses;
+        return responses;
     }
 }

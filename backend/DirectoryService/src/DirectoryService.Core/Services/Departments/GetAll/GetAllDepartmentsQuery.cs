@@ -3,4 +3,4 @@ using DirectoryService.Core.Abstractions;
 
 namespace DirectoryService.Core.Services.Departments.GetAll;
 
-public record GetAllDepartmentQuery() : IQuery<GetAllDepartmentQuery, DepartmentResponse[]>;
+public record GetAllDepartmentsQuery() : IQuery<GetAllDepartmentsQuery, DepartmentResponse[]>;

@@ -1,12 +1,12 @@
-﻿using CSharpFunctionalExtensions;
-using DirectoryService.Contracts.Positions;
+﻿using DirectoryService.Contracts.Positions;
 using DirectoryService.Core;
 using DirectoryService.Core.Services.Positions.Create;
 using DirectoryService.Core.Services.Positions.Delete;
+using DirectoryService.Core.Services.Positions.GetAll;
+using DirectoryService.Core.Services.Positions.GetById;
 using DirectoryService.Core.Services.Positions.Update;
 using DirectoryService.Presenters.Results;
 using Microsoft.AspNetCore.Mvc;
-using Shared;
 
 namespace DirectoryService.Presenters;
 
@@ -16,22 +16,21 @@ namespace DirectoryService.Presenters;
 public class PositionsController : ControllerBase
 {
     [HttpGet]
-    public async Task<EndpointResult<PositionResponse[]>> GetAll(CancellationToken cancellationToken = default)
+    public async Task<EndpointResult<PositionResponse[]>> GetAll(
+        [FromServices] ISender sender,
+        CancellationToken cancellationToken = default)
     {
-        return Result.Success<PositionResponse[], Failure>([ new PositionResponse(
-            Guid.CreateVersion7(),
-            "testName"
-        )]);
+        return await sender.SendAsync(new GetAllPositionsQuery(), cancellationToken);
     }
 
 
     [HttpGet("{id:guid}")]
-    public async Task<EndpointResult<PositionResponse>> GetById([FromRoute] Guid id, CancellationToken cancellationToken = default)
+    public async Task<EndpointResult<PositionResponse>> GetById(
+        [FromServices] ISender sender,
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken = default)
     {
-        return Result.Success<PositionResponse, Failure>(new PositionResponse(
-            id,
-            "testName"
-        ));
+        return await sender.SendAsync((GetByIdPositionsQuery)id, cancellationToken);
     }
 
 

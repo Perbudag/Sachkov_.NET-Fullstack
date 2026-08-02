@@ -6,7 +6,6 @@ using DirectoryService.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared;
-using System.Xml.Linq;
 
 namespace DirectoryService.Infrastructure.Postgres.Repositories;
 
@@ -58,5 +57,17 @@ internal class LocationRepository : ILocationsRepository
             return Errors.LocationErrors.NotFoudName().ToFailure();
 
         return location;
+    }
+
+    public async Task<UnitResult<Failure>> RemoveAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var location = await _context.Locations.FirstOrDefaultAsync(d => d.Id == id, cancellationToken);
+
+        if (location == null)
+            return Errors.LocationErrors.NotFoud().ToFailure();
+
+        _context.Locations.Remove(location);
+
+        return UnitResult.Success<Failure>();
     }
 }

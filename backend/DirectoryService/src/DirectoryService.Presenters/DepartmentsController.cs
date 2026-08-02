@@ -1,12 +1,13 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Departments;
 using DirectoryService.Core;
-using DirectoryService.Core.Abstractions;
-using DirectoryService.Core.Services.Departments;
 using DirectoryService.Core.Services.Departments.AddLocation;
+using DirectoryService.Core.Services.Departments.AddPosition;
 using DirectoryService.Core.Services.Departments.Create;
+using DirectoryService.Core.Services.Departments.Delete;
 using DirectoryService.Core.Services.Departments.GetAll;
 using DirectoryService.Core.Services.Departments.RemoveLocation;
+using DirectoryService.Core.Services.Departments.RemovePosition;
 using DirectoryService.Core.Services.Departments.Update;
 using DirectoryService.Presenters.Results;
 using Microsoft.AspNetCore.Mvc;
@@ -62,9 +63,12 @@ public class DepartmentsController : ControllerBase
 
 
     [HttpDelete("{id:guid}")]
-    public async Task<EndpointResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken = default)
+    public async Task<EndpointResult> Delete(
+        [FromServices] ISender sender,
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken = default)
     {
-        return UnitResult.Success<Failure>();
+        return await sender.SendAsync((DeleteDepartmentCommand)id, cancellationToken);
     }
 
 
@@ -87,5 +91,27 @@ public class DepartmentsController : ControllerBase
         CancellationToken cancellationToken = default)
     {
         return await sender.SendAsync((RemoveLocationInDepartmentCommand)(departmentId, locationId), cancellationToken);
+    }
+
+
+    [HttpPost("/departments/{departmentId:guid}/positions/{positionId:guid}")]
+    public async Task<EndpointResult> AddPosition(
+        [FromServices] ISender sender,
+        [FromRoute] Guid departmentId,
+        [FromRoute] Guid positionId,
+        CancellationToken cancellationToken = default)
+    {
+        return await sender.SendAsync((AddPositionDepartmentCommand)(departmentId, positionId), cancellationToken);
+    }
+
+
+    [HttpDelete("/departments/{departmentId:guid}/positions/{positionId:guid}")]
+    public async Task<EndpointResult> RemovePosition(
+        [FromServices] ISender sender,
+        [FromRoute] Guid departmentId,
+        [FromRoute] Guid positionId,
+        CancellationToken cancellationToken = default)
+    {
+        return await sender.SendAsync((RemovePositionDepartmentCommand)(departmentId, positionId), cancellationToken);
     }
 }

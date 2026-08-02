@@ -17,8 +17,5 @@ public static partial class Errors
             Error.NotFoud($"Location with this id not found", "locations.not.found");
         public static Error NotFoudName() =>
             Error.NotFoud($"Location with this name not found", "locations.not.found");
-
-        public static Error NotFoudMany(IEnumerable<Guid> ids) =>
-            Error.NotFoud("Locations with this ids not found: " + string.Join(", ", ids), "departments.not.found");
     }
 }

@@ -21,6 +21,7 @@ public static class DependencyInjectionExtensions
 
         services.AddScoped<ITransactionManager, TransactionManager>();
 
+        services.AddScoped<IReadDbContext>(sp => sp.GetRequiredService<AppDbContext>());
         services.AddDbContext<AppDbContext>(options => 
             options.UseNpgsql(configurations.GetConnectionString("Postgresql"))
                                     .UseLoggerFactory(LoggerFactory.Create(builder =>

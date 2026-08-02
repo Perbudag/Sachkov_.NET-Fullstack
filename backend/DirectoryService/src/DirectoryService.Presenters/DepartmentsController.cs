@@ -6,6 +6,7 @@ using DirectoryService.Core.Services.Departments.AddPosition;
 using DirectoryService.Core.Services.Departments.Create;
 using DirectoryService.Core.Services.Departments.Delete;
 using DirectoryService.Core.Services.Departments.GetAll;
+using DirectoryService.Core.Services.Departments.GetById;
 using DirectoryService.Core.Services.Departments.RemoveLocation;
 using DirectoryService.Core.Services.Departments.RemovePosition;
 using DirectoryService.Core.Services.Departments.Update;
@@ -25,19 +26,17 @@ public class DepartmentsController : ControllerBase
         [FromServices] ISender sender,
         CancellationToken cancellationToken = default)
     {
-        return await sender.SendAsync(new GetAllDepartmentQuery(), cancellationToken);
+        return await sender.SendAsync(new GetAllDepartmentsQuery(), cancellationToken);
     }
 
 
     [HttpGet("{id:guid}")]
-    public async Task<EndpointResult<DepartmentResponse>> GetById([FromRoute] Guid id, CancellationToken cancellationToken = default)
+    public async Task<EndpointResult<DepartmentResponse>> GetById(
+        [FromServices] ISender sender,
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken = default)
     {
-        return Result.Success<DepartmentResponse, Failure>(new DepartmentResponse(
-                Guid.CreateVersion7(),
-                "TestName",
-                "TestSlug",
-                "TestParentSlug.TestSlug"
-            ));
+        return await sender.SendAsync((GetByIdDepartmentQuery)id, cancellationToken);
     }
 
 

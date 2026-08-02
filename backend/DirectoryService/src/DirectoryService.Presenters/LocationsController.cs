@@ -4,6 +4,8 @@ using DirectoryService.Contracts.SharedDto;
 using DirectoryService.Core;
 using DirectoryService.Core.Services.Locations.Create;
 using DirectoryService.Core.Services.Locations.Delete;
+using DirectoryService.Core.Services.Locations.GetAll;
+using DirectoryService.Core.Services.Locations.GetById;
 using DirectoryService.Core.Services.Locations.Update;
 using DirectoryService.Presenters.Results;
 using Microsoft.AspNetCore.Mvc;
@@ -17,24 +19,21 @@ namespace DirectoryService.Presenters;
 public class LocationsController : ControllerBase
 {
     [HttpGet]
-    public async Task<EndpointResult<LocationResponse[]>> GetAll(CancellationToken cancellationToken = default)
+    public async Task<EndpointResult<LocationResponse[]>> GetAll(
+        [FromServices] ISender sender,
+        CancellationToken cancellationToken = default)
     {
-        return Result.Success<LocationResponse[], Failure>([new LocationResponse(
-            Guid.CreateVersion7(),
-            "TestName",
-            new AddressDto("352941", "Россия", "Кемеровская область", "Армавир", "Зеленый пер.", "103", "24")
-            )]);
+        return await sender.SendAsync(new GetAllLocationsQuery(), cancellationToken);
     }
 
 
     [HttpGet("{id:guid}")]
-    public async Task<EndpointResult<LocationResponse>> GetById([FromRoute] Guid id, CancellationToken cancellationToken = default)
+    public async Task<EndpointResult<LocationResponse>> GetById(
+        [FromServices] ISender sender,
+        [FromRoute] Guid id,
+        CancellationToken cancellationToken = default)
     {
-        return Result.Success<LocationResponse, Failure>(new LocationResponse(
-            Guid.CreateVersion7(),
-            "TestName",
-            new AddressDto("352941", "Россия", "Кемеровская область", "Армавир", "Зеленый пер.", "103", "24")
-            ));
+        return await sender.SendAsync((GetByIdLocationQuery)id, cancellationToken);
     }
 
 
@@ -62,7 +61,7 @@ public class LocationsController : ControllerBase
     [HttpDelete("{id:guid}")]
     public async Task<EndpointResult> Delete(
         [FromServices] ISender sender,
-        [FromRoute] Guid id, 
+        [FromRoute] Guid id,
         CancellationToken cancellationToken = default)
     {
         return await sender.SendAsync((DeleteLocationCommand)id, cancellationToken);

@@ -6,6 +6,7 @@ using DirectoryService.Core.Services.Locations.Create;
 using DirectoryService.Core.Services.Locations.Delete;
 using DirectoryService.Core.Services.Locations.GetAll;
 using DirectoryService.Core.Services.Locations.GetById;
+using DirectoryService.Core.Services.Locations.GetTop;
 using DirectoryService.Core.Services.Locations.Update;
 using DirectoryService.Presenters.Results;
 using Microsoft.AspNetCore.Mvc;
@@ -36,6 +37,13 @@ public class LocationsController : ControllerBase
         return await sender.SendAsync((GetByIdLocationQuery)id, cancellationToken);
     }
 
+    [HttpGet("top")]
+    public async Task<EndpointResult<TopLocationResponse[]>> GetTop(
+        [FromServices] ISender sender,
+        CancellationToken cancellationToken = default)
+    {
+        return await sender.SendAsync(new GetTopLocationsQuery(), cancellationToken);
+    }
 
     [HttpPost]
     public async Task<EndpointResult<Guid>> Create(

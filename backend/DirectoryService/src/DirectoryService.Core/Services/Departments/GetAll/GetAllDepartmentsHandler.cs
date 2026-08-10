@@ -48,12 +48,12 @@ internal class GetAllDepartmentsHandler : IQueryHandler<PageResult<DepartmentLis
                 nameof(query.Page)).ToFailure();
 
 
-        var isAscending = string.Equals(query.SortOrder, "ascending", StringComparison.OrdinalIgnoreCase);
-        var isDescending = string.Equals(query.SortOrder, "descending", StringComparison.OrdinalIgnoreCase);
+        var isAscending = string.Equals(query.SortDir, "asc", StringComparison.OrdinalIgnoreCase);
+        var isDescending = string.Equals(query.SortDir, "desc", StringComparison.OrdinalIgnoreCase);
 
         if (!isAscending && !isDescending)
-            return Errors.DepartmentErrors.ValidationError("Значениями SortOrder могут быть только \"ascending\" и \"descending\"",
-                nameof(query.SortOrder)).ToFailure();
+            return Errors.DepartmentErrors.ValidationError("Значениями SortOrder могут быть только \"asc\" и \"desc\"",
+                nameof(query.SortDir)).ToFailure();
 
         Expression<Func<Department, object>>? keySelector = query.SortBy.ToLower(CultureInfo.CurrentCulture) switch
         {

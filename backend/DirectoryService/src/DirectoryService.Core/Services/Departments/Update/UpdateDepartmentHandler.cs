@@ -12,7 +12,7 @@ using Shared;
 
 namespace DirectoryService.Core.Services.Departments.Update;
 
-internal class UpdateDepartmentHandler : ICommandHandler<DepartmentResponse, UpdateDepartmentCommand>
+internal class UpdateDepartmentHandler : ICommandHandler<DepartmentDto, UpdateDepartmentCommand>
 {
     private readonly ILogger<UpdateDepartmentHandler> _logger;
     private readonly IDepartmentsRepository _departmentsRepository;
@@ -30,7 +30,7 @@ internal class UpdateDepartmentHandler : ICommandHandler<DepartmentResponse, Upd
         _transactionManager = transactionManager;
     }
 
-    public async Task<Result<DepartmentResponse, Failure>> HandleAsync(UpdateDepartmentCommand command, CancellationToken cancellationToken)
+    public async Task<Result<DepartmentDto, Failure>> HandleAsync(UpdateDepartmentCommand command, CancellationToken cancellationToken)
     {
         var validatiorResult = await _validator.ValidateAsync(command.Request, cancellationToken);
         if (!validatiorResult.IsValid)
@@ -68,7 +68,7 @@ internal class UpdateDepartmentHandler : ICommandHandler<DepartmentResponse, Upd
 
         _logger.LogInformation("The department with ID {Id} was updated.", command.Id);
 
-        return new DepartmentResponse(command.Id,
+        return new DepartmentDto(command.Id,
             department.Value.Name.ToString(),
             department.Value.Slug.ToString(),
             department.Value.Path.ToString(),

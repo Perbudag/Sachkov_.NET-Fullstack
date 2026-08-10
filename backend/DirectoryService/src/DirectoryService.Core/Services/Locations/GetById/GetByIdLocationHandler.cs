@@ -9,7 +9,7 @@ using Shared;
 
 namespace DirectoryService.Core.Services.Locations.GetById;
 
-internal class GetByIdLocationHandler : IQueryHandler<LocationResponse, GetByIdLocationQuery>
+internal class GetByIdLocationHandler : IQueryHandler<LocationDto, GetByIdLocationQuery>
 {
     private readonly IReadDbContext _context;
 
@@ -18,7 +18,7 @@ internal class GetByIdLocationHandler : IQueryHandler<LocationResponse, GetByIdL
         _context = context;
     }
 
-    public async Task<Result<LocationResponse, Failure>> HandleAsync(GetByIdLocationQuery query, CancellationToken cancellationToken)
+    public async Task<Result<LocationDto, Failure>> HandleAsync(GetByIdLocationQuery query, CancellationToken cancellationToken)
     {
         if (query.Id == Guid.Empty)
             return Errors.SharedErrors.IsRequired("Id", "locations.validation.error").ToFailure();
@@ -26,7 +26,7 @@ internal class GetByIdLocationHandler : IQueryHandler<LocationResponse, GetByIdL
 
         var response = await _context.LocationsRead
             .Where(d => d.Id == query.Id)
-            .Select(d => new LocationResponse(
+            .Select(d => new LocationDto(
                 Id: d.Id,
                 Name: d.Name.ToString(),
                 Address: new AddressDto(

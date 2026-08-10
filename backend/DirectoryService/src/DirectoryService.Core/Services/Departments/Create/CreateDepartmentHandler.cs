@@ -36,10 +36,10 @@ internal class CreateDepartmentHandler : ICommandHandler<Guid, CreateDepartmentC
 
     public async Task<Result<Guid, Failure>> HandleAsync(CreateDepartmentCommand command, CancellationToken cancellationToken)
     {
-        var validatiorResult = await _validator.ValidateAsync(command.Request, cancellationToken);
-        if (!validatiorResult.IsValid)
+        var validateResult = await _validator.ValidateAsync(command.Request, cancellationToken);
+        if (!validateResult.IsValid)
         {
-            return validatiorResult.ToErrors();
+            return validateResult.ToErrors();
         }
 
         Department? parent = null;

@@ -1,5 +1,4 @@
-﻿using CSharpFunctionalExtensions;
-using DirectoryService.Contracts.Departments;
+﻿using DirectoryService.Contracts.Departments;
 using DirectoryService.Core;
 using DirectoryService.Core.Services.Departments.AddLocation;
 using DirectoryService.Core.Services.Departments.AddPosition;
@@ -22,16 +21,17 @@ namespace DirectoryService.Presenters;
 public class DepartmentsController : ControllerBase
 {
     [HttpGet]
-    public async Task<EndpointResult<DepartmentResponse[]>> GetAll(
+    public async Task<EndpointResult<PageResult<DepartmentListItemDto[]>>> GetAll(
         [FromServices] ISender sender,
+        [FromQuery] GetAllDepartmentsRequst requst,
         CancellationToken cancellationToken = default)
     {
-        return await sender.SendAsync(new GetAllDepartmentsQuery(), cancellationToken);
+        return await sender.SendAsync((GetAllDepartmentsQuery)requst, cancellationToken);
     }
 
 
     [HttpGet("{id:guid}")]
-    public async Task<EndpointResult<DepartmentResponse>> GetById(
+    public async Task<EndpointResult<DepartmentDto>> GetById(
         [FromServices] ISender sender,
         [FromRoute] Guid id,
         CancellationToken cancellationToken = default)
@@ -51,7 +51,7 @@ public class DepartmentsController : ControllerBase
 
 
     [HttpPatch("{id:guid}")]
-    public async Task<EndpointResult<DepartmentResponse>> Update(
+    public async Task<EndpointResult<DepartmentDto>> Update(
         [FromServices] ISender sender,
         [FromRoute] Guid id,
         [FromBody] UpdateDepartmentRequest request,

@@ -12,7 +12,7 @@ using Shared;
 
 namespace DirectoryService.Core.Services.Locations.Update;
 
-internal class UpdateLocationHandler : ICommandHandler<LocationResponse, UpdateLocationCommand>
+internal class UpdateLocationHandler : ICommandHandler<LocationDto, UpdateLocationCommand>
 {
     private readonly ILogger<UpdateLocationHandler> _logger;
     private readonly ILocationsRepository _repository;
@@ -30,7 +30,7 @@ internal class UpdateLocationHandler : ICommandHandler<LocationResponse, UpdateL
         _transactionManager = transactionManager;
     }
 
-    public async Task<Result<LocationResponse, Failure>> HandleAsync(UpdateLocationCommand command, CancellationToken cancellationToken)
+    public async Task<Result<LocationDto, Failure>> HandleAsync(UpdateLocationCommand command, CancellationToken cancellationToken)
     {
         var validationResult = await _validator.ValidateAsync(command.Request, cancellationToken);
 
@@ -90,7 +90,7 @@ internal class UpdateLocationHandler : ICommandHandler<LocationResponse, UpdateL
 
         _logger.LogInformation("The location with ID {Id} was updated.", command.Id);
 
-        return new LocationResponse(
+        return new LocationDto(
             location.Value.Id,
             location.Value.Name.ToString(),
             addressDto);

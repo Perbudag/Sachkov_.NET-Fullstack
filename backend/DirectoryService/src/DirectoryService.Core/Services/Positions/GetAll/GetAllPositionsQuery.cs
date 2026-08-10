@@ -3,4 +3,4 @@ using DirectoryService.Core.Abstractions;
 
 namespace DirectoryService.Core.Services.Positions.GetAll;
 
-public record GetAllPositionsQuery : IQuery<GetAllPositionsQuery, PositionResponse[]>;
+public record GetAllPositionsQuery : IQuery<GetAllPositionsQuery, PositionDto[]>;

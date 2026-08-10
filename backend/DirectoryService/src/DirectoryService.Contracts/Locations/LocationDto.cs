@@ -2,4 +2,4 @@
 
 namespace DirectoryService.Contracts.Locations;
 
-public record LocationResponse(Guid Id, string Name, AddressDto Address);
+public record LocationDto(Guid Id, string Name, AddressDto Address);

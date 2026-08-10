@@ -23,7 +23,7 @@ public class DepartmentsController : ControllerBase
     [HttpGet]
     public async Task<EndpointResult<PageResult<DepartmentListItemDto[]>>> GetAll(
         [FromServices] ISender sender,
-        [FromQuery] GetAllDepartmentsRequst requst,
+        [FromQuery] GetAllDepartmentsRequest requst,
         CancellationToken cancellationToken = default)
     {
         return await sender.SendAsync((GetAllDepartmentsQuery)requst, cancellationToken);

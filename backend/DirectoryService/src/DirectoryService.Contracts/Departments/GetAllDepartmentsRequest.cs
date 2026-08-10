@@ -1,6 +1,6 @@
 ﻿namespace DirectoryService.Contracts.Departments;
 
-public record GetAllDepartmentsRequst(
+public record GetAllDepartmentsRequest(
     string? Search = null,
     string SortBy = nameof(DepartmentListItemDto.Id),
     string SortDir = "asc",

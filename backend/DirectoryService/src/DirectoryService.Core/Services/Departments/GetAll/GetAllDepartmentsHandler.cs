@@ -55,12 +55,12 @@ internal class GetAllDepartmentsHandler : IQueryHandler<PageResult<DepartmentLis
             return Errors.DepartmentErrors.ValidationError("Значениями SortOrder могут быть только \"asc\" и \"desc\"",
                 nameof(query.SortDir)).ToFailure();
 
-        Expression<Func<Department, object>>? keySelector = query.SortBy.ToLower(CultureInfo.CurrentCulture) switch
+        Expression<Func<Department, object>>? keySelector = query.SortBy switch
         {
-            "id" => d => d.Id,
-            "name" => d => d.Name,
-            "slug" => d => d.Slug,
-            "createdat" => d => d.CreatedAt,
+            string s when s.Equals(nameof(DepartmentListItemDto.Id), StringComparison.OrdinalIgnoreCase) => d => d.Id,
+            string s when s.Equals(nameof(DepartmentListItemDto.Name), StringComparison.OrdinalIgnoreCase) => d => d.Name,
+            string s when s.Equals(nameof(DepartmentListItemDto.Slug), StringComparison.OrdinalIgnoreCase) => d => d.Slug,
+            string s when s.Equals(nameof(DepartmentListItemDto.CreatedAt), StringComparison.OrdinalIgnoreCase) => d => d.CreatedAt,
             _ => null
         };
 
@@ -69,10 +69,10 @@ internal class GetAllDepartmentsHandler : IQueryHandler<PageResult<DepartmentLis
             return Errors.DepartmentErrors.ValidationError("Некорректное поле сортировки", nameof(query.SortBy)).ToFailure();
 #pragma warning restore CA1508 // Предотвращение появления неиспользуемого условного кода
 
-        departmentQuery = isAscending 
+        departmentQuery = isAscending
             ? departmentQuery.OrderBy(keySelector)
             : departmentQuery.OrderByDescending(keySelector);
-            
+
 
         var responses = await departmentQuery
             .Skip((query.Page - 1) * query.PageSize)

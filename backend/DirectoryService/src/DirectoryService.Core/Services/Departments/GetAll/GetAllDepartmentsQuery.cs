@@ -11,7 +11,7 @@ public record GetAllDepartmentsQuery(
     int Page = 1,
     int PageSize = 50) : IQuery<GetAllDepartmentsQuery, PageResult<DepartmentListItemDto[]>>
 {
-    public static implicit operator GetAllDepartmentsQuery(GetAllDepartmentsRequst request) => new(
+    public static implicit operator GetAllDepartmentsQuery(GetAllDepartmentsRequest request) => new(
         Search: request.Search,
         SortBy: request.SortBy,
         SortDir: request.SortDir,

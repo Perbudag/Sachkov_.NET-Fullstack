@@ -8,7 +8,7 @@ using Shared;
 
 namespace DirectoryService.Core.Services.Positions.GetById;
 
-internal class GetByIdPositionsHandler : IQueryHandler<PositionResponse, GetByIdPositionsQuery>
+internal class GetByIdPositionsHandler : IQueryHandler<PositionDto, GetByIdPositionsQuery>
 {
     private readonly IReadDbContext _context;
 
@@ -17,14 +17,14 @@ internal class GetByIdPositionsHandler : IQueryHandler<PositionResponse, GetById
         _context = context;
     }
 
-    public async Task<Result<PositionResponse, Failure>> HandleAsync(GetByIdPositionsQuery query, CancellationToken cancellationToken)
+    public async Task<Result<PositionDto, Failure>> HandleAsync(GetByIdPositionsQuery query, CancellationToken cancellationToken)
     {
         if (query.Id == Guid.Empty)
             return Errors.SharedErrors.IsRequired("Id", "positions.validation.error").ToFailure();
 
         var response = await _context.PositionsRead
             .Where(p => p.Id == query.Id)
-            .Select(p => new PositionResponse(
+            .Select(p => new PositionDto(
                 Id: p.Id,
                 Name: p.Name.ToString())
             )

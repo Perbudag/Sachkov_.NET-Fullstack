@@ -20,7 +20,7 @@ namespace DirectoryService.Presenters;
 public class LocationsController : ControllerBase
 {
     [HttpGet]
-    public async Task<EndpointResult<LocationResponse[]>> GetAll(
+    public async Task<EndpointResult<LocationDto[]>> GetAll(
         [FromServices] ISender sender,
         CancellationToken cancellationToken = default)
     {
@@ -29,7 +29,7 @@ public class LocationsController : ControllerBase
 
 
     [HttpGet("{id:guid}")]
-    public async Task<EndpointResult<LocationResponse>> GetById(
+    public async Task<EndpointResult<LocationDto>> GetById(
         [FromServices] ISender sender,
         [FromRoute] Guid id,
         CancellationToken cancellationToken = default)
@@ -38,7 +38,7 @@ public class LocationsController : ControllerBase
     }
 
     [HttpGet("top")]
-    public async Task<EndpointResult<TopLocationResponse[]>> GetTop(
+    public async Task<EndpointResult<TopLocationDto[]>> GetTop(
         [FromServices] ISender sender,
         CancellationToken cancellationToken = default)
     {
@@ -56,7 +56,7 @@ public class LocationsController : ControllerBase
 
 
     [HttpPatch("{id:guid}")]
-    public async Task<EndpointResult<LocationResponse>> Update(
+    public async Task<EndpointResult<LocationDto>> Update(
         [FromServices] ISender sender,
         [FromRoute] Guid id,
         [FromBody] UpdateLocationRequest request,

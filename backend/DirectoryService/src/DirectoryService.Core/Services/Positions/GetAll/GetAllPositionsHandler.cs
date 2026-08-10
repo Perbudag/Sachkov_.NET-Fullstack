@@ -7,7 +7,7 @@ using Shared;
 
 namespace DirectoryService.Core.Services.Positions.GetAll;
 
-internal class GetAllPositionsHandler : IQueryHandler<PositionResponse[], GetAllPositionsQuery>
+internal class GetAllPositionsHandler : IQueryHandler<PositionDto[], GetAllPositionsQuery>
 {
     private readonly IReadDbContext _context;
 
@@ -16,10 +16,10 @@ internal class GetAllPositionsHandler : IQueryHandler<PositionResponse[], GetAll
         _context = context;
     }
 
-    public async Task<Result<PositionResponse[], Failure>> HandleAsync(GetAllPositionsQuery query, CancellationToken cancellationToken)
+    public async Task<Result<PositionDto[], Failure>> HandleAsync(GetAllPositionsQuery query, CancellationToken cancellationToken)
     {
         var responses = await _context.PositionsRead
-            .Select(p => new PositionResponse(
+            .Select(p => new PositionDto(
                 Id: p.Id,
                 Name: p.Name.ToString())
             )

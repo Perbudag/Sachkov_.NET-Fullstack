@@ -11,7 +11,7 @@ using Shared;
 
 namespace DirectoryService.Core.Services.Positions.Update;
 
-internal class UpdatePositionHandler : ICommandHandler<PositionResponse, UpdatePositionCommand>
+internal class UpdatePositionHandler : ICommandHandler<PositionDto, UpdatePositionCommand>
 {
     private readonly ILogger<UpdatePositionHandler> _logger;
     private readonly IPositionsRepository _repository;
@@ -29,7 +29,7 @@ internal class UpdatePositionHandler : ICommandHandler<PositionResponse, UpdateP
         _validator = validator;
     }
 
-    public async Task<Result<PositionResponse, Failure>> HandleAsync(UpdatePositionCommand command, CancellationToken cancellationToken)
+    public async Task<Result<PositionDto, Failure>> HandleAsync(UpdatePositionCommand command, CancellationToken cancellationToken)
     {
         var validationResult = await _validator.ValidateAsync(command.Request, cancellationToken);
         if (!validationResult.IsValid)
@@ -65,6 +65,6 @@ internal class UpdatePositionHandler : ICommandHandler<PositionResponse, UpdateP
 
         _logger.LogInformation("The position with ID {Id} was updated.", command.Id);
 
-        return new PositionResponse(position.Value.Id, position.Value.Name.ToString());
+        return new PositionDto(position.Value.Id, position.Value.Name.ToString());
     }
 }

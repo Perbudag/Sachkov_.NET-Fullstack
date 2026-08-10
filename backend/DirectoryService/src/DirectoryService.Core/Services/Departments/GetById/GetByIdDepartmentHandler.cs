@@ -8,7 +8,7 @@ using Shared;
 
 namespace DirectoryService.Core.Services.Departments.GetById;
 
-internal class GetByIdDepartmentHandler : IQueryHandler<DepartmentResponse, GetByIdDepartmentQuery>
+internal class GetByIdDepartmentHandler : IQueryHandler<DepartmentDto, GetByIdDepartmentQuery>
 {
     private readonly IReadDbContext _context;
 
@@ -17,7 +17,7 @@ internal class GetByIdDepartmentHandler : IQueryHandler<DepartmentResponse, GetB
         _context = context;
     }
 
-    public async Task<Result<DepartmentResponse, Failure>> HandleAsync(GetByIdDepartmentQuery query, CancellationToken cancellationToken)
+    public async Task<Result<DepartmentDto, Failure>> HandleAsync(GetByIdDepartmentQuery query, CancellationToken cancellationToken)
     {
         if (query.Id == Guid.Empty)
             return Errors.SharedErrors.IsRequired("Id", "departments.validation.error").ToFailure();
@@ -25,7 +25,7 @@ internal class GetByIdDepartmentHandler : IQueryHandler<DepartmentResponse, GetB
 
         var response = await _context.DepartmentsRead
             .Where(d => d.Id == query.Id)
-            .Select(d => new DepartmentResponse(
+            .Select(d => new DepartmentDto(
                 Id: d.Id,
                 Name: d.Name.ToString(),
                 Slug: d.Slug.ToString(),

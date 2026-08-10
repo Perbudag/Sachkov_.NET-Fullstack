@@ -16,7 +16,7 @@ namespace DirectoryService.Presenters;
 public class PositionsController : ControllerBase
 {
     [HttpGet]
-    public async Task<EndpointResult<PositionResponse[]>> GetAll(
+    public async Task<EndpointResult<PositionDto[]>> GetAll(
         [FromServices] ISender sender,
         CancellationToken cancellationToken = default)
     {
@@ -25,7 +25,7 @@ public class PositionsController : ControllerBase
 
 
     [HttpGet("{id:guid}")]
-    public async Task<EndpointResult<PositionResponse>> GetById(
+    public async Task<EndpointResult<PositionDto>> GetById(
         [FromServices] ISender sender,
         [FromRoute] Guid id,
         CancellationToken cancellationToken = default)
@@ -45,7 +45,7 @@ public class PositionsController : ControllerBase
 
 
     [HttpPatch("{id:guid}")]
-    public async Task<EndpointResult<PositionResponse>> Update(
+    public async Task<EndpointResult<PositionDto>> Update(
         [FromServices] ISender sender,
         [FromRoute] Guid id,
         [FromBody] UpdatePositionRequest request,

@@ -9,7 +9,7 @@ using Shared;
 
 namespace DirectoryService.Core.Services.Locations.GetTop;
 
-internal class GetTopLocationsHandler : IQueryHandler<TopLocationResponse[], GetTopLocationsQuery>
+internal class GetTopLocationsHandler : IQueryHandler<TopLocationDto[], GetTopLocationsQuery>
 {
     private readonly IReadDbContext _context;
 
@@ -18,14 +18,14 @@ internal class GetTopLocationsHandler : IQueryHandler<TopLocationResponse[], Get
         _context = context;
     }
 
-    public async Task<Result<TopLocationResponse[], Failure>> HandleAsync(GetTopLocationsQuery query, CancellationToken cancellationToken)
+    public async Task<Result<TopLocationDto[], Failure>> HandleAsync(GetTopLocationsQuery query, CancellationToken cancellationToken)
     {
         var response = await (from departmentLocation in _context.DepartmentLocationsRead
                               join location in _context.LocationsRead
                                   on departmentLocation.LocationId equals location.Id
                               group departmentLocation by location into locationGroup
                               orderby locationGroup.Count() descending
-                              select new TopLocationResponse(
+                              select new TopLocationDto(
                                         Id: locationGroup.Key.Id,
                                         Name: locationGroup.Key.Name.ToString(),
                                         Address: new AddressDto(

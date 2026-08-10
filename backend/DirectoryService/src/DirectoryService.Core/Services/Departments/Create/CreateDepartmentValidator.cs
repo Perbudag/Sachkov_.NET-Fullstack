@@ -1,5 +1,4 @@
 ﻿using DirectoryService.Contracts.Departments;
-using DirectoryService.Contracts.Locations;
 using DirectoryService.Core.Validation;
 using DirectoryService.Domain.ValueObjects;
 using FluentValidation;

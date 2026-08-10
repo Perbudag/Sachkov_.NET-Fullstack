@@ -2,4 +2,4 @@
 
 namespace DirectoryService.Contracts.Locations;
 
-public record TopLocationResponse(Guid Id, string Name, AddressDto Address, int DepartmentCount);
+public record TopLocationDto(Guid Id, string Name, AddressDto Address, int DepartmentCount);

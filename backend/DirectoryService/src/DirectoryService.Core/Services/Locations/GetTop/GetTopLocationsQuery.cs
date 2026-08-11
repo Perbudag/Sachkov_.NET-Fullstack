@@ -3,4 +3,4 @@ using DirectoryService.Core.Abstractions;
 
 namespace DirectoryService.Core.Services.Locations.GetTop;
 
-public record GetTopLocationsQuery : IQuery<GetTopLocationsQuery, TopLocationDto[]>;
+public record GetTopLocationsQuery : IQuery<GetTopLocationsQuery, LocationListItemDto[]>;

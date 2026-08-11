@@ -20,11 +20,21 @@ namespace DirectoryService.Presenters;
 public class LocationsController : ControllerBase
 {
     [HttpGet]
-    public async Task<EndpointResult<LocationDto[]>> GetAll(
+    public async Task<EndpointResult<PageResult<LocationListItemDto[]>>> GetAll(
         [FromServices] ISender sender,
+        [FromQuery] GetAllLocationsRequest request,
         CancellationToken cancellationToken = default)
     {
-        return await sender.SendAsync(new GetAllLocationsQuery(), cancellationToken);
+        return await sender.SendAsync((GetAllLocationsQuery)request, cancellationToken);
+    }
+
+    [HttpGet("dapper")]
+    public async Task<EndpointResult<PageResult<LocationListItemDto[]>>> GetAllDapper(
+        [FromServices] ISender sender,
+        [FromQuery] GetAllLocationsRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        return await sender.SendAsync((GetAllLocationsDapperQuery)request, cancellationToken);
     }
 
 
@@ -38,7 +48,7 @@ public class LocationsController : ControllerBase
     }
 
     [HttpGet("top")]
-    public async Task<EndpointResult<TopLocationDto[]>> GetTop(
+    public async Task<EndpointResult<LocationListItemDto[]>> GetTop(
         [FromServices] ISender sender,
         CancellationToken cancellationToken = default)
     {

@@ -15,12 +15,12 @@ namespace DirectoryService.Core.Services.Departments.GetAll;
 
 internal class GetAllDepartmentsHandler : IQueryHandler<PageResult<DepartmentListItemDto[]>, GetAllDepartmentsQuery>
 {
-    private readonly IReadDbContext _repository;
+    private readonly IReadDbContext _context;
     private readonly IValidator<GetAllDepartmentsQuery> _validator;
 
-    public GetAllDepartmentsHandler(IReadDbContext repository, IValidator<GetAllDepartmentsQuery> validator)
+    public GetAllDepartmentsHandler(IReadDbContext context, IValidator<GetAllDepartmentsQuery> validator)
     {
-        _repository = repository;
+        _context = context;
         _validator = validator;
     }
 
@@ -30,7 +30,7 @@ internal class GetAllDepartmentsHandler : IQueryHandler<PageResult<DepartmentLis
         if (!validateResilt.IsValid)
             return validateResilt.ToErrors();
 
-        var departmentQuery = _repository.DepartmentsRead;
+        var departmentQuery = _context.DepartmentsRead;
 
         if (query.Search != null)
         {

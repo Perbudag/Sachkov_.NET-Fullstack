@@ -1,17 +1,19 @@
-﻿using DirectoryService.Contracts.Locations;
+﻿using DirectoryService.Contracts.Departments;
+using DirectoryService.Contracts.Locations;
 using DirectoryService.Core.Abstractions;
 using Shared;
 
 namespace DirectoryService.Core.Services.Locations.GetAll;
 
-public record GetAllLocationsQuery(string? Search,
+public record GetAllLocationsDapperQuery(
+    string? Search,
     int MinDepartmentCount = 0,
     string SortBy = nameof(LocationListItemDto.Id),
     string SortDir = "asc",
     int Page = 1,
     int PageSize = 50
-    ) : IQuery<GetAllLocationsQuery, PageResult<LocationListItemDto[]>>
+    ) : IQuery<GetAllLocationsDapperQuery, PageResult<LocationListItemDto[]>>
 {
-    public static implicit operator GetAllLocationsQuery(GetAllLocationsRequest request) =>
+    public static implicit operator GetAllLocationsDapperQuery(GetAllLocationsRequest request) =>
         new(request.Search, request.MinDepartmentCount, request.SortBy, request.SortDir, request.Page, request.PageSize);
 }

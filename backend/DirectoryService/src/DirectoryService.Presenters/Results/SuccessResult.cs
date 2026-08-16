@@ -21,6 +21,6 @@ public class SuccessResult<TValue> : IResult
 
         httpContext.Response.StatusCode = StatusCodes.Status200OK;
 
-        return httpContext.Response.WriteAsJsonAsync(envelope);
+        return httpContext.Response.WriteAsJsonAsync(envelope, cancellationToken: httpContext.RequestAborted);
     }
 }

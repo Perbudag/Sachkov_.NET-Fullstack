@@ -27,7 +27,7 @@ public class FailureResult : IResult
         {
             httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
-            return httpContext.Response.WriteAsJsonAsync(envelope);
+            return httpContext.Response.WriteAsJsonAsync(envelope, cancellationToken: httpContext.RequestAborted);
         }
 
         var distinctErrorTypes = _errors
@@ -39,7 +39,7 @@ public class FailureResult : IResult
                 StatusCodes.Status500InternalServerError :
                 GetStatusCodeFromErrorType(distinctErrorTypes[0]);
 
-        return httpContext.Response.WriteAsJsonAsync(envelope);
+        return httpContext.Response.WriteAsJsonAsync(envelope, cancellationToken: httpContext.RequestAborted);
     }
 
     private static int GetStatusCodeFromErrorType(ErrorType errorType) =>

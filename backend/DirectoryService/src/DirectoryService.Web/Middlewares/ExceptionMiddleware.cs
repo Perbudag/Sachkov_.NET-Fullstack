@@ -27,7 +27,7 @@ public class ExceptionMiddleware : IMiddleware
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
-            await context.Response.WriteAsJsonAsync(Envelope.Failure(Error.Failure("something went wrong")));
+            await context.Response.WriteAsJsonAsync(Envelope.Failure(Error.Failure("something went wrong")), cancellationToken: context.RequestAborted);
         }
     }
 }

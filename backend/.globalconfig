@@ -101,3 +101,6 @@ dotnet_diagnostic.CA1000.severity = none
 
 #S3881: "IDisposable" should be implemented correctly
 dotnet_diagnostic.S3881.severity = none
+
+#CA2234: передавайте объекты System.Uri вместо строк
+dotnet_diagnostic.CA2234.severity = none

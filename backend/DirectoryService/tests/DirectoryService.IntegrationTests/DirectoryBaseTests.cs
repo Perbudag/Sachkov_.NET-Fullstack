@@ -40,12 +40,7 @@ public abstract class DirectoryBaseTests : IAsyncLifetime
         await action(dbContext);
     }
 
-    public ValueTask InitializeAsync() => ValueTask.CompletedTask;
+    public async ValueTask InitializeAsync() => await _resetDatabase.Invoke();
 
-    public async ValueTask DisposeAsync()
-    {
-        await _resetDatabase.Invoke();
-
-        GC.SuppressFinalize(this);
-    }
+    public async ValueTask DisposeAsync() => GC.SuppressFinalize(this);
 }

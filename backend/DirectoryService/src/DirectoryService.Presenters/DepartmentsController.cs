@@ -93,7 +93,7 @@ public class DepartmentsController : ControllerBase
     }
 
 
-    [HttpPost("/departments/{departmentId:guid}/positions/{positionId:guid}")]
+    [HttpPost("{departmentId:guid}/positions/{positionId:guid}")]
     public async Task<EndpointResult> AddPosition(
         [FromServices] ISender sender,
         [FromRoute] Guid departmentId,
@@ -104,7 +104,7 @@ public class DepartmentsController : ControllerBase
     }
 
 
-    [HttpDelete("/departments/{departmentId:guid}/positions/{positionId:guid}")]
+    [HttpDelete("{departmentId:guid}/positions/{positionId:guid}")]
     public async Task<EndpointResult> RemovePosition(
         [FromServices] ISender sender,
         [FromRoute] Guid departmentId,

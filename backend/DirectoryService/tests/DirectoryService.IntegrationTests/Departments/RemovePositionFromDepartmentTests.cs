@@ -21,7 +21,7 @@ public class RemovePositionFromDepartmentTests : DirectoryBaseTests
             var positionId = await ExecuteInDbAsync(db => DbTestData.CreatePositionAsync(db, "Директор", cancellationToken));
     
             // act
-            var response = await HttpClient.DeleteAsync($"departments/{departmentId}/positions/{positionId}", cancellationToken);
+            var response = await HttpClient.DeleteAsync($"api/Departments/{departmentId}/positions/{positionId}", cancellationToken);
             var envelope = await response.Content.ReadFromJsonAsync<Envelope<object?>>(cancellationToken);
     
             // assert
@@ -40,7 +40,7 @@ public class RemovePositionFromDepartmentTests : DirectoryBaseTests
         await ExecuteInDbAsync(db => DbTestData.CreateDepartmentPositionAsync(db, departmentId, positionId, cancellationToken));
 
         // act
-        var response = await HttpClient.DeleteAsync($"departments/{departmentId}/positions/{positionId}", cancellationToken);
+        var response = await HttpClient.DeleteAsync($"api/Departments/{departmentId}/positions/{positionId}", cancellationToken);
 
         // assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);

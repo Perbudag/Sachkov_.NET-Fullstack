@@ -21,7 +21,7 @@ public class AddPositionToDepartmentTests : DirectoryBaseTests
             var positionId = await ExecuteInDbAsync(db => DbTestData.CreatePositionAsync(db, "Директор", cancellationToken));
     
             // act
-            var response = await HttpClient.PostAsync($"departments/{departmentId}/positions/{positionId}", null, cancellationToken);
+            var response = await HttpClient.PostAsync($"api/Departments/{departmentId}/positions/{positionId}", null, cancellationToken);
     
             // assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -37,8 +37,8 @@ public class AddPositionToDepartmentTests : DirectoryBaseTests
             await ExecuteInDbAsync(db => DbTestData.CreateDepartmentPositionAsync(db, departmentId, positionId, cancellationToken));
     
             // act
-            var response = await HttpClient.PostAsync($"departments/{departmentId}/positions/{positionId}", null, cancellationToken);
-            var envelope = await response.Content.ReadFromJsonAsync<Envelope<object?>>(cancellationToken);
+            var response = await HttpClient.PostAsync($"api/Departments/{departmentId}/positions/{positionId}", null, cancellationToken);
+            var envelope = await response.Content.ReadFromJsonAsync<Envelope<bool?>>(cancellationToken);
     
             // assert
             Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
@@ -54,7 +54,7 @@ public class AddPositionToDepartmentTests : DirectoryBaseTests
             var departmentId = await ExecuteInDbAsync(db => DbTestData.CreateDepartmentAsync(db, "Администрация", "administration", null, cancellationToken));
     
             // act
-            var response = await HttpClient.PostAsync($"departments/{departmentId}/positions/{Guid.NewGuid()}", null, cancellationToken);
+            var response = await HttpClient.PostAsync($"api/Departments/{departmentId}/positions/{Guid.NewGuid()}", null, cancellationToken);
             var envelope = await response.Content.ReadFromJsonAsync<Envelope<object?>>(cancellationToken);
     
             // assert

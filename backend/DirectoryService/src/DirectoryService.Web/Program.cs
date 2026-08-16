@@ -59,3 +59,8 @@ finally
 {
     await Log.CloseAndFlushAsync();
 }
+
+namespace DirectoryService.Web
+{
+    public partial class Program;
+}

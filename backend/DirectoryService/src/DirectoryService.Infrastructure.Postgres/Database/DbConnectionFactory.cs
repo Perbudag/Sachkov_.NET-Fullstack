@@ -4,7 +4,7 @@ using System.Data;
 
 namespace DirectoryService.Infrastructure.Postgres.Database;
 
-internal class DbConnectionFactory : IDbConnectionFactory
+public class DbConnectionFactory : IDbConnectionFactory
 {
     private readonly string _connectionString;
 

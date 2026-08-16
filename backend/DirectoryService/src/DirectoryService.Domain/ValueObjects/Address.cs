@@ -92,7 +92,7 @@ public partial record Address
                 "и/или прописных букв латинского и кириллического алфавита.", "address.validation.error", nameof(house)));
         }
 
-        if (apartment != null && !NumberPattern.IsMatch(apartment))
+        if (!string.IsNullOrWhiteSpace(apartment)  && !NumberPattern.IsMatch(apartment))
         {
             errors.Add(Error.Validation("Номер квартиры должен состоять из цифр" +
                 "и/или прописных букв латинского и кириллического алфавита.", "address.validation.error", nameof(apartment)));
@@ -109,6 +109,7 @@ public partial record Address
         var valueParts = value.Replace(", г. ", "|", StringComparison.Ordinal)
                               .Replace(", ул. ", "|", StringComparison.Ordinal)
                               .Replace(", д. ", "|", StringComparison.Ordinal)
+                              .Replace(", кв. ", "|", StringComparison.Ordinal)
                               .Replace(", ", "|", StringComparison.Ordinal)
                               .Split('|');
 

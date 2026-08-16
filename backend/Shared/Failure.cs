@@ -1,28 +1,20 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.Collections.ObjectModel;
-using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Shared;
 
-public class Failure : IEnumerable<Error>
+public class Failure : Collection<Error>
 {
-    private readonly List<Error> _errors;
 
-    public Failure(IEnumerable<Error> errors)
+    [JsonConstructor]
+    public Failure(IEnumerable<Error> errors) : base(errors.ToList())
     {
-        _errors = [.. errors];
     }
 
-    public IEnumerator<Error> GetEnumerator() =>
-        _errors.GetEnumerator();
-
-    IEnumerator IEnumerable.GetEnumerator() =>
-        _errors.GetEnumerator();
-
-    public static implicit operator Failure(Collection<Error> errors) =>
-        new(errors);
+    public Failure()
+    {
+    }
 
     public static implicit operator Failure(Error error) =>
         new([error]);

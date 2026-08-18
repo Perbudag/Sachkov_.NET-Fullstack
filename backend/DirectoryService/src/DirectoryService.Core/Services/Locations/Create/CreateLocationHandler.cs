@@ -37,7 +37,7 @@ internal class CreateLocationHandler : ICommandHandler<Guid, CreateLocationComma
             return validationResult.ToErrors();
         }
 
-        var name = Name.Create(command.Request.Name);
+        var name = Name.Create(command.Request.Name).Value;
 
         var address = Address.Create(
             command.Request.Address.PostalCode,
@@ -47,12 +47,12 @@ internal class CreateLocationHandler : ICommandHandler<Guid, CreateLocationComma
             command.Request.Address.Street,
             command.Request.Address.House,
             command.Request.Address.Apartment
-            );
+            ).Value;
 
-        var location = Location.Create(name.Value, address.Value);
+        var location = Location.Create(name, address).Value;
         
 
-        var result = await _repository.AddAsync(location.Value, cancellationToken);
+        var result = await _repository.AddAsync(location, cancellationToken);
 
         if (result.IsFailure)
             return result.Error;
@@ -62,8 +62,8 @@ internal class CreateLocationHandler : ICommandHandler<Guid, CreateLocationComma
         if (saveResult.IsFailure)
             return saveResult.Error.ToFailure();
 
-        _logger.LogInformation("Location created with name \"{Name}\".", name.Value);
+        _logger.LogInformation("Location created with name \"{Name}\".", name);
 
-        return location.Value.Id;
+        return location.Id;
     }
 }

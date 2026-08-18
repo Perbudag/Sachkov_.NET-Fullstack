@@ -25,12 +25,14 @@ internal class DeletePositionHandler : ICommandHandler<DeletePositionCommand>
             return Errors.SharedErrors.IsRequired("Id", "positions.validation.error").ToFailure();
         }
 
-        var result = await _repository.RemoveAsync(command.Id, cancellationToken);
+        var positionResult = await _repository.GetByAsync(p => p.Id == command.Id, cancellationToken);
 
-        if (result.IsFailure)
+        if(positionResult.IsFailure)
         {
-            return result.Error;
+            return positionResult.Error;
         }
+
+        positionResult.Value.SoftDelete();
 
         var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
 

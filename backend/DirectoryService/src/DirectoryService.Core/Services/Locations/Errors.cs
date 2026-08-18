@@ -11,11 +11,12 @@ public static partial class Errors
             Error.Validation(message, "locations.validation.error", invalidField);
 
         public static Error ConflictName(string name) =>
-            Error.Conflict($"A location named \"{name}\" already exists", "locations.is.conflict");
+            Error.Conflict("A location named \"{name}\" already exists", "locations.is.conflict");
 
         public static Error NotFoud() =>
-            Error.NotFoud($"Location with this id not found", "locations.not.found");
-        public static Error NotFoudName() =>
-            Error.NotFoud($"Location with this name not found", "locations.not.found");
+            Error.NotFoud("Location with this id not found", "locations.not.found");
+
+        public static Error NotFoud(Guid id) =>
+            Error.NotFoud($"Could not find the location with ID: {id}", "locations.not.found");
     }
 }

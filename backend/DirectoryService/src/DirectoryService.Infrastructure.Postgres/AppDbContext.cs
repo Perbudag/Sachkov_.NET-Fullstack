@@ -13,9 +13,9 @@ public class AppDbContext : DbContext, IReadDbContext
     public DbSet<DepartmentPosition> DepartmentsPositions { get; set; }
 
 
-    public IQueryable<Department> DepartmentsRead => Departments.AsQueryable().AsNoTracking();
-    public IQueryable<Location> LocationsRead => Locations.AsQueryable().AsNoTracking();
-    public IQueryable<Position> PositionsRead => Positions.AsQueryable().AsNoTracking();
+    public IQueryable<Department> DepartmentsRead => Departments.Where(d => !d.IsDeleted).AsNoTracking();
+    public IQueryable<Location> LocationsRead => Locations.Where(l => !l.IsDeleted).AsNoTracking();
+    public IQueryable<Position> PositionsRead => Positions.Where(p => !p.IsDeleted).AsNoTracking();
     public IQueryable<DepartmentLocation> DepartmentLocationsRead => DepartmentLocations.AsQueryable().AsNoTracking();
     public IQueryable<DepartmentPosition> DepartmentsPositionsRead => DepartmentsPositions.AsQueryable().AsNoTracking();
 

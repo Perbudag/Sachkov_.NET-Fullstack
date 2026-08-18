@@ -6,6 +6,7 @@ using DirectoryService.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared;
+using System.Linq.Expressions;
 
 namespace DirectoryService.Infrastructure.Postgres.Repositories;
 
@@ -34,9 +35,9 @@ internal class LocationRepository : ILocationsRepository
         return UnitResult.Success<Failure>();
     }
 
-    public async Task<Result<Location, Failure>> GetByIdAsync(Guid locationId, CancellationToken cancellationToken)
+    public async Task<Result<Location, Failure>> GetByAsync(Expression<Func<Location, bool>> predicate, CancellationToken cancellationToken)
     {
-        var location = await _context.Locations.FirstOrDefaultAsync(l => l.Id == locationId, cancellationToken);
+        var location = await _context.Locations.FirstOrDefaultAsync(predicate, cancellationToken);
 
         if (location == null)
             return Errors.LocationErrors.NotFoud().ToFailure();
@@ -44,30 +45,6 @@ internal class LocationRepository : ILocationsRepository
         return location;
     }
 
-    public async Task<Result<IEnumerable<Location>, Failure>> GetByIdsAsync(IEnumerable<Guid> locationIds, CancellationToken cancellationToken)
-    {
-        return await _context.Locations.Where(l => locationIds.Contains(l.Id)).ToListAsync(cancellationToken);
-    }
-
-    public async Task<Result<Location, Failure>> GetByNameAsync(Name name, CancellationToken cancellationToken)
-    {
-        var location = await _context.Locations.FirstOrDefaultAsync(l => l.Name == name, cancellationToken);
-
-        if (location == null)
-            return Errors.LocationErrors.NotFoudName().ToFailure();
-
-        return location;
-    }
-
-    public async Task<UnitResult<Failure>> RemoveAsync(Guid id, CancellationToken cancellationToken)
-    {
-        var location = await _context.Locations.FirstOrDefaultAsync(d => d.Id == id, cancellationToken);
-
-        if (location == null)
-            return Errors.LocationErrors.NotFoud().ToFailure();
-
-        _context.Locations.Remove(location);
-
-        return UnitResult.Success<Failure>();
-    }
+    public IAsyncEnumerable<Location> GetByAsyncEnum(Expression<Func<Location, bool>> predicate) =>
+        _context.Locations.Where(predicate).AsAsyncEnumerable();
 }

@@ -23,6 +23,7 @@
     <PackageReference Include="Serilog.Sinks.Console" />
     <PackageReference Include="Serilog.Sinks.Debug" />
     <PackageReference Include="Serilog.Sinks.Seq" />
+    <PackageReference Include="System.Linq.Async" />
   </ItemGroup>
 
 

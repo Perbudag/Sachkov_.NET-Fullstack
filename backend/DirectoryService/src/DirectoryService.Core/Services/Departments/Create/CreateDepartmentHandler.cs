@@ -47,7 +47,7 @@ internal class CreateDepartmentHandler : ICommandHandler<Guid, CreateDepartmentC
 
         if (command.Request.ParentId != null)
         {
-            var parentResult = await _departmentsRepository.GetByIdAsync(command.Request.ParentId.Value, cancellationToken);
+            var parentResult = await _departmentsRepository.GetByAsync(d => d.Id == command.Request.ParentId && !d.IsDeleted, cancellationToken);
 
             if (parentResult.IsFailure)
             {
@@ -59,34 +59,35 @@ internal class CreateDepartmentHandler : ICommandHandler<Guid, CreateDepartmentC
 
         if (command.Request.LocationIds.Any())
         {
-            var locationsResult = await _locationsRepository.GetByIdsAsync(command.Request.LocationIds, cancellationToken);
+            locations = await _locationsRepository
+                .GetByAsyncEnum(l => command.Request.LocationIds.Contains(l.Id))
+                .ToListAsync(cancellationToken);
 
-            if (locationsResult.IsFailure)
-                return locationsResult.Error;
+            var errors = command.Request.LocationIds
+                .Where(lId => !locations
+                .Select(l => l.Id)
+                .Contains(lId))
+                .Select(lId => Errors.LocationErrors.NotFoud(lId));
 
-            locations = locationsResult.Value.ToList();
-
-            var notFoundLocationIds = command.Request.LocationIds.Where(lId => !locations.Select(l => l.Id).Contains(lId));
-
-            if (notFoundLocationIds.Any())
+            if (errors.Any())
             {
-                return Errors.DepartmentErrors.LocationNotFoudMany(notFoundLocationIds).ToFailure();
+                return new Failure(errors);
             }
         }
 
-        var name = Name.Create(command.Request.Name);
-        var slug = Slug.Create(command.Request.Slug);
+        var name = Name.Create(command.Request.Name).Value;
+        var slug = Slug.Create(command.Request.Slug).Value;
 
-        var department = Department.Create(name.Value, slug.Value, parent);
+        var department = Department.Create(name, slug, parent).Value;
 
-        var addResult = await _departmentsRepository.AddAsync(department.Value, cancellationToken);
+        var addResult = await _departmentsRepository.AddAsync(department, cancellationToken);
 
         if (addResult.IsFailure)
             return addResult.Error;
 
         if (locations != null && locations.Count > 0)
         {
-            var addLocationResult = await _departmentsRepository.AddLocationsAsync(department.Value, locations, cancellationToken);
+            var addLocationResult = await _departmentsRepository.AddLocationsAsync(department, locations, cancellationToken);
 
             if (addLocationResult.IsFailure)
                 return addLocationResult.Error;
@@ -99,6 +100,6 @@ internal class CreateDepartmentHandler : ICommandHandler<Guid, CreateDepartmentC
 
         _logger.LogInformation("Department created with name \"{Name}\".", name.Value);
 
-        return department.Value.Id;
+        return department.Id;
     }
 }

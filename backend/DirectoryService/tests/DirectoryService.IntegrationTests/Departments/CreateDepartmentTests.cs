@@ -110,6 +110,6 @@ public class CreateDepartmentTests : DirectoryBaseTests
         // assert
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         Assert.True(envelope?.IsError);
-        Assert.Contains(envelope!.Errors!, e => string.Equals(e.Code, "departments.not.found.locations", StringComparison.Ordinal));
+        Assert.Contains(envelope!.Errors!, e => string.Equals(e.Code, "locations.not.found", StringComparison.Ordinal));
     }
 }

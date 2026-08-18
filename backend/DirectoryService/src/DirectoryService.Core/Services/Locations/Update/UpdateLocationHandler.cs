@@ -39,23 +39,23 @@ internal class UpdateLocationHandler : ICommandHandler<LocationDto, UpdateLocati
             return validationResult.ToErrors();
         }
 
-        var location = await _repository.GetByIdAsync(command.Id, cancellationToken);
+        var locationResult = await _repository.GetByAsync(l => l.Id == command.Id && !l.IsDeleted, cancellationToken);
 
-        if (location.IsFailure)
+        if (locationResult.IsFailure)
         {
-            return Errors.LocationErrors.NotFoud().ToFailure();
+            return locationResult.Error;
         }
 
         if (command.Request.Name != null)
         {
             var name = Name.Create(command.Request.Name);
 
-            if ((await _repository.GetByNameAsync(name.Value, cancellationToken)).IsSuccess)
+            if ((await _repository.GetByAsync(l => l.Name == name.Value, cancellationToken)).IsSuccess)
             {
                 return Errors.LocationErrors.ConflictName(name.ToString()).ToFailure();
             }
 
-            location.Value.SetName(name.Value);
+            locationResult.Value.SetName(name.Value);
         }
 
         if (command.Request.Address != null)
@@ -69,9 +69,9 @@ internal class UpdateLocationHandler : ICommandHandler<LocationDto, UpdateLocati
                 command.Request.Address.Street,
                 command.Request.Address.House,
                 command.Request.Address.Apartment
-                );
+                ).Value;
 
-            location.Value.SetAddress(address.Value);
+            locationResult.Value.SetAddress(address);
         }
 
         var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
@@ -80,19 +80,19 @@ internal class UpdateLocationHandler : ICommandHandler<LocationDto, UpdateLocati
             return saveResult.Error.ToFailure();
 
         var addressDto = new AddressDto(
-            location.Value.Address.PostalCode,
-            location.Value.Address.Country,
-            location.Value.Address.Region,
-            location.Value.Address.City,
-            location.Value.Address.Street,
-            location.Value.Address.House,
-            location.Value.Address.Apartment);
+            locationResult.Value.Address.PostalCode,
+            locationResult.Value.Address.Country,
+            locationResult.Value.Address.Region,
+            locationResult.Value.Address.City,
+            locationResult.Value.Address.Street,
+            locationResult.Value.Address.House,
+            locationResult.Value.Address.Apartment);
 
         _logger.LogInformation("The location with ID {Id} was updated.", command.Id);
 
         return new LocationDto(
-            location.Value.Id,
-            location.Value.Name.ToString(),
+            locationResult.Value.Id,
+            locationResult.Value.Name.ToString(),
             addressDto);
     }
 }

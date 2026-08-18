@@ -12,6 +12,9 @@ public partial class Errors
         public static Error Conflict(string name) =>
             Error.Conflict($"A department named \"{name}\" already exists", "departments.is.conflict");
 
+        public static Error ConflictHasChildren() =>
+            Error.Conflict($"This department has sub-departments", "departments.is.conflict");
+
         public static Error LocationConflict() =>
             Error.Conflict("There is already such a location within the department", "departments.is.conflict.location");
 
@@ -21,9 +24,6 @@ public partial class Errors
 
         public static Error NotFoud() =>
             Error.NotFoud($"Department with this id not found", "departments.not.found");
-
-        public static Error NotFoudName() =>
-            Error.NotFoud($"Department with this name not found", "departments.not.found");
         
 
         public static Error NotFoudParent() =>
@@ -31,10 +31,6 @@ public partial class Errors
 
         public static Error LocationNotFound() =>
             Error.NotFoud($"There is no such location within the department", "departments.not.found.location");
-
-
-        public static Error LocationNotFoudMany(IEnumerable<Guid> ids) =>
-            Error.NotFoud("Locations with this ids not found: " + string.Join(", ", ids), "departments.not.found.locations");
 
         public static Error PositionNotFound() =>
             Error.NotFoud($"There is no such position within the department", "departments.not.found.position");

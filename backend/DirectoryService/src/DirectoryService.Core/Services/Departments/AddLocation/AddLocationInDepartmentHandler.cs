@@ -40,16 +40,16 @@ internal class AddLocationInDepartmentHandler : ICommandHandler<AddLocationInDep
         if (errors.Count > 0)
             return new Failure(errors);
 
-        var departmentResult = await _departmentsRepository.GetByIdAsync(command.DepartmentId, cancellationToken);
-        var locationResult = await _locationsRepository.GetByIdAsync(command.LocationId, cancellationToken);
+        var departmentResult = await _departmentsRepository.GetByAsync(d => d.Id == command.DepartmentId && !d.IsDeleted, cancellationToken);
+        var locationResult = await _locationsRepository.GetByAsync(l => l.Id == command.LocationId && !l.IsDeleted, cancellationToken);
 
         if (departmentResult.IsFailure)
         {
-            errors.Add(Errors.DepartmentErrors.NotFoud());
+            errors.AddRange(departmentResult.Error);
         }
         if (locationResult.IsFailure)
         {
-            errors.Add(Errors.DepartmentErrors.LocationNotFound());
+            errors.AddRange(locationResult.Error);
         }
 
         if (errors.Count > 0)

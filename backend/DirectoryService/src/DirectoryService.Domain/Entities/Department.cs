@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryService.Domain.Abstracts;
 using DirectoryService.Domain.ValueObjects;
 using Shared;
 using Path = DirectoryService.Domain.ValueObjects.Path;
@@ -6,7 +7,7 @@ using Path = DirectoryService.Domain.ValueObjects.Path;
 namespace DirectoryService.Domain.Entities;
 
 
-public class Department
+public class Department : ISoftDeletable
 {
     private Department(Name name, Slug slug, Department? parent)
     {

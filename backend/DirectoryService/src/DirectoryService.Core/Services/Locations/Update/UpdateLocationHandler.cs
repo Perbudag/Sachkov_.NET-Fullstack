@@ -39,7 +39,7 @@ internal class UpdateLocationHandler : ICommandHandler<LocationDto, UpdateLocati
             return validationResult.ToErrors();
         }
 
-        var locationResult = await _repository.GetByAsync(l => l.Id == command.Id && !l.IsDeleted, cancellationToken);
+        var locationResult = await _repository.GetByAsync(l => l.Id == command.Id, cancellationToken);
 
         if (locationResult.IsFailure)
         {
@@ -50,7 +50,7 @@ internal class UpdateLocationHandler : ICommandHandler<LocationDto, UpdateLocati
         {
             var name = Name.Create(command.Request.Name);
 
-            if ((await _repository.GetByAsync(l => l.Name == name.Value, cancellationToken)).IsSuccess)
+            if ((await _repository.GetByAsync(l => l.Name == name.Value, true, cancellationToken)).IsSuccess)
             {
                 return Errors.LocationErrors.ConflictName(name.ToString()).ToFailure();
             }

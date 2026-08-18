@@ -43,7 +43,7 @@ internal class UpdateDepartmentHandler : ICommandHandler<DepartmentDto, UpdateDe
             return Errors.SharedErrors.IsRequired("DepartmentId", "departments.validation.error").ToFailure();
         }
 
-        var department = await _departmentsRepository.GetByAsync(d => d.Id == command.Id && !d.IsDeleted, cancellationToken);
+        var department = await _departmentsRepository.GetByAsync(d => d.Id == command.Id, cancellationToken);
 
         if (department.IsFailure)
             return department.Error;
@@ -53,7 +53,7 @@ internal class UpdateDepartmentHandler : ICommandHandler<DepartmentDto, UpdateDe
         {
             var name = Name.Create(command.Request.Name);
 
-            if ((await _departmentsRepository.GetByAsync(d => d.Name == name.Value, cancellationToken)).IsSuccess)
+            if ((await _departmentsRepository.GetByAsync(d => d.Name == name.Value, true, cancellationToken)).IsSuccess)
             {
                 return Errors.DepartmentErrors.Conflict(name.ToString()).ToFailure();
             }

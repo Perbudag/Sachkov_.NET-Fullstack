@@ -37,7 +37,7 @@ internal class UpdatePositionHandler : ICommandHandler<PositionDto, UpdatePositi
             return validationResult.ToErrors();
         }
 
-        var positionResult = await _repository.GetByAsync(p => p.Id == command.Id && !p.IsDeleted, cancellationToken);
+        var positionResult = await _repository.GetByAsync(p => p.Id == command.Id, true, cancellationToken);
 
         if (positionResult.IsFailure)
         {

@@ -23,7 +23,7 @@ internal class LocationRepository : ILocationsRepository
 
     public async Task<UnitResult<Failure>> AddAsync(Location location, CancellationToken cancellationToken)
     {
-        if (await _context.Locations.AnyAsync(l => l.Name == location.Name, cancellationToken))
+        if (await _context.Locations.IgnoreQueryFilters().AnyAsync(l => l.Name == location.Name, cancellationToken))
         {
             _logger.LogError("Failed to create location with id: {Id}", location.Id);
 
@@ -35,9 +35,16 @@ internal class LocationRepository : ILocationsRepository
         return UnitResult.Success<Failure>();
     }
 
-    public async Task<Result<Location, Failure>> GetByAsync(Expression<Func<Location, bool>> predicate, CancellationToken cancellationToken)
+    public async Task<Result<Location, Failure>> GetByAsync(Expression<Func<Location, bool>> predicate, bool ignoreQueryFilters, CancellationToken cancellationToken)
     {
-        var location = await _context.Locations.FirstOrDefaultAsync(predicate, cancellationToken);
+        var query = _context.Locations;
+
+        if (ignoreQueryFilters)
+        {
+            query.IgnoreQueryFilters();
+        }
+
+        var location = await query.FirstOrDefaultAsync(predicate, cancellationToken);
 
         if (location == null)
             return Errors.LocationErrors.NotFoud().ToFailure();
@@ -45,6 +52,18 @@ internal class LocationRepository : ILocationsRepository
         return location;
     }
 
-    public IAsyncEnumerable<Location> GetByAsyncEnum(Expression<Func<Location, bool>> predicate) =>
-        _context.Locations.Where(predicate).AsAsyncEnumerable();
+    public Task<Result<Location, Failure>> GetByAsync(Expression<Func<Location, bool>> predicate, CancellationToken cancellationToken) =>
+        GetByAsync(predicate, false, cancellationToken);
+
+    public IAsyncEnumerable<Location> GetByAsyncEnum(Expression<Func<Location, bool>> predicate, bool ignoreQueryFilters = false)
+    {
+        var query = _context.Locations;
+
+        if(ignoreQueryFilters)
+        {
+            query.IgnoreQueryFilters();
+        }    
+
+        return query.Where(predicate).AsAsyncEnumerable();
+    }
 }

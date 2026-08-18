@@ -2,7 +2,6 @@
 using DirectoryService.Core.Fails;
 using DirectoryService.Core.Services.Positions;
 using DirectoryService.Domain.Entities;
-using DirectoryService.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared;
@@ -35,9 +34,16 @@ internal class PositionsRepository : IPositionsRepository
         return UnitResult.Success<Failure>();
     }
 
-    public async Task<Result<Position, Failure>> GetByAsync(Expression<Func<Position, bool>> predicate, CancellationToken cancellationToken)
+    public async Task<Result<Position, Failure>> GetByAsync(Expression<Func<Position, bool>> predicate, bool ignoreQueryFilters, CancellationToken cancellationToken)
     {
-        var position = await _context.Positions.FirstOrDefaultAsync(predicate, cancellationToken);
+        var query = _context.Positions;
+
+        if(ignoreQueryFilters)
+        {
+            query.IgnoreQueryFilters();
+        }
+
+        var position = await query.FirstOrDefaultAsync(predicate, cancellationToken);
 
         if (position == null)
             return Errors.PositionsErrors.NotFoud().ToFailure();
@@ -45,6 +51,18 @@ internal class PositionsRepository : IPositionsRepository
         return position;
     }
 
-    public IAsyncEnumerable<Position> GetByAsyncEnum(Expression<Func<Position, bool>> predicate) =>
-        _context.Positions.Where(predicate).AsAsyncEnumerable();
+    public Task<Result<Position, Failure>> GetByAsync(Expression<Func<Position, bool>> predicate, CancellationToken cancellationToken) =>
+        GetByAsync(predicate, false, cancellationToken);
+
+    public IAsyncEnumerable<Position> GetByAsyncEnum(Expression<Func<Position, bool>> predicate, bool ignoreQueryFilters = false)
+    {
+        var query = _context.Positions;
+
+        if(ignoreQueryFilters)
+        {
+            query.IgnoreQueryFilters();
+        }
+
+        return query.Where(predicate).AsAsyncEnumerable();
+    }
 }

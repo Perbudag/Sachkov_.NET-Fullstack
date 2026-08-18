@@ -24,14 +24,14 @@ internal class DeleteDepartmentHandler : ICommandHandler<DeleteDepartmentCommand
             return Errors.SharedErrors.IsRequired("Id", "departments.validation.error").ToFailure();
         }
 
-        var departmentResult = await _repository.GetByAsync(d => d.Id == command.Id && !d.IsDeleted, cancellationToken);
+        var departmentResult = await _repository.GetByAsync(d => d.Id == command.Id, cancellationToken);
 
         if (departmentResult.IsFailure)
         {
             return departmentResult.Error;
         }
 
-        if((await _repository.CountByAsync(d => d.ParentId == command.Id, cancellationToken)) > 0)
+        if((await _repository.CountByAsync(d => d.ParentId == command.Id, true, cancellationToken)) > 0)
         {
             return Errors.DepartmentErrors.ConflictHasChildren().ToFailure();
         }

@@ -58,7 +58,7 @@ internal class ClearDatabaseRepository : IClearDatabaseRepository
 
                 if (positionsDeletedCount >= batchSize)
                 {
-                    positionsDeletedCount = await _context.Departments
+                    positionsDeletedCount = await _context.Positions
                          .Where(p => p.IsDeleted && p.DeletedAt <= thresholdDate)
                          .Take(batchSize)
                          .ExecuteDeleteAsync(cancellationToken);

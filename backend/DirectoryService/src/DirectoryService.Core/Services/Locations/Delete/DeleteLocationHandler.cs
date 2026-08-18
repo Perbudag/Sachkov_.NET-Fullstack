@@ -24,7 +24,7 @@ internal class DeleteLocationHandler : ICommandHandler<DeleteLocationCommand>
             return Errors.SharedErrors.IsRequired("Id", "locations.validation.error").ToFailure();
         }
 
-        var locationResult = await _repository.GetByAsync(l => l.Id == command.Id && !l.IsDeleted, cancellationToken);
+        var locationResult = await _repository.GetByAsync(l => l.Id == command.Id, cancellationToken);
 
         if (locationResult.IsFailure)
             return locationResult.Error;

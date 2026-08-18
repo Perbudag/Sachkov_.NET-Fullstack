@@ -42,8 +42,8 @@ internal class RemoveLocationInDepartmentHandler : ICommandHandler<RemoveLocatio
             return new Failure(errors);
 
 
-        var departmentResult = await _departmentsRepository.GetByAsync(d => d.Id == command.DepartmentId && !d.IsDeleted, cancellationToken);
-        var locationResult = await _locationsRepository.GetByAsync(l => l.Id == command.LocationId && !l.IsDeleted, cancellationToken);
+        var departmentResult = await _departmentsRepository.GetByAsync(d => d.Id == command.DepartmentId, cancellationToken);
+        var locationResult = await _locationsRepository.GetByAsync(l => l.Id == command.LocationId, cancellationToken);
 
         if (departmentResult.IsFailure)
         {

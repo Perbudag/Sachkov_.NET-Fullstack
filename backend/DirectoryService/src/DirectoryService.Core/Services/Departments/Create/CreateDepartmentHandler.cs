@@ -47,7 +47,7 @@ internal class CreateDepartmentHandler : ICommandHandler<Guid, CreateDepartmentC
 
         if (command.Request.ParentId != null)
         {
-            var parentResult = await _departmentsRepository.GetByAsync(d => d.Id == command.Request.ParentId && !d.IsDeleted, cancellationToken);
+            var parentResult = await _departmentsRepository.GetByAsync(d => d.Id == command.Request.ParentId, cancellationToken);
 
             if (parentResult.IsFailure)
             {

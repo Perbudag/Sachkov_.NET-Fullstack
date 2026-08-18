@@ -24,12 +24,16 @@ internal class DepartmentsRepository : IDepartmentsRepository
     {
         var errors = new List<Error>();
 
-        if (await _context.Departments.AnyAsync(d => d.Name == department.Name, cancellationToken))
+        if (await _context.Departments
+            .IgnoreQueryFilters()
+            .AnyAsync(d => d.Name == department.Name, cancellationToken))
         {
             errors.Add(Errors.DepartmentErrors.Conflict(department.Name.ToString()));
         }
 
-        if (department.ParentId != null && await _context.Departments.AnyAsync(d => d.ParentId == department.ParentId && d.Slug == department.Slug, cancellationToken))
+        if (department.ParentId != null && await _context.Departments
+            .IgnoreQueryFilters()
+            .AnyAsync(d => d.ParentId == department.ParentId && d.Slug == department.Slug, cancellationToken))
         {
             errors.Add(Errors.DepartmentErrors.SlugConflict(department.ParentId.Value, department.Slug.ToString()));
         }
@@ -46,9 +50,16 @@ internal class DepartmentsRepository : IDepartmentsRepository
         return UnitResult.Success<Failure>();
     }
 
-    public async Task<Result<Department, Failure>> GetByAsync(Expression<Func<Department, bool>> predicate, CancellationToken cancellationToken)
+    public async Task<Result<Department, Failure>> GetByAsync(Expression<Func<Department, bool>> predicate, bool ignoreQueryFilters, CancellationToken cancellationToken)
     {
-        var department = await _context.Departments.FirstOrDefaultAsync(predicate, cancellationToken);
+        var query = _context.Departments;
+
+        if (ignoreQueryFilters)
+        {
+            query.IgnoreQueryFilters();
+        }
+
+        var department = await query.FirstOrDefaultAsync(predicate, cancellationToken);
 
         if (department == null)
             return Errors.DepartmentErrors.NotFoud().ToFailure();
@@ -56,8 +67,20 @@ internal class DepartmentsRepository : IDepartmentsRepository
         return department;
     }
 
-    public IAsyncEnumerable<Department> GetByAsyncEnum(Expression<Func<Department, bool>> predicate) =>
-         _context.Departments.Where(predicate).AsAsyncEnumerable();
+    public Task<Result<Department, Failure>> GetByAsync(Expression<Func<Department, bool>> predicate, CancellationToken cancellationToken) =>
+        GetByAsync(predicate, false, cancellationToken);
+
+    public IAsyncEnumerable<Department> GetByAsyncEnum(Expression<Func<Department, bool>> predicate, bool ignoreQueryFilters = false)
+    {
+        var query = _context.Departments;
+
+        if (ignoreQueryFilters)
+        {
+            query.IgnoreQueryFilters();
+        }
+
+        return query.Where(predicate).AsAsyncEnumerable();
+    }
 
     public async Task<UnitResult<Failure>> AddLocationsAsync(Department department, IEnumerable<Location> locations, CancellationToken cancellationToken)
     {
@@ -133,6 +156,18 @@ internal class DepartmentsRepository : IDepartmentsRepository
         return UnitResult.Success<Failure>();
     }
 
+    public Task<long> CountByAsync(Expression<Func<Department, bool>> predicate, bool ignoreQueryFilters, CancellationToken cancellationToken)
+    {
+        var query = _context.Departments;
+
+        if(ignoreQueryFilters)
+        {
+            query.IgnoreQueryFilters();
+        }
+
+        return query.LongCountAsync(predicate, cancellationToken);
+    }
+
     public Task<long> CountByAsync(Expression<Func<Department, bool>> predicate, CancellationToken cancellationToken) =>
-          _context.Departments.LongCountAsync(predicate, cancellationToken);
+          CountByAsync(predicate, false, cancellationToken);
 }

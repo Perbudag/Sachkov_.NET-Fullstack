@@ -1,10 +1,11 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryService.Domain.Abstracts;
 using DirectoryService.Domain.ValueObjects;
 using Shared;
 
 namespace DirectoryService.Domain.Entities;
 
-public class Position
+public class Position : ISoftDeletable
 {
     private Position(Name name)
     {

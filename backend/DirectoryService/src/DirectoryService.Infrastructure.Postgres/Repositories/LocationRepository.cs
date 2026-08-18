@@ -37,11 +37,11 @@ internal class LocationRepository : ILocationsRepository
 
     public async Task<Result<Location, Failure>> GetByAsync(Expression<Func<Location, bool>> predicate, bool ignoreQueryFilters, CancellationToken cancellationToken)
     {
-        var query = _context.Locations;
+        var query = _context.Locations.AsQueryable();
 
         if (ignoreQueryFilters)
         {
-            query.IgnoreQueryFilters();
+            query = query.IgnoreQueryFilters();
         }
 
         var location = await query.FirstOrDefaultAsync(predicate, cancellationToken);
@@ -57,11 +57,11 @@ internal class LocationRepository : ILocationsRepository
 
     public IAsyncEnumerable<Location> GetByAsyncEnum(Expression<Func<Location, bool>> predicate, bool ignoreQueryFilters = false)
     {
-        var query = _context.Locations;
+        var query = _context.Locations.AsQueryable();
 
         if(ignoreQueryFilters)
         {
-            query.IgnoreQueryFilters();
+            query = query.IgnoreQueryFilters();
         }    
 
         return query.Where(predicate).AsAsyncEnumerable();

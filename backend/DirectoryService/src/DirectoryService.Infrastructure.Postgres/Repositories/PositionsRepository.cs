@@ -36,11 +36,11 @@ internal class PositionsRepository : IPositionsRepository
 
     public async Task<Result<Position, Failure>> GetByAsync(Expression<Func<Position, bool>> predicate, bool ignoreQueryFilters, CancellationToken cancellationToken)
     {
-        var query = _context.Positions;
+        var query = _context.Positions.AsQueryable();
 
         if(ignoreQueryFilters)
         {
-            query.IgnoreQueryFilters();
+            query = query.IgnoreQueryFilters();
         }
 
         var position = await query.FirstOrDefaultAsync(predicate, cancellationToken);
@@ -56,11 +56,11 @@ internal class PositionsRepository : IPositionsRepository
 
     public IAsyncEnumerable<Position> GetByAsyncEnum(Expression<Func<Position, bool>> predicate, bool ignoreQueryFilters = false)
     {
-        var query = _context.Positions;
+        var query = _context.Positions.AsQueryable();
 
         if(ignoreQueryFilters)
         {
-            query.IgnoreQueryFilters();
+            query = query.IgnoreQueryFilters();
         }
 
         return query.Where(predicate).AsAsyncEnumerable();

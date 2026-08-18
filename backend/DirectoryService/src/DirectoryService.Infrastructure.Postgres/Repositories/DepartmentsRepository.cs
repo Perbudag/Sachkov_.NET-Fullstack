@@ -52,11 +52,11 @@ internal class DepartmentsRepository : IDepartmentsRepository
 
     public async Task<Result<Department, Failure>> GetByAsync(Expression<Func<Department, bool>> predicate, bool ignoreQueryFilters, CancellationToken cancellationToken)
     {
-        var query = _context.Departments;
+        var query = _context.Departments.AsQueryable();
 
         if (ignoreQueryFilters)
         {
-            query.IgnoreQueryFilters();
+            query = query.IgnoreQueryFilters();
         }
 
         var department = await query.FirstOrDefaultAsync(predicate, cancellationToken);
@@ -72,11 +72,11 @@ internal class DepartmentsRepository : IDepartmentsRepository
 
     public IAsyncEnumerable<Department> GetByAsyncEnum(Expression<Func<Department, bool>> predicate, bool ignoreQueryFilters = false)
     {
-        var query = _context.Departments;
+        var query = _context.Departments.AsQueryable();
 
         if (ignoreQueryFilters)
         {
-            query.IgnoreQueryFilters();
+            query = query.IgnoreQueryFilters();
         }
 
         return query.Where(predicate).AsAsyncEnumerable();
@@ -158,11 +158,11 @@ internal class DepartmentsRepository : IDepartmentsRepository
 
     public Task<long> CountByAsync(Expression<Func<Department, bool>> predicate, bool ignoreQueryFilters, CancellationToken cancellationToken)
     {
-        var query = _context.Departments;
+        var query = _context.Departments.AsQueryable();
 
         if(ignoreQueryFilters)
         {
-            query.IgnoreQueryFilters();
+            query = query.IgnoreQueryFilters();
         }
 
         return query.LongCountAsync(predicate, cancellationToken);

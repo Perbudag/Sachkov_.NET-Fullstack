@@ -11,7 +11,7 @@ public static partial class Errors
             Error.Validation(message, "locations.validation.error", invalidField);
 
         public static Error ConflictName(string name) =>
-            Error.Conflict("A location named \"{name}\" already exists", "locations.is.conflict");
+            Error.Conflict($"A location named \"{name}\" already exists", "locations.is.conflict");
 
         public static Error NotFoud() =>
             Error.NotFoud("Location with this id not found", "locations.not.found");

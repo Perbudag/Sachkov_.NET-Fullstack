@@ -37,6 +37,7 @@ internal class ClearDatabaseRepository : IClearDatabaseRepository
                 if (departmentsDeletedCount >= batchSize)
                 {
                     departmentsDeletedCount = await _context.Departments
+                         .IgnoreQueryFilters()
                          .Where(d => d.IsDeleted && d.DeletedAt <= thresholdDate)
                          .Take(batchSize)
                          .ExecuteDeleteAsync(cancellationToken);
@@ -48,6 +49,7 @@ internal class ClearDatabaseRepository : IClearDatabaseRepository
                 if (locationsDeletedCount >= batchSize)
                 {
                     locationsDeletedCount = await _context.Locations
+                         .IgnoreQueryFilters()
                          .Where(l => l.IsDeleted && l.DeletedAt <= thresholdDate)
                          .Take(batchSize)
                          .ExecuteDeleteAsync(cancellationToken);
@@ -59,6 +61,7 @@ internal class ClearDatabaseRepository : IClearDatabaseRepository
                 if (positionsDeletedCount >= batchSize)
                 {
                     positionsDeletedCount = await _context.Positions
+                         .IgnoreQueryFilters()
                          .Where(p => p.IsDeleted && p.DeletedAt <= thresholdDate)
                          .Take(batchSize)
                          .ExecuteDeleteAsync(cancellationToken);
@@ -67,7 +70,7 @@ internal class ClearDatabaseRepository : IClearDatabaseRepository
                 }
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             _logger.LogError(ex, "Something went wrong when cleaning the database.");
         }

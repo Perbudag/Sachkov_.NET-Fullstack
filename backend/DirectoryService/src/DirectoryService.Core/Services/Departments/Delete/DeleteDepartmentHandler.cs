@@ -24,12 +24,19 @@ internal class DeleteDepartmentHandler : ICommandHandler<DeleteDepartmentCommand
             return Errors.SharedErrors.IsRequired("Id", "departments.validation.error").ToFailure();
         }
 
-        var result = await _repository.RemoveAsync(command.Id, cancellationToken);
+        var departmentResult = await _repository.GetByAsync(d => d.Id == command.Id, cancellationToken);
 
-        if (result.IsFailure)
+        if (departmentResult.IsFailure)
         {
-            return result.Error;
+            return departmentResult.Error;
         }
+
+        if((await _repository.CountByAsync(d => d.ParentId == command.Id, true, cancellationToken)) > 0)
+        {
+            return Errors.DepartmentErrors.ConflictHasChildren().ToFailure();
+        }
+
+        departmentResult.Value.SoftDelete();
 
         var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
 

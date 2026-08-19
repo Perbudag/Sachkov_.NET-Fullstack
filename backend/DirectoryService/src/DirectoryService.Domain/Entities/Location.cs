@@ -1,10 +1,11 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryService.Domain.Abstracts;
 using DirectoryService.Domain.ValueObjects;
 using Shared;
 
 namespace DirectoryService.Domain.Entities;
 
-public class Location
+public class Location : ISoftDeletable
 {
     private Location(Name name, Address address)
     {
@@ -23,8 +24,10 @@ public class Location
     public Guid Id { get; }
     public Name Name { get; private set; } = null!;
     public Address Address { get; private set; } = null!;
+    public bool IsDeleted { get; private set; }
     public DateTime CreatedAt { get; }
     public DateTime UpdatedAt { get; private set; }
+    public DateTime? DeletedAt { get; private set; }
 
 
     public static Result<Location, Failure> Create(Name name, Address address)
@@ -46,5 +49,11 @@ public class Location
         UpdatedAt = DateTime.UtcNow;
 
         return UnitResult.Success<Failure>();
+    }
+
+    public void SoftDelete()
+    {
+        IsDeleted = true;
+        DeletedAt = DateTime.UtcNow;
     }
 }

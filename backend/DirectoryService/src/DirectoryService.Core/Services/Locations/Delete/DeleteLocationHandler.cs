@@ -24,12 +24,12 @@ internal class DeleteLocationHandler : ICommandHandler<DeleteLocationCommand>
             return Errors.SharedErrors.IsRequired("Id", "locations.validation.error").ToFailure();
         }
 
-        var result = await _repository.RemoveAsync(command.Id, cancellationToken);
+        var locationResult = await _repository.GetByAsync(l => l.Id == command.Id, cancellationToken);
 
-        if (result.IsFailure)
-        {
-            return result.Error;
-        }
+        if (locationResult.IsFailure)
+            return locationResult.Error;
+
+        locationResult.Value.SoftDelete();
 
         var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
 

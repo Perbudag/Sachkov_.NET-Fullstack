@@ -39,9 +39,11 @@ internal class GetAllLocationsDapperHandler : IQueryHandler<PageResult<LocationL
                     l.name, 
                     l.address, 
                     l.created_at,
-                    count(dl.location_id)::int AS departments_count
+                    count(d.department_id)::int AS departments_count
                 FROM locations AS l
                 LEFT JOIN departments_locations AS dl ON l.location_id = dl.location_id
+                LEFT JOIN departments AS d ON dl.department_id = d.department_id 
+                                           AND d.is_deleted = FALSE
                 /**where**/
                 GROUP BY l.location_id, l.address, l.name
                 /**having**/)
@@ -63,6 +65,8 @@ internal class GetAllLocationsDapperHandler : IQueryHandler<PageResult<LocationL
             Limit = query.PageSize
         });
 
+        builder.Where("l.is_deleted = FALSE");
+
         if (!string.IsNullOrWhiteSpace(query.Search))
         {
             builder.Where("name LIKE '%' || @Search || '%'", new { query.Search });
@@ -70,7 +74,7 @@ internal class GetAllLocationsDapperHandler : IQueryHandler<PageResult<LocationL
 
         if (query.MinDepartmentCount > 0)
         {
-            builder.Having("count(dl.location_id)::int >= @MinDepartmentCount", new { query.MinDepartmentCount });
+            builder.Having("count(d.department_id)::int >= @MinDepartmentCount", new { query.MinDepartmentCount });
         }
 
         string? SordBy = query.SortBy switch

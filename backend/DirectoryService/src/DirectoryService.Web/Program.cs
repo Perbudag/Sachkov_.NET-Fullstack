@@ -1,5 +1,6 @@
 using DirectoryService.Core;
 using DirectoryService.Infrastructure.Postgres;
+using DirectoryService.Web.BackgroundServices.DatabaseCleaner;
 using DirectoryService.Web.Middlewares;
 using Scalar.AspNetCore;
 using Serilog;
@@ -30,6 +31,11 @@ try
         .ReadFrom.Configuration(builder.Configuration)
         .ReadFrom.Services(services)
         .Enrich.WithProperty("ServiceName", "DirectoryService"));
+
+    builder.Services.AddHostedService<DatabaseCleanerBackgroundService>();
+
+    builder.Services.Configure<DatabaseCleanerOptions>(
+        builder.Configuration.GetSection(DatabaseCleanerOptions.SectionName));
 
     var app = builder.Build();
 

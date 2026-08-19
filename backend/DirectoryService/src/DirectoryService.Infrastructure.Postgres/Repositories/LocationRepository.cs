@@ -6,6 +6,7 @@ using DirectoryService.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared;
+using System.Linq.Expressions;
 
 namespace DirectoryService.Infrastructure.Postgres.Repositories;
 
@@ -22,7 +23,7 @@ internal class LocationRepository : ILocationsRepository
 
     public async Task<UnitResult<Failure>> AddAsync(Location location, CancellationToken cancellationToken)
     {
-        if (await _context.Locations.AnyAsync(l => l.Name == location.Name, cancellationToken))
+        if (await _context.Locations.IgnoreQueryFilters().AnyAsync(l => l.Name == location.Name, cancellationToken))
         {
             _logger.LogError("Failed to create location with id: {Id}", location.Id);
 
@@ -34,9 +35,16 @@ internal class LocationRepository : ILocationsRepository
         return UnitResult.Success<Failure>();
     }
 
-    public async Task<Result<Location, Failure>> GetByIdAsync(Guid locationId, CancellationToken cancellationToken)
+    public async Task<Result<Location, Failure>> GetByAsync(Expression<Func<Location, bool>> predicate, bool ignoreQueryFilters, CancellationToken cancellationToken)
     {
-        var location = await _context.Locations.FirstOrDefaultAsync(l => l.Id == locationId, cancellationToken);
+        var query = _context.Locations.AsQueryable();
+
+        if (ignoreQueryFilters)
+        {
+            query = query.IgnoreQueryFilters();
+        }
+
+        var location = await query.FirstOrDefaultAsync(predicate, cancellationToken);
 
         if (location == null)
             return Errors.LocationErrors.NotFoud().ToFailure();
@@ -44,30 +52,18 @@ internal class LocationRepository : ILocationsRepository
         return location;
     }
 
-    public async Task<Result<IEnumerable<Location>, Failure>> GetByIdsAsync(IEnumerable<Guid> locationIds, CancellationToken cancellationToken)
+    public Task<Result<Location, Failure>> GetByAsync(Expression<Func<Location, bool>> predicate, CancellationToken cancellationToken) =>
+        GetByAsync(predicate, false, cancellationToken);
+
+    public IAsyncEnumerable<Location> GetByAsyncEnum(Expression<Func<Location, bool>> predicate, bool ignoreQueryFilters = false)
     {
-        return await _context.Locations.Where(l => locationIds.Contains(l.Id)).ToListAsync(cancellationToken);
-    }
+        var query = _context.Locations.AsQueryable();
 
-    public async Task<Result<Location, Failure>> GetByNameAsync(Name name, CancellationToken cancellationToken)
-    {
-        var location = await _context.Locations.FirstOrDefaultAsync(l => l.Name == name, cancellationToken);
+        if(ignoreQueryFilters)
+        {
+            query = query.IgnoreQueryFilters();
+        }    
 
-        if (location == null)
-            return Errors.LocationErrors.NotFoudName().ToFailure();
-
-        return location;
-    }
-
-    public async Task<UnitResult<Failure>> RemoveAsync(Guid id, CancellationToken cancellationToken)
-    {
-        var location = await _context.Locations.FirstOrDefaultAsync(d => d.Id == id, cancellationToken);
-
-        if (location == null)
-            return Errors.LocationErrors.NotFoud().ToFailure();
-
-        _context.Locations.Remove(location);
-
-        return UnitResult.Success<Failure>();
+        return query.Where(predicate).AsAsyncEnumerable();
     }
 }

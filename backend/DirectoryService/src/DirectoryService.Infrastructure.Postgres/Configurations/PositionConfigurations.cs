@@ -22,6 +22,10 @@ public class PositionConfigurations : IEntityTypeConfiguration<Position>
                 src => src.Value,
                 dst => Name.Create(dst).Value);
 
+        builder.Property(d => d.IsDeleted)
+            .HasColumnName("is_deleted")
+            .HasDefaultValue(false);
+
         builder.Property(p => p.CreatedAt)
             .HasColumnName("created_at")
             .IsRequired()
@@ -31,6 +35,10 @@ public class PositionConfigurations : IEntityTypeConfiguration<Position>
             .HasColumnName("updated_at")
             .IsRequired()
             .HasDefaultValueSql("timezone('utc', now())");
+
+        builder.Property(d => d.DeletedAt)
+            .HasColumnName("deleted_at")
+            .HasDefaultValue(null);
 
         builder.HasMany<DepartmentPosition>()
             .WithOne()

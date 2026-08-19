@@ -40,16 +40,16 @@ internal class AddPositionDepartmentHandler : ICommandHandler<AddPositionDepartm
         if (errors.Count > 0)
             return new Failure(errors);
 
-        var departmentResult = await _departmentsRepository.GetByIdAsync(command.DepartmentId, cancellationToken);
-        var positionResult = await _positionsRepository.GetByIdAsync(command.PositionId, cancellationToken);
+        var departmentResult = await _departmentsRepository.GetByAsync(d => d.Id == command.DepartmentId, cancellationToken);
+        var positionResult = await _positionsRepository.GetByAsync(p => p.Id == command.PositionId, cancellationToken);
 
         if (departmentResult.IsFailure)
         {
-            errors.Add(Errors.DepartmentErrors.NotFoud());
+            errors.AddRange(departmentResult.Error);
         }
         if (positionResult.IsFailure)
         {
-            errors.Add(Errors.DepartmentErrors.PositionNotFound());
+            errors.AddRange(positionResult.Error);
         }
 
         if (errors.Count > 0)

@@ -13,11 +13,11 @@ public class AppDbContext : DbContext, IReadDbContext
     public DbSet<DepartmentPosition> DepartmentsPositions { get; set; }
 
 
-    public IQueryable<Department> DepartmentsRead => Departments.AsQueryable().AsNoTracking();
-    public IQueryable<Location> LocationsRead => Locations.AsQueryable().AsNoTracking();
-    public IQueryable<Position> PositionsRead => Positions.AsQueryable().AsNoTracking();
-    public IQueryable<DepartmentLocation> DepartmentLocationsRead => DepartmentLocations.AsQueryable().AsNoTracking();
-    public IQueryable<DepartmentPosition> DepartmentsPositionsRead => DepartmentsPositions.AsQueryable().AsNoTracking();
+    public IQueryable<Department> DepartmentsRead => Departments.AsNoTracking();
+    public IQueryable<Location> LocationsRead => Locations.AsNoTracking();
+    public IQueryable<Position> PositionsRead => Positions.AsNoTracking();
+    public IQueryable<DepartmentLocation> DepartmentLocationsRead => DepartmentLocations.AsNoTracking();
+    public IQueryable<DepartmentPosition> DepartmentsPositionsRead => DepartmentsPositions.AsNoTracking();
 
 
     public AppDbContext(DbContextOptions options) : base(options)
@@ -27,5 +27,9 @@ public class AppDbContext : DbContext, IReadDbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+
+        modelBuilder.Entity<Department>().HasQueryFilter(d => !d.IsDeleted);
+        modelBuilder.Entity<Location>().HasQueryFilter(l => !l.IsDeleted);
+        modelBuilder.Entity<Position>().HasQueryFilter(p => !p.IsDeleted);
     }
 }

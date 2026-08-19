@@ -2,11 +2,10 @@
 using DirectoryService.Core.Fails;
 using DirectoryService.Core.Services.Departments;
 using DirectoryService.Domain.Entities;
-using DirectoryService.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared;
-using System.Xml.Linq;
+using System.Linq.Expressions;
 
 namespace DirectoryService.Infrastructure.Postgres.Repositories;
 
@@ -25,12 +24,16 @@ internal class DepartmentsRepository : IDepartmentsRepository
     {
         var errors = new List<Error>();
 
-        if (await _context.Departments.AnyAsync(d => d.Name == department.Name, cancellationToken))
+        if (await _context.Departments
+            .IgnoreQueryFilters()
+            .AnyAsync(d => d.Name == department.Name, cancellationToken))
         {
             errors.Add(Errors.DepartmentErrors.Conflict(department.Name.ToString()));
         }
 
-        if (department.ParentId != null && await _context.Departments.AnyAsync(d => d.ParentId == department.ParentId && d.Slug == department.Slug, cancellationToken))
+        if (department.ParentId != null && await _context.Departments
+            .IgnoreQueryFilters()
+            .AnyAsync(d => d.ParentId == department.ParentId && d.Slug == department.Slug, cancellationToken))
         {
             errors.Add(Errors.DepartmentErrors.SlugConflict(department.ParentId.Value, department.Slug.ToString()));
         }
@@ -47,24 +50,16 @@ internal class DepartmentsRepository : IDepartmentsRepository
         return UnitResult.Success<Failure>();
     }
 
-    public async Task<Result<IEnumerable<Department>, Failure>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<Result<Department, Failure>> GetByAsync(Expression<Func<Department, bool>> predicate, bool ignoreQueryFilters, CancellationToken cancellationToken)
     {
-        return await _context.Departments.ToListAsync(cancellationToken);
-    }
+        var query = _context.Departments.AsQueryable();
 
-    public async Task<Result<Department, Failure>> GetByNameAsync(Name name, CancellationToken cancellationToken)
-    {
-        var department = await _context.Departments.FirstOrDefaultAsync(d => d.Name == name, cancellationToken);
+        if (ignoreQueryFilters)
+        {
+            query = query.IgnoreQueryFilters();
+        }
 
-        if (department == null)
-            return Errors.DepartmentErrors.NotFoudName().ToFailure();
-
-        return department;
-    }
-
-    public async Task<Result<Department, Failure>> GetByIdAsync(Guid departmentId, CancellationToken cancellationToken)
-    {
-        var department = await _context.Departments.FirstOrDefaultAsync(d => d.Id == departmentId, cancellationToken);
+        var department = await query.FirstOrDefaultAsync(predicate, cancellationToken);
 
         if (department == null)
             return Errors.DepartmentErrors.NotFoud().ToFailure();
@@ -72,16 +67,19 @@ internal class DepartmentsRepository : IDepartmentsRepository
         return department;
     }
 
-    public async Task<UnitResult<Failure>> RemoveAsync(Guid id, CancellationToken cancellationToken)
+    public Task<Result<Department, Failure>> GetByAsync(Expression<Func<Department, bool>> predicate, CancellationToken cancellationToken) =>
+        GetByAsync(predicate, false, cancellationToken);
+
+    public IAsyncEnumerable<Department> GetByAsyncEnum(Expression<Func<Department, bool>> predicate, bool ignoreQueryFilters = false)
     {
-        var department = await _context.Departments.FirstOrDefaultAsync(d => d.Id == id, cancellationToken);
+        var query = _context.Departments.AsQueryable();
 
-        if (department == null)
-            return Errors.DepartmentErrors.NotFoud().ToFailure();
+        if (ignoreQueryFilters)
+        {
+            query = query.IgnoreQueryFilters();
+        }
 
-        _context.Departments.Remove(department);
-
-        return UnitResult.Success<Failure>();
+        return query.Where(predicate).AsAsyncEnumerable();
     }
 
     public async Task<UnitResult<Failure>> AddLocationsAsync(Department department, IEnumerable<Location> locations, CancellationToken cancellationToken)
@@ -157,4 +155,19 @@ internal class DepartmentsRepository : IDepartmentsRepository
 
         return UnitResult.Success<Failure>();
     }
+
+    public Task<long> CountByAsync(Expression<Func<Department, bool>> predicate, bool ignoreQueryFilters, CancellationToken cancellationToken)
+    {
+        var query = _context.Departments.AsQueryable();
+
+        if(ignoreQueryFilters)
+        {
+            query = query.IgnoreQueryFilters();
+        }
+
+        return query.LongCountAsync(predicate, cancellationToken);
+    }
+
+    public Task<long> CountByAsync(Expression<Func<Department, bool>> predicate, CancellationToken cancellationToken) =>
+          CountByAsync(predicate, false, cancellationToken);
 }

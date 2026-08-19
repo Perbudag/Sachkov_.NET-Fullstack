@@ -49,7 +49,10 @@ internal class GetAllLocationsHandler : IQueryHandler<PageResult<LocationListIte
                             select new
                             {
                                 Location = l,
-                                DepartmentsCount = joinedDepartments.Count()
+                                DepartmentsCount = _context.DepartmentsRead
+                                                    .Count(d => joinedDepartments
+                                                        .Select(j => j.DepartmentId)
+                                                        .Contains(d.Id))
                             };
 
         if (!string.IsNullOrWhiteSpace(query.Search))

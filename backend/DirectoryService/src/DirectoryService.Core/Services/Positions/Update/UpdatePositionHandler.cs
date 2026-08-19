@@ -37,25 +37,25 @@ internal class UpdatePositionHandler : ICommandHandler<PositionDto, UpdatePositi
             return validationResult.ToErrors();
         }
 
-        var position = await _repository.GetByIdAsync(command.Id, cancellationToken);
+        var positionResult = await _repository.GetByAsync(p => p.Id == command.Id, cancellationToken);
 
-        if (position.IsFailure)
+        if (positionResult.IsFailure)
         {
-            return Errors.PositionsErrors.NotFoud().ToFailure();
+            return positionResult.Error;
         }
 
         if (command.Request.Name != null)
         {
-            var name = Name.Create(command.Request.Name);
+            var name = Name.Create(command.Request.Name).Value;
 
-            var checkNameResult = await _repository.GetByNameAsync(name.Value, cancellationToken);
+            var checkNameResult = await _repository.GetByAsync(p => p.Name == name, cancellationToken);
 
             if (checkNameResult.IsSuccess && checkNameResult.Value.Id != command.Id)
             {
                 return Errors.PositionsErrors.ConflictName(name.ToString()).ToFailure();
             }
 
-            position.Value.SetName(name.Value);
+            positionResult.Value.SetName(name);
         }
 
         var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
@@ -65,6 +65,6 @@ internal class UpdatePositionHandler : ICommandHandler<PositionDto, UpdatePositi
 
         _logger.LogInformation("The position with ID {Id} was updated.", command.Id);
 
-        return new PositionDto(position.Value.Id, position.Value.Name.ToString());
+        return new PositionDto(positionResult.Value.Id, positionResult.Value.Name.ToString());
     }
 }

@@ -1,6 +1,7 @@
 using DirectoryService.Core.Abstractions.Database;
 using DirectoryService.Infrastructure.Postgres;
 using DirectoryService.Infrastructure.Postgres.Database;
+using DirectoryService.Web.BackgroundServices.DatabaseCleaner;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -29,7 +30,7 @@ public class DirectoryTestWebFactory : WebApplicationFactory<Program>, IAsyncLif
     {
         builder.ConfigureTestServices(services =>
         {
-            services.RemoveAll<AppDbContext>(); 
+            services.RemoveAll<AppDbContext>();
             services.RemoveAll<IDbConnectionFactory>();
 
             services.AddDbContext<AppDbContext>(options =>
@@ -38,6 +39,13 @@ public class DirectoryTestWebFactory : WebApplicationFactory<Program>, IAsyncLif
 
             services.AddSingleton<IDbConnectionFactory>(
                 new DbConnectionFactory(_dbContainer.GetConnectionString()));
+
+            services.Configure<DatabaseCleanerOptions>(options =>
+            {
+                options.DelayTime = TimeSpan.FromSeconds(5);
+                options.AgeOfDeletion = TimeSpan.FromSeconds(5);
+                options.BatchSize = 10;
+            });
         });
     }
 
@@ -68,7 +76,7 @@ public class DirectoryTestWebFactory : WebApplicationFactory<Program>, IAsyncLif
         await _dbContainer.DisposeAsync();
 
         await base.DisposeAsync();
-        
+
         GC.SuppressFinalize(this);
     }
 

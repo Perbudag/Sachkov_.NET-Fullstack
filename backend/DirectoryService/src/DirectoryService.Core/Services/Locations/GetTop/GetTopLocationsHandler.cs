@@ -21,6 +21,9 @@ internal class GetTopLocationsHandler : IQueryHandler<LocationListItemDto[], Get
     public async Task<Result<LocationListItemDto[], Failure>> HandleAsync(GetTopLocationsQuery query, CancellationToken cancellationToken)
     {
         var response = await (from departmentLocation in _context.DepartmentLocationsRead
+                              join department in _context.DepartmentsRead
+                                  on departmentLocation.DepartmentId equals department.Id
+                              where !department.IsDeleted
                               join location in _context.LocationsRead
                                   on departmentLocation.LocationId equals location.Id
                               group departmentLocation by location into locationGroup

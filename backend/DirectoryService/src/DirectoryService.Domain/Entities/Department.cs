@@ -9,6 +9,17 @@ namespace DirectoryService.Domain.Entities;
 
 public class Department : ISoftDeletable
 {
+    public Guid Id { get; }
+    public Name Name { get; private set; } = null!;
+    public Slug Slug { get; private set; } = null!;
+    public Path Path { get; private set; } = null!;
+    public int Depth { get; private set; }
+    public Guid? ParentId { get; private set; }
+    public bool IsDeleted { get; private set; }
+    public DateTime CreatedAt { get; }
+    public DateTime UpdatedAt { get; private set; }
+    public DateTime? DeletedAt { get; private set; }
+
     private Department(Name name, Slug slug, Department? parent)
     {
         Id = Guid.CreateVersion7();
@@ -16,6 +27,7 @@ public class Department : ISoftDeletable
         Name = name;
         Slug = slug;
         Path = Path.Create([.. parent?.Path.Slugs ?? [], slug]).Value;
+        Depth = parent != null ? parent.Depth + 1 : 0;
         ParentId = parent?.Id;
 
         CreatedAt = DateTime.UtcNow;
@@ -23,18 +35,7 @@ public class Department : ISoftDeletable
     }
 
     // EF Core
-    private Department() {}
-
-    public Guid Id { get; }
-    public Name Name { get; private set; } = null!;
-    public Slug Slug { get; private set; } = null!;
-    public Path Path { get; private set; } = null!;
-    public Guid? ParentId { get; private set; }
-    public bool IsDeleted { get; private set; }
-    public DateTime CreatedAt { get; }
-    public DateTime UpdatedAt { get; private set; }
-    public DateTime? DeletedAt { get; private set; }
-
+    private Department() { }
 
     public static Result<Department, Failure> Create(Name name, Slug slug, Department? parent)
     {
@@ -59,7 +60,7 @@ public class Department : ISoftDeletable
         return UnitResult.Success<Failure>();
     }
 
-    public UnitResult<Failure> SetParent(Department parent)
+    public UnitResult<Failure> SetParent(Department? parent)
     {
         if (this == parent)
         {
@@ -69,8 +70,9 @@ public class Department : ISoftDeletable
             return error.ToFailure();
         }
 
-        ParentId = parent.Id;
+        ParentId = parent?.Id;
         Path = Path.Create([.. parent?.Path.Slugs ?? [], Slug]).Value;
+        Depth = parent != null ? parent.Depth + 1 : 0;
         UpdatedAt = DateTime.UtcNow;
 
         return UnitResult.Success<Failure>();

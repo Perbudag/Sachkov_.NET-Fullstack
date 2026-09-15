@@ -24,8 +24,11 @@ public class AppDbContext : DbContext, IReadDbContext
     {
     }
 
+    public IQueryable<TResult> SqlQuery<TResult>(FormattableString sql) => this.Database.SqlQuery<TResult>(sql);
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasPostgresExtension("ltree");
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
         modelBuilder.Entity<Department>().HasQueryFilter(d => !d.IsDeleted);

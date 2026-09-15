@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DirectoryService.Infrastructure.Postgres.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260818165643_AddingSoftDelete")]
-    partial class AddingSoftDelete
+    [Migration("20260826190528_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,6 +23,7 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                 .HasAnnotation("ProductVersion", "10.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "ltree");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("DirectoryService.Domain.Entities.Department", b =>
@@ -42,6 +43,10 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
 
+                    b.Property<int>("Depth")
+                        .HasColumnType("integer")
+                        .HasColumnName("depth");
+
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -60,7 +65,7 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
 
                     b.Property<string>("Path")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("ltree")
                         .HasColumnName("path");
 
                     b.Property<string>("Slug")
@@ -81,6 +86,10 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                         .IsUnique();
 
                     b.HasIndex("ParentId");
+
+                    b.HasIndex("Path");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Path"), "gist");
 
                     b.ToTable("departments", (string)null);
                 });

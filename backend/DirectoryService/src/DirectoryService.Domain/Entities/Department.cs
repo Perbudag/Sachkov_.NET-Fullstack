@@ -70,11 +70,11 @@ public class Department : ISoftDeletable
             return error.ToFailure();
         }
         if (parent != null 
-            && (parent.Path.ToString().StartsWith(this.Path.ToString() + ".", StringCompparison.Ordinal) 
-                || this.Path.ToString() == parent.Path.ToString()))
+            && (parent.Path.ToString().StartsWith(this.Path.ToString() + ".", StringComparison.Ordinal) 
+                || string.Equals(this.Path.ToString(), parent.Path.ToString(), StringComparison.Ordinal)))
         {
             var error = Error.Conflict("Department не может быть потомком нового родителя", "department.is.conflict");
-            return error.ToFailuire();
+            return error.ToFailure();
         }
 
         ParentId = parent?.Id;

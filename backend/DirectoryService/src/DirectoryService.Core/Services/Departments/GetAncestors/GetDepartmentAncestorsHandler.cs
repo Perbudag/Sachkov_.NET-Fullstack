@@ -50,7 +50,8 @@ namespace DirectoryService.Core.Services.Departments.GetAncestors
                     COUNT(*) OVER() As TotalCount
                 FROM departments d, root r
                 WHERE d.path @> r.path
-                AND d.department_id <> r.department_id
+                    AND d.department_id <> r.department_id
+                    AND d.is_deleted = FALSE
                 /**orderby**/
                 OFFSET @Offset LIMIT @Limit;
                 """);

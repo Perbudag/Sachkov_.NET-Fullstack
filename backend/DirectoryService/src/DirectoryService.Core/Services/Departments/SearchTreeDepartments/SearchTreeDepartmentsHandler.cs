@@ -68,7 +68,7 @@ internal class SearchTreeDepartmentsHandler : IQueryHandler<SearchTreeDepartment
         foreach (var root in roots)
         {
             var ancestors = nodes.Where(n => !string.Equals(root.Path, n.Path, StringComparison.Ordinal) 
-                                        && root.Path.Contains(n.Path, StringComparison.CurrentCulture)).ToList();
+                                        && root.Path.StartsWith(n.Path + ".", StringComparison.Ordinal)).ToList();
 
             result.Add(new SearchTreeDepartmentsResultDto(root, ancestors));
         }

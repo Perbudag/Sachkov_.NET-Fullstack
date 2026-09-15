@@ -43,7 +43,10 @@ namespace DirectoryService.Core.Services.Departments.GetAncestors
                     d.slug As Slug,
                     d.path As Path,
                     d.depth As Depth,
-                    TRUE As HasChildren,
+                    EXISTS(SELECT *
+                        FROM departments
+                        WHERE path <@ d.path
+                        AND department_id <> d.department_id) As HasChildren,
                     COUNT(*) OVER() As TotalCount
                 FROM departments d, root r
                 WHERE d.path @> r.path

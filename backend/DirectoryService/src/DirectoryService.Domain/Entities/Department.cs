@@ -69,6 +69,14 @@ public class Department : ISoftDeletable
 
             return error.ToFailure();
         }
+        if (parent != null 
+            && this.Path.ToString().Contains(parent.Path.ToString(), StringComparison.CurrentCulture))
+        {
+            var error = Error.Conflict("Department не может быть предком" +
+                "для нового родителя", "department.is.conflict");
+
+            return error.ToFailure();
+        }
 
         ParentId = parent?.Id;
         Path = Path.Create([.. parent?.Path.Slugs ?? [], Slug]).Value;

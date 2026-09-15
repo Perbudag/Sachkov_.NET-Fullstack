@@ -5,9 +5,13 @@ using DirectoryService.Core.Services.Departments.AddPosition;
 using DirectoryService.Core.Services.Departments.Create;
 using DirectoryService.Core.Services.Departments.Delete;
 using DirectoryService.Core.Services.Departments.GetAll;
+using DirectoryService.Core.Services.Departments.GetAncestors;
 using DirectoryService.Core.Services.Departments.GetById;
+using DirectoryService.Core.Services.Departments.GetChildren;
+using DirectoryService.Core.Services.Departments.GetDepartmentsTree;
 using DirectoryService.Core.Services.Departments.RemoveLocation;
 using DirectoryService.Core.Services.Departments.RemovePosition;
+using DirectoryService.Core.Services.Departments.SearchDepartments;
 using DirectoryService.Core.Services.Departments.Update;
 using DirectoryService.Presenters.Results;
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +33,33 @@ public class DepartmentsController : ControllerBase
         return await sender.SendAsync((GetAllDepartmentsQuery)requst, cancellationToken);
     }
 
+    [HttpGet("tree")]
+    public async Task<EndpointResult<PageResult<DepartmentTreeNodeDto[]>>> GetTree(
+        [FromServices] ISender sender,
+        [FromQuery] GetDepartmentTreeNodeRequest requst,
+        CancellationToken cancellationToken = default)
+    {
+        return await sender.SendAsync((GetDepartmentsTreeQuery)requst, cancellationToken);
+    }
+
+    [HttpGet("tree/search")]
+    public async Task<EndpointResult<SearchTreeDepartmentsResultDto[]>> SearchTree(
+        [FromServices] ISender sender,
+        [FromQuery] SearchTreeDepartmentsRequest requst,
+        CancellationToken cancellationToken = default)
+    {
+        return await sender.SendAsync((SearchTreeDepartmentsQuery)requst, cancellationToken);
+    }
+
+    [HttpGet("{id:guid}/ancestors")]
+    public async Task<EndpointResult<PageResult<DepartmentTreeNodeDto[]>>> GetAncestors(
+        [FromServices] ISender sender,
+        [FromRoute] Guid id,
+        [FromQuery] GetDepartmentAncestorsRequest requst,
+        CancellationToken cancellationToken = default)
+    {
+        return await sender.SendAsync((GetDepartmentAncestorsQuery)(id, requst), cancellationToken);
+    }
 
     [HttpGet("{id:guid}")]
     public async Task<EndpointResult<DepartmentDto>> GetById(
@@ -37,6 +68,16 @@ public class DepartmentsController : ControllerBase
         CancellationToken cancellationToken = default)
     {
         return await sender.SendAsync((GetByIdDepartmentQuery)id, cancellationToken);
+    }
+
+    [HttpGet("{id:guid}/children")]
+    public async Task<EndpointResult<PageResult<DepartmentTreeNodeDto[]>>> GetChildren(
+        [FromServices] ISender sender,
+        [FromRoute] Guid id,
+        [FromQuery] GetDepartmentChildrenRequest requst,
+        CancellationToken cancellationToken = default)
+    {
+        return await sender.SendAsync((GetDepartmentChildrenQuery)(id, requst), cancellationToken);
     }
 
 

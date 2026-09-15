@@ -2,7 +2,7 @@ services:
 
   postgres:
     container_name: postgres
-    image: postgres:18.4
+    image: postgres
     restart: always
     environment:
       POSTGRES_DB: ${POSTGRES_DB}

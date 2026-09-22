@@ -72,6 +72,7 @@ internal class UpdateDepartmentHandler : ICommandHandler<DepartmentDto, UpdateDe
             department.Value.Name.ToString(),
             department.Value.Slug.ToString(),
             department.Value.Path.ToString(),
+            department.Value.Depth,
             department.Value.ParentId);
     }
 }

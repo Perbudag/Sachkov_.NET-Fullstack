@@ -1,7 +1,8 @@
 ﻿namespace DirectoryService.Contracts.Departments;
 
-public record DepartmentListItemDto(Guid Id,
+public record DepartmentTreeNodeDto(Guid Id,
                                     string Name,
                                     string Slug,
                                     string Path,
-                                    DateTime CreatedAt);
+                                    int Depth,
+                                    bool HasChildren);

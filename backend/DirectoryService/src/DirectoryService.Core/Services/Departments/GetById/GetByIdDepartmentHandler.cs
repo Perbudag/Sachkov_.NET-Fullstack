@@ -30,6 +30,7 @@ internal class GetByIdDepartmentHandler : IQueryHandler<DepartmentDto, GetByIdDe
                 Name: d.Name.ToString(),
                 Slug: d.Slug.ToString(),
                 Path: d.Path.ToString(),
+                Depth: d.Depth,
                 ParentId: d.ParentId
             ))
             .FirstOrDefaultAsync(cancellationToken);

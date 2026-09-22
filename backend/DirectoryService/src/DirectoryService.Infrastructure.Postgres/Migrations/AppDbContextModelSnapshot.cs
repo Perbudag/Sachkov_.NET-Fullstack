@@ -20,6 +20,7 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                 .HasAnnotation("ProductVersion", "10.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "ltree");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("DirectoryService.Domain.Entities.Department", b =>
@@ -39,6 +40,10 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
 
+                    b.Property<int>("Depth")
+                        .HasColumnType("integer")
+                        .HasColumnName("depth");
+
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -57,7 +62,7 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
 
                     b.Property<string>("Path")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasColumnType("ltree")
                         .HasColumnName("path");
 
                     b.Property<string>("Slug")
@@ -78,6 +83,10 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                         .IsUnique();
 
                     b.HasIndex("ParentId");
+
+                    b.HasIndex("Path");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Path"), "gist");
 
                     b.ToTable("departments", (string)null);
                 });

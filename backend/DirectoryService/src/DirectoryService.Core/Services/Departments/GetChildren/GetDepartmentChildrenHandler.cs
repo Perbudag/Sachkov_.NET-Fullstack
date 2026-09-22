@@ -8,36 +8,30 @@ using DirectoryService.Domain.Entities;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Shared;
-using System.Globalization;
 using System.Linq.Expressions;
 
-namespace DirectoryService.Core.Services.Departments.GetAll;
+namespace DirectoryService.Core.Services.Departments.GetChildren;
 
-internal class GetAllDepartmentsHandler : IQueryHandler<PageResult<DepartmentListItemDto[]>, GetAllDepartmentsQuery>
+internal class GetDepartmentChildrenHandler : IQueryHandler<PageResult<DepartmentTreeNodeDto[]>, GetDepartmentChildrenQuery>
 {
-    private readonly IReadDbContext _context;
-    private readonly IValidator<GetAllDepartmentsQuery> _validator;
+    private readonly IReadDbContext _dbContext;
+    private readonly IValidator<GetDepartmentChildrenQuery> _validator;
 
-    public GetAllDepartmentsHandler(IReadDbContext context, IValidator<GetAllDepartmentsQuery> validator)
+    public GetDepartmentChildrenHandler(IReadDbContext dbContext, IValidator<GetDepartmentChildrenQuery> validator)
     {
-        _context = context;
+        _dbContext = dbContext;
         _validator = validator;
     }
 
-    public async Task<Result<PageResult<DepartmentListItemDto[]>, Failure>> HandleAsync(GetAllDepartmentsQuery query, CancellationToken cancellationToken)
+    public async Task<Result<PageResult<DepartmentTreeNodeDto[]>, Failure>> HandleAsync(GetDepartmentChildrenQuery query, CancellationToken cancellationToken)
     {
         var validateResilt = await _validator.ValidateAsync(query, cancellationToken);
         if (!validateResilt.IsValid)
             return validateResilt.ToErrors();
 
-        var departmentQuery = _context.DepartmentsRead;
+        var departmentsQuery = _dbContext.DepartmentsRead.Where(d => d.ParentId == query.ParentId);
 
-        if (query.Search != null)
-        {
-            departmentQuery = departmentQuery.Where(d => EF.Functions.Like((string)(object)d.Name, $"%{query.Search}%"));
-        }
-
-        var totalCount = await departmentQuery.LongCountAsync(cancellationToken);
+        var totalCount = await departmentsQuery.CountAsync(cancellationToken);
         var maxPageNumber = totalCount / query.PageSize;
 
         if ((totalCount % query.PageSize) > 0)
@@ -46,7 +40,6 @@ internal class GetAllDepartmentsHandler : IQueryHandler<PageResult<DepartmentLis
         if (query.Page > maxPageNumber && maxPageNumber != 0)
             return Errors.DepartmentErrors.ValidationError($"Номер страницы превысил максимальное значение (макс. {maxPageNumber})",
                 nameof(query.Page)).ToFailure();
-
 
         var isAscending = string.Equals(query.SortDir, "asc", StringComparison.OrdinalIgnoreCase);
         var isDescending = string.Equals(query.SortDir, "desc", StringComparison.OrdinalIgnoreCase);
@@ -57,10 +50,11 @@ internal class GetAllDepartmentsHandler : IQueryHandler<PageResult<DepartmentLis
 
         Expression<Func<Department, object>>? keySelector = query.SortBy switch
         {
-            string s when s.Equals(nameof(DepartmentListItemDto.Id), StringComparison.OrdinalIgnoreCase) => d => d.Id,
-            string s when s.Equals(nameof(DepartmentListItemDto.Name), StringComparison.OrdinalIgnoreCase) => d => d.Name,
-            string s when s.Equals(nameof(DepartmentListItemDto.Slug), StringComparison.OrdinalIgnoreCase) => d => d.Slug,
-            string s when s.Equals(nameof(DepartmentListItemDto.CreatedAt), StringComparison.OrdinalIgnoreCase) => d => d.CreatedAt,
+            string s when s.Equals(nameof(DepartmentTreeNodeDto.Id), StringComparison.OrdinalIgnoreCase) => d => d.Id,
+            string s when s.Equals(nameof(DepartmentTreeNodeDto.Name), StringComparison.OrdinalIgnoreCase) => d => d.Name,
+            string s when s.Equals(nameof(DepartmentTreeNodeDto.Slug), StringComparison.OrdinalIgnoreCase) => d => d.Slug,
+            string s when s.Equals(nameof(DepartmentTreeNodeDto.Path), StringComparison.OrdinalIgnoreCase) => d => d.Path,
+            string s when s.Equals(nameof(DepartmentTreeNodeDto.Depth), StringComparison.OrdinalIgnoreCase) => d => d.Depth,
             _ => null
         };
 
@@ -69,23 +63,22 @@ internal class GetAllDepartmentsHandler : IQueryHandler<PageResult<DepartmentLis
             return Errors.DepartmentErrors.ValidationError("Некорректное поле сортировки", nameof(query.SortBy)).ToFailure();
 #pragma warning restore CA1508 // Предотвращение появления неиспользуемого условного кода
 
-        departmentQuery = isAscending
-            ? departmentQuery.OrderBy(keySelector)
-            : departmentQuery.OrderByDescending(keySelector);
+        departmentsQuery = isAscending
+            ? departmentsQuery.OrderBy(keySelector)
+            : departmentsQuery.OrderByDescending(keySelector);
 
-
-        var responses = await departmentQuery
+        var response = await departmentsQuery
             .Skip((query.Page - 1) * query.PageSize)
             .Take(query.PageSize)
-            .Select(d => new DepartmentListItemDto(
+            .Select(d => new DepartmentTreeNodeDto(
                 Id: d.Id,
                 Name: d.Name.ToString(),
                 Slug: d.Slug.ToString(),
                 Path: d.Path.ToString(),
-                CreatedAt: d.CreatedAt
-            ))
+                Depth: d.Depth,
+                HasChildren: _dbContext.DepartmentsRead.Any(c => c.ParentId == d.Id)))
             .ToArrayAsync(cancellationToken);
 
-        return new PageResult<DepartmentListItemDto[]>(responses, totalCount, query.Page, query.PageSize);
+        return new PageResult<DepartmentTreeNodeDto[]>(response, totalCount, query.Page, query.PageSize);
     }
 }

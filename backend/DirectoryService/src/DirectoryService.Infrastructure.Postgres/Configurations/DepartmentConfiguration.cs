@@ -33,10 +33,15 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
 
         builder.Property(d => d.Path)
             .HasColumnName("path")
+            .HasColumnType("ltree")
             .IsRequired()
             .HasConversion(
                 src => src.ToString(),
                 dst => Path.Create(dst).Value);
+
+        builder.Property(d => d.Depth)
+            .HasColumnName("depth")
+            .IsRequired();
 
         builder.Property(d => d.IsDeleted)
             .HasColumnName("is_deleted")
@@ -74,5 +79,6 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
 
 
         builder.HasIndex(d => d.Name).IsUnique();
+        builder.HasIndex(d => d.Path).HasMethod("gist");
     }
 }

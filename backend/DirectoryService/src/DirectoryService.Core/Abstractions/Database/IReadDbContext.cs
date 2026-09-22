@@ -9,4 +9,6 @@ public interface IReadDbContext
     IQueryable<Position> PositionsRead { get; }
     IQueryable<DepartmentLocation> DepartmentLocationsRead { get; }
     IQueryable<DepartmentPosition> DepartmentsPositionsRead { get; }
+
+    IQueryable<TResult> SqlQuery<TResult>(FormattableString sql);
 }

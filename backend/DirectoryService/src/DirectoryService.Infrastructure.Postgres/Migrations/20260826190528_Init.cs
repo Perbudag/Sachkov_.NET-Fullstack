@@ -11,6 +11,9 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterDatabase()
+                .Annotation("Npgsql:PostgresExtension:ltree", ",,");
+
             migrationBuilder.CreateTable(
                 name: "departments",
                 columns: table => new
@@ -18,10 +21,13 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                     department_id = table.Column<Guid>(type: "uuid", nullable: false),
                     name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
                     slug = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    path = table.Column<string>(type: "text", nullable: false),
+                    path = table.Column<string>(type: "ltree", nullable: false),
+                    depth = table.Column<int>(type: "integer", nullable: false),
                     parent_id = table.Column<Guid>(type: "uuid", nullable: true),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "timezone('utc', now())"),
-                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "timezone('utc', now())")
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "timezone('utc', now())"),
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -41,8 +47,10 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                     location_id = table.Column<Guid>(type: "uuid", nullable: false),
                     name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
                     address = table.Column<string>(type: "text", nullable: false),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "timezone('utc', now())"),
-                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "timezone('utc', now())")
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "timezone('utc', now())"),
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -55,8 +63,10 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                 {
                     position_id = table.Column<Guid>(type: "uuid", nullable: false),
                     name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "timezone('utc', now())"),
-                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "timezone('utc', now())")
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "timezone('utc', now())"),
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -116,14 +126,27 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_departments_name",
+                table: "departments",
+                column: "name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_departments_parent_id",
                 table: "departments",
                 column: "parent_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_departments_locations_department_id",
+                name: "IX_departments_path",
+                table: "departments",
+                column: "path")
+                .Annotation("Npgsql:IndexMethod", "gist");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_departments_locations_department_id_location_id",
                 table: "departments_locations",
-                column: "department_id");
+                columns: new[] { "department_id", "location_id" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_departments_locations_location_id",
@@ -131,14 +154,27 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                 column: "location_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_departments_positions_department_id",
+                name: "IX_departments_positions_department_id_position_id",
                 table: "departments_positions",
-                column: "department_id");
+                columns: new[] { "department_id", "position_id" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_departments_positions_position_id",
                 table: "departments_positions",
                 column: "position_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_locations_name",
+                table: "locations",
+                column: "name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_positions_name",
+                table: "positions",
+                column: "name",
+                unique: true);
         }
 
         /// <inheritdoc />

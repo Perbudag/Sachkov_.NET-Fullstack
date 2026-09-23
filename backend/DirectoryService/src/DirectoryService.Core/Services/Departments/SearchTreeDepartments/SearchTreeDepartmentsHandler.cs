@@ -54,14 +54,14 @@ internal class SearchTreeDepartmentsHandler : IQueryHandler<SearchTreeDepartment
             ORDER BY d.Depth;
             """);
 
-        builder.Where("name LIKE '%' || @Q || '%'", new { query.Q });
+        builder.Where("name ILIKE '%' || @Q || '%'", new { query.Q });
         builder.Where("is_deleted = FALSE");
 
         var nodes = await connection.QueryAsync<DepartmentTreeNodeDto>(
             template.RawSql,
             template.Parameters);
 
-        var roots = nodes.Where(n => n.Name.Contains(query.Q, StringComparison.CurrentCulture));
+        var roots = nodes.Where(n => n.Name.Contains(query.Q, StringComparison.CurrentCultureIgnoreCase));
 
         var result = new List<SearchTreeDepartmentsResultDto>();
 

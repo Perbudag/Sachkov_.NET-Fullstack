@@ -78,7 +78,11 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
             .OnDelete(DeleteBehavior.Cascade);
 
 
-        builder.HasIndex(d => d.Name).IsUnique();
+        builder.HasIndex(d => d.Name)
+            .HasMethod("gin")
+            .HasOperators("gin_trgm_ops");
+
         builder.HasIndex(d => d.Path).HasMethod("gist");
+        builder.HasIndex(d => d.Slug).IsUnique();
     }
 }

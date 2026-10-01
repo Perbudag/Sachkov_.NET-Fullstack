@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared;
 using System.Linq.Expressions;
+using Path = DirectoryService.Domain.ValueObjects.Path;
 
 namespace DirectoryService.Infrastructure.Postgres.Repositories;
 
@@ -48,6 +49,71 @@ internal class DepartmentsRepository : IDepartmentsRepository
         await _context.Departments.AddAsync(department, cancellationToken);
 
         return UnitResult.Success<Failure>();
+    }
+
+    public async Task<Result<Department, Failure>> UpdateParentAsync(Guid id, Guid? ParentId, CancellationToken cancellationToken)
+    {
+        var errors = new List<Error>();
+
+
+        var department = await _context.Departments.FirstOrDefaultAsync(d => d.Id == id, cancellationToken);
+
+        if (department == null)
+        {
+            errors.Add(Errors.DepartmentErrors.NotFoud());
+        }
+        else if (department.ParentId == ParentId)
+            return department;
+
+        Department? newParent = null;
+
+        if (ParentId != null)
+        {
+            newParent = await _context.Departments
+                .IgnoreQueryFilters().FirstOrDefaultAsync(d => d.Id == ParentId, cancellationToken);
+
+            if (newParent == null)
+            {
+                errors.Add(Errors.DepartmentErrors.NotFoudParent());
+            }
+            else if (newParent.IsDeleted)
+            {
+                errors.Add(Errors.DepartmentErrors.MoveParentIsDeleted());
+            }
+        }
+
+
+        if (errors.Count > 0)
+            return new Failure(errors);
+
+
+        if (newParent?.Path.IsChildren(department!.Path) ?? false)
+        {
+            return Errors.DepartmentErrors.Cycle().ToFailure();
+        }
+
+        var oldPathStr = department!.Path.ToString();
+        var oldDepth = department.Depth;
+
+        var validationResult = department.SetParent(newParent);
+        if (validationResult.IsFailure)
+            return validationResult.Error;
+
+
+        var newPathStr = department.Path.ToString();
+        int depthDelta = department.Depth - oldDepth;
+
+        await _context.Database.ExecuteSqlInterpolatedAsync($@"
+            UPDATE ""departments""
+            SET 
+                ""path"" = {newPathStr}::ltree || subpath(""path"", nlevel({oldPathStr}::ltree)),
+                ""depth"" = ""depth"" + {depthDelta},
+                ""updated_at"" = {DateTime.UtcNow}
+            WHERE ""path"" <@ {oldPathStr}::ltree
+                AND ""department_id"" != {id}",
+            cancellationToken);
+
+        return department;
     }
 
     public async Task<Result<Department, Failure>> GetByAsync(Expression<Func<Department, bool>> predicate, bool ignoreQueryFilters, CancellationToken cancellationToken)
@@ -160,7 +226,7 @@ internal class DepartmentsRepository : IDepartmentsRepository
     {
         var query = _context.Departments.AsQueryable();
 
-        if(ignoreQueryFilters)
+        if (ignoreQueryFilters)
         {
             query = query.IgnoreQueryFilters();
         }

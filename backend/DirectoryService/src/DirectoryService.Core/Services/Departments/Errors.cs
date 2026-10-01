@@ -37,5 +37,11 @@ public partial class Errors
 
         public static Error PositionConflict() =>
             Error.Conflict("There is already such a position within the department", "departments.is.conflict.position");
+
+        public static Error MoveParentIsDeleted() =>
+            Error.Conflict("The parent with this ID was deleted.", "department.move.parent_deleted");
+
+        public static Error Cycle() => 
+            Error.Conflict("A parent cannot be a descendant of a node.", "department.move.cycle");
     }
 }

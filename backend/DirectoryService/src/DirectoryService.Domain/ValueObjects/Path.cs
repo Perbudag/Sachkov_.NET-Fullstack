@@ -34,6 +34,21 @@ public record Path
         return new Path(slugs);
     }
 
+    public bool IsChildren(Path parentPath)
+    {
+        if (parentPath.Slugs.Count > Slugs.Count)
+            return false;
+
+        for(int i = 0; i < parentPath.Slugs.Count; i++)
+        {
+            if (Slugs[i] != parentPath.Slugs[i])
+                return false;
+        }
+
+        return true;
+    }
 
     public override string ToString() => Value;
+
+    public static implicit operator string(Path path) => path.Value;
 }

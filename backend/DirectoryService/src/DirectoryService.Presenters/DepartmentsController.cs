@@ -2,6 +2,7 @@
 using DirectoryService.Core;
 using DirectoryService.Core.Services.Departments.AddLocation;
 using DirectoryService.Core.Services.Departments.AddPosition;
+using DirectoryService.Core.Services.Departments.ChangeParent;
 using DirectoryService.Core.Services.Departments.Create;
 using DirectoryService.Core.Services.Departments.Delete;
 using DirectoryService.Core.Services.Departments.GetAll;
@@ -99,6 +100,16 @@ public class DepartmentsController : ControllerBase
         CancellationToken cancellationToken = default)
     {
         return await sender.SendAsync((UpdateDepartmentCommand)(id, request), cancellationToken);
+    }
+
+    [HttpPut("/departments/{id:guid}/parent")]
+    public async Task<EndpointResult<PutDepartmentParentDto>> PutParent(
+        [FromServices] ISender sender,
+        [FromRoute] Guid id,
+        [FromBody] PutDepartmentParentRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        return await sender.SendAsync((ChangeDepartmentParentCommand)(id, request), cancellationToken);
     }
 
 

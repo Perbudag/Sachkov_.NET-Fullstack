@@ -1,9 +1,9 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Abstractions.Database;
-using DirectoryService.Core.Fails;
 using DirectoryService.Core.Services.Locations;
 using DirectoryService.Core.Services.Positions;
+using DirectoryService.Domain.Errors;
 using Microsoft.Extensions.Logging;
 using Shared;
 
@@ -32,10 +32,10 @@ internal class AddPositionDepartmentHandler : ICommandHandler<AddPositionDepartm
         var errors = new List<Error>();
 
         if (command.DepartmentId == Guid.Empty)
-            errors.Add(Errors.SharedErrors.IsRequired("DepartmentId", "departments.validation.error"));
+            errors.Add(SharedErrors.IsRequired("DepartmentId", "departments.validation.error"));
 
         if (command.PositionId == Guid.Empty)
-            errors.Add(Errors.SharedErrors.IsRequired("PositionId", "departments.validation.error"));
+            errors.Add(SharedErrors.IsRequired("PositionId", "departments.validation.error"));
 
         if (errors.Count > 0)
             return new Failure(errors);

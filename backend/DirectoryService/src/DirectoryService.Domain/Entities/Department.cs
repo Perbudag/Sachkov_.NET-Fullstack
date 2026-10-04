@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Domain.Abstracts;
+using DirectoryService.Domain.Errors;
 using DirectoryService.Domain.ValueObjects;
 using Shared;
 using Path = DirectoryService.Domain.ValueObjects.Path;
@@ -64,16 +65,11 @@ public class Department : ISoftDeletable
     {
         if (this == parent)
         {
-            var error = Error.Conflict("Department не может быть родителем" +
-                "для самого себя", "department.is.conflict");
-
-            return error.ToFailure();
+            return DepartmentErrors.MoveParentIsSelf().ToFailure();
         }
-        if (parent != null 
-            && (parent.Path.ToString().StartsWith(this.Path.ToString() + ".", StringComparison.Ordinal) 
-                || string.Equals(this.Path.ToString(), parent.Path.ToString(), StringComparison.Ordinal)))
+        if (parent != null  && parent.Path.IsChildren(Path))
         {
-            var error = Error.Conflict("Department не может быть потомком нового родителя", "department.is.conflict");
+            var error = DepartmentErrors.Cycle();
             return error.ToFailure();
         }
 

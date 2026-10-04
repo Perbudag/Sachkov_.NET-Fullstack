@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryService.Domain.Errors;
 using Shared;
 using System.Text.RegularExpressions;
 
@@ -16,11 +17,18 @@ namespace DirectoryService.Domain.ValueObjects
         public static Result<Slug, Failure> Create(string value)
         {
             if (value.Length < MIN_LENGTH || value.Length > MAX_LENGTH)
-                return Error.Validation($"slug (от {MIN_LENGTH} до {MAX_LENGTH} символов)", "slug.validation.error").ToFailure();
+            {
+                return SharedErrors.InvalidLength("Slug", MIN_LENGTH, MAX_LENGTH, "slug.validation.error").ToFailure();
+            }
 
             if (!SlugPattern.IsMatch(value))
-                return Error.Validation("slug (только строчные латинские буквы, цифры и дефисы, " +
-                    "не начинается и не заканчивается дефисом)", "slug.validation.error").ToFailure();
+            {
+                return SharedErrors.InvalidFormat(
+                    "Slug",
+                    "only lowercase letters, digits, and hyphens; cannot start or end with a hyphen.",
+                    "slug.validation.error"
+                ).ToFailure();
+            }
 
             return new Slug(value);
         }

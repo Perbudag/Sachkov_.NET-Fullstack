@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryService.Domain.Errors;
 using Shared;
 
 namespace DirectoryService.Domain.Entities;
@@ -32,12 +33,12 @@ public class DepartmentPosition
 
         if (departmentId == Guid.Empty)
         {
-            errors.Add(Error.Validation("departmentId не должен быть пустым.", "department.position.validation.error", nameof(departmentId)));
+            SharedErrors.IsRequired(nameof(departmentId), "department.position.validation.error");
         }
 
         if (positionId == Guid.Empty)
         {
-            errors.Add(Error.Validation("positionId не должен быть пустым.", "department.position.validation.error", nameof(positionId)));
+            SharedErrors.IsRequired(nameof(positionId), "department.position.validation.error");
         }
 
         if (errors.Count > 0)

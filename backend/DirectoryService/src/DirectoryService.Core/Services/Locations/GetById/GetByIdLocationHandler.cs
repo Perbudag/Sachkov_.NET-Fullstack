@@ -3,7 +3,7 @@ using DirectoryService.Contracts.Locations;
 using DirectoryService.Contracts.SharedDto;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Abstractions.Database;
-using DirectoryService.Core.Fails;
+using DirectoryService.Domain.Errors;
 using Microsoft.EntityFrameworkCore;
 using Shared;
 
@@ -21,7 +21,7 @@ internal class GetByIdLocationHandler : IQueryHandler<LocationDto, GetByIdLocati
     public async Task<Result<LocationDto, Failure>> HandleAsync(GetByIdLocationQuery query, CancellationToken cancellationToken)
     {
         if (query.Id == Guid.Empty)
-            return Errors.SharedErrors.IsRequired("Id", "locations.validation.error").ToFailure();
+            return SharedErrors.IsRequired("Id", "locations.validation.error").ToFailure();
 
 
         var response = await _context.LocationsRead
@@ -42,7 +42,7 @@ internal class GetByIdLocationHandler : IQueryHandler<LocationDto, GetByIdLocati
 
 
         if (response == null)
-            return Errors.LocationErrors.NotFoud().ToFailure();
+            return LocationErrors.NotFoud().ToFailure();
 
 
         return response;

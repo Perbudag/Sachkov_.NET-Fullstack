@@ -2,7 +2,7 @@
 using DirectoryService.Contracts.Departments;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Abstractions.Database;
-using DirectoryService.Core.Fails;
+using DirectoryService.Domain.Errors;
 using Microsoft.EntityFrameworkCore;
 using Shared;
 
@@ -20,7 +20,7 @@ internal class GetByIdDepartmentHandler : IQueryHandler<DepartmentDto, GetByIdDe
     public async Task<Result<DepartmentDto, Failure>> HandleAsync(GetByIdDepartmentQuery query, CancellationToken cancellationToken)
     {
         if (query.Id == Guid.Empty)
-            return Errors.SharedErrors.IsRequired("Id", "departments.validation.error").ToFailure();
+            return SharedErrors.IsRequired("Id", "departments.validation.error").ToFailure();
 
 
         var response = await _context.DepartmentsRead
@@ -37,7 +37,7 @@ internal class GetByIdDepartmentHandler : IQueryHandler<DepartmentDto, GetByIdDe
 
 
         if (response == null)
-            return Errors.DepartmentErrors.NotFoud().ToFailure();
+            return DepartmentErrors.NotFoud().ToFailure();
 
 
         return response;

@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Abstractions.Database;
-using DirectoryService.Core.Fails;
+using DirectoryService.Domain.Errors;
 using Shared;
 
 namespace DirectoryService.Core.Services.Locations.Delete;
@@ -21,7 +21,7 @@ internal class DeleteLocationHandler : ICommandHandler<DeleteLocationCommand>
     {
         if (command.Id == Guid.Empty)
         {
-            return Errors.SharedErrors.IsRequired("Id", "locations.validation.error").ToFailure();
+            return SharedErrors.IsRequired("Id", "locations.validation.error").ToFailure();
         }
 
         var locationResult = await _repository.GetByAsync(l => l.Id == command.Id, cancellationToken);

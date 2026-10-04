@@ -1,8 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Abstractions.Database;
-using DirectoryService.Core.Fails;
-using DirectoryService.Core.Services.Locations;
+using DirectoryService.Domain.Errors;
 using Shared;
 
 namespace DirectoryService.Core.Services.Positions.Delete;
@@ -22,7 +21,7 @@ internal class DeletePositionHandler : ICommandHandler<DeletePositionCommand>
     {
         if (command.Id == Guid.Empty)
         {
-            return Errors.SharedErrors.IsRequired("Id", "positions.validation.error").ToFailure();
+            return SharedErrors.IsRequired("Id", "positions.validation.error").ToFailure();
         }
 
         var positionResult = await _repository.GetByAsync(p => p.Id == command.Id, cancellationToken);

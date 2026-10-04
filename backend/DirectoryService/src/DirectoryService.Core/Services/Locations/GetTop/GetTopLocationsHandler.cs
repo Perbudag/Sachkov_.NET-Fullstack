@@ -3,7 +3,6 @@ using DirectoryService.Contracts.Locations;
 using DirectoryService.Contracts.SharedDto;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Abstractions.Database;
-using DirectoryService.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Shared;
 

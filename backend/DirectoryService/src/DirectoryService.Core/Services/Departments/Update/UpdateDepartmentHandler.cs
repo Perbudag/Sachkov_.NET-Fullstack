@@ -2,9 +2,8 @@
 using DirectoryService.Contracts.Departments;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Abstractions.Database;
-using DirectoryService.Core.Fails;
-using DirectoryService.Core.Services.Locations;
 using DirectoryService.Core.Validation;
+using DirectoryService.Domain.Errors;
 using DirectoryService.Domain.ValueObjects;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
@@ -40,7 +39,7 @@ internal class UpdateDepartmentHandler : ICommandHandler<DepartmentDto, UpdateDe
 
         if (command.Id == Guid.Empty)
         {
-            return Errors.SharedErrors.IsRequired("DepartmentId", "departments.validation.error").ToFailure();
+            return SharedErrors.IsRequired("DepartmentId", "departments.validation.error").ToFailure();
         }
 
         var department = await _departmentsRepository.GetByAsync(d => d.Id == command.Id, cancellationToken);
@@ -55,7 +54,7 @@ internal class UpdateDepartmentHandler : ICommandHandler<DepartmentDto, UpdateDe
 
             if ((await _departmentsRepository.GetByAsync(d => d.Name == name.Value, true, cancellationToken)).IsSuccess)
             {
-                return Errors.DepartmentErrors.Conflict(name.ToString()).ToFailure();
+                return DepartmentErrors.Conflict(name.ToString()).ToFailure();
             }
 
             department.Value.SetName(name.Value);

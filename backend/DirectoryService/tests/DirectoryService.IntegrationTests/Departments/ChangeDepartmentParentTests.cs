@@ -54,14 +54,14 @@ public class ChangeDepartmentParentTests : DirectoryBaseTests
             childId,
             cancellationToken));
 
-        var request = new PutDepartmentParentRequest(newParentId);
+        var request = new MoveDepartmentRequest(newParentId);
 
         // act
         var response = await HttpClient.PutAsJsonAsync(
             $"departments/{departmentId}/parent",
             request,
             cancellationToken);
-        var envelope = await response.Content.ReadFromJsonAsync<Envelope<PutDepartmentParentDto?>>(
+        var envelope = await response.Content.ReadFromJsonAsync<Envelope<MoveDepartmentDto?>>(
             cancellationToken);
 
         var state = await ExecuteInDbAsync(db =>
@@ -146,14 +146,14 @@ public class ChangeDepartmentParentTests : DirectoryBaseTests
             childId,
             cancellationToken));
 
-        var request = new PutDepartmentParentRequest(null);
+        var request = new MoveDepartmentRequest(null);
 
         // act
         var response = await HttpClient.PutAsJsonAsync(
             $"departments/{departmentId}/parent",
             request,
             cancellationToken);
-        var envelope = await response.Content.ReadFromJsonAsync<Envelope<PutDepartmentParentDto?>>(
+        var envelope = await response.Content.ReadFromJsonAsync<Envelope<MoveDepartmentDto?>>(
             cancellationToken);
 
         var state = await ExecuteInDbAsync(db =>
@@ -254,14 +254,14 @@ public class ChangeDepartmentParentTests : DirectoryBaseTests
                 })
                 .ToListAsync(cancellationToken));
 
-        var request = new PutDepartmentParentRequest(grandChildId);
+        var request = new MoveDepartmentRequest(grandChildId);
 
         // act
         var response = await HttpClient.PutAsJsonAsync(
             $"departments/{departmentId}/parent",
             request,
             cancellationToken);
-        var envelope = await response.Content.ReadFromJsonAsync<Envelope<PutDepartmentParentDto?>>(
+        var envelope = await response.Content.ReadFromJsonAsync<Envelope<MoveDepartmentDto?>>(
             cancellationToken);
 
         var stateAfter = await ExecuteInDbAsync(db =>
@@ -319,14 +319,14 @@ public class ChangeDepartmentParentTests : DirectoryBaseTests
                 })
                 .FirstAsync(cancellationToken));
 
-        var request = new PutDepartmentParentRequest(departmentId);
+        var request = new MoveDepartmentRequest(departmentId);
 
         // act
         var response = await HttpClient.PutAsJsonAsync(
             $"departments/{departmentId}/parent",
             request,
             cancellationToken);
-        var envelope = await response.Content.ReadFromJsonAsync<Envelope<PutDepartmentParentDto?>>(
+        var envelope = await response.Content.ReadFromJsonAsync<Envelope<MoveDepartmentDto?>>(
             cancellationToken);
 
         var pathAfter = await ExecuteInDbAsync(db =>
@@ -402,14 +402,14 @@ public class ChangeDepartmentParentTests : DirectoryBaseTests
                 })
                 .FirstAsync(cancellationToken));
 
-        var request = new PutDepartmentParentRequest(deletedParentId);
+        var request = new MoveDepartmentRequest(deletedParentId);
 
         // act
         var response = await HttpClient.PutAsJsonAsync(
             $"departments/{departmentId}/parent",
             request,
             cancellationToken);
-        var envelope = await response.Content.ReadFromJsonAsync<Envelope<PutDepartmentParentDto?>>(
+        var envelope = await response.Content.ReadFromJsonAsync<Envelope<MoveDepartmentDto?>>(
             cancellationToken);
 
         var stateAfter = await ExecuteInDbAsync(db =>
@@ -441,14 +441,14 @@ public class ChangeDepartmentParentTests : DirectoryBaseTests
     {
         // arrange
         var cancellationToken = TestContext.Current.CancellationToken;
-        var request = new PutDepartmentParentRequest(null);
+        var request = new MoveDepartmentRequest(null);
 
         // act
         var response = await HttpClient.PutAsJsonAsync(
             $"departments/{Guid.NewGuid()}/parent",
             request,
             cancellationToken);
-        var envelope = await response.Content.ReadFromJsonAsync<Envelope<PutDepartmentParentDto?>>(
+        var envelope = await response.Content.ReadFromJsonAsync<Envelope<MoveDepartmentDto?>>(
             cancellationToken);
 
         // assert
@@ -478,14 +478,14 @@ public class ChangeDepartmentParentTests : DirectoryBaseTests
             sourceParentId,
             cancellationToken));
 
-        var request = new PutDepartmentParentRequest(Guid.NewGuid());
+        var request = new MoveDepartmentRequest(Guid.NewGuid());
 
         // act
         var response = await HttpClient.PutAsJsonAsync(
             $"departments/{departmentId}/parent",
             request,
             cancellationToken);
-        var envelope = await response.Content.ReadFromJsonAsync<Envelope<PutDepartmentParentDto?>>(
+        var envelope = await response.Content.ReadFromJsonAsync<Envelope<MoveDepartmentDto?>>(
             cancellationToken);
 
         // assert
@@ -537,14 +537,14 @@ public class ChangeDepartmentParentTests : DirectoryBaseTests
                 })
                 .ToListAsync(cancellationToken));
 
-        var request = new PutDepartmentParentRequest(parentId);
+        var request = new MoveDepartmentRequest(parentId);
 
         // act
         var response = await HttpClient.PutAsJsonAsync(
             $"departments/{departmentId}/parent",
             request,
             cancellationToken);
-        var envelope = await response.Content.ReadFromJsonAsync<Envelope<PutDepartmentParentDto?>>(
+        var envelope = await response.Content.ReadFromJsonAsync<Envelope<MoveDepartmentDto?>>(
             cancellationToken);
 
         var stateAfter = await ExecuteInDbAsync(db =>
@@ -634,14 +634,14 @@ public class ChangeDepartmentParentTests : DirectoryBaseTests
 
         try
         {
-            var request = new PutDepartmentParentRequest(newParentId);
+            var request = new MoveDepartmentRequest(newParentId);
 
             // act
             var response = await HttpClient.PutAsJsonAsync(
                 $"departments/{departmentId}/parent",
                 request,
                 cancellationToken);
-            var envelope = await response.Content.ReadFromJsonAsync<Envelope<PutDepartmentParentDto?>>(
+            var envelope = await response.Content.ReadFromJsonAsync<Envelope<MoveDepartmentDto?>>(
                 cancellationToken);
 
             var updateStatementCount = await GetDepartmentUpdateStatementCountAsync(cancellationToken);

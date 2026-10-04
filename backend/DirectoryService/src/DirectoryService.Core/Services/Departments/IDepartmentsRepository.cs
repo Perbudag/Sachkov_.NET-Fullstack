@@ -8,7 +8,7 @@ namespace DirectoryService.Core.Services.Departments;
 public interface IDepartmentsRepository
 {
     Task<UnitResult<Failure>> AddAsync(Department department, CancellationToken cancellationToken);
-    Task<Result<Department, Failure>> UpdateParentAsync(Guid id, Guid? ParentId, CancellationToken cancellationToken);
+    Task<UnitResult<Failure>> MoveAsync(Department department, Department? newParent, CancellationToken cancellationToken);
     Task<Result<Department, Failure>> GetByAsync(Expression<Func<Department, bool>> predicate, bool ignoreQueryFilters, CancellationToken cancellationToken);
     Task<Result<Department, Failure>> GetByAsync(Expression<Func<Department, bool>> predicate, CancellationToken cancellationToken);
     IAsyncEnumerable<Department> GetByAsyncEnum(Expression<Func<Department, bool>> predicate, bool ignoreQueryFilters = false);

@@ -3,8 +3,8 @@ using Dapper;
 using DirectoryService.Contracts.Locations;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Abstractions.Database;
-using DirectoryService.Core.Fails;
 using DirectoryService.Core.Validation;
+using DirectoryService.Domain.Errors;
 using FluentValidation;
 using Shared;
 
@@ -89,7 +89,7 @@ internal class GetAllLocationsDapperHandler : IQueryHandler<PageResult<LocationL
 
         if (SordBy == null)
         {
-            return Errors.LocationErrors.ValidationError("Некорректное поле сортировки", nameof(query.SortBy)).ToFailure();
+            return LocationErrors.ValidationError("Некорректное поле сортировки", nameof(query.SortBy)).ToFailure();
         }
 
         if (string.Equals(query.SortDir, "asc", StringComparison.OrdinalIgnoreCase))
@@ -102,7 +102,7 @@ internal class GetAllLocationsDapperHandler : IQueryHandler<PageResult<LocationL
         }
         else
         {
-            return Errors.LocationErrors.ValidationError("Значениями SortOrder могут быть только \"asc\" и \"desc\"",
+            return LocationErrors.ValidationError("Значениями SortOrder могут быть только \"asc\" и \"desc\"",
                 nameof(query.SortDir)).ToFailure();
         }
 
@@ -117,7 +117,7 @@ internal class GetAllLocationsDapperHandler : IQueryHandler<PageResult<LocationL
             splitOn: "TotalCount");
 
         if (query.Page > 1 && totalCount == 0)
-            return Errors.LocationErrors.ValidationError($"Номер страницы превысил максимальное значение",
+            return LocationErrors.ValidationError($"Номер страницы превысил максимальное значение",
                 nameof(query.Page)).ToFailure();
 
         return new PageResult<LocationListItemDto[]>(result.ToArray(), totalCount, query.Page, query.PageSize);

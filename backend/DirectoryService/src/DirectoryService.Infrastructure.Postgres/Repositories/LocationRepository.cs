@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
-using DirectoryService.Core.Fails;
 using DirectoryService.Core.Services.Locations;
 using DirectoryService.Domain.Entities;
+using DirectoryService.Domain.Errors;
 using DirectoryService.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -27,7 +27,7 @@ internal class LocationRepository : ILocationsRepository
         {
             _logger.LogError("Failed to create location with id: {Id}", location.Id);
 
-            return Errors.LocationErrors.ConflictName(location.Name.ToString()).ToFailure();
+            return LocationErrors.ConflictName(location.Name.ToString()).ToFailure();
         }
 
         await _context.Locations.AddAsync(location, cancellationToken);
@@ -47,7 +47,7 @@ internal class LocationRepository : ILocationsRepository
         var location = await query.FirstOrDefaultAsync(predicate, cancellationToken);
 
         if (location == null)
-            return Errors.LocationErrors.NotFoud().ToFailure();
+            return LocationErrors.NotFoud().ToFailure();
 
         return location;
     }

@@ -1,9 +1,9 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Abstractions.Database;
-using DirectoryService.Core.Fails;
 using DirectoryService.Core.Services.Locations;
 using DirectoryService.Domain.Entities;
+using DirectoryService.Domain.Errors;
 using Microsoft.Extensions.Logging;
 using Shared;
 
@@ -32,10 +32,10 @@ internal class RemoveLocationInDepartmentHandler : ICommandHandler<RemoveLocatio
         var errors = new List<Error>();
 
         if (command.DepartmentId == Guid.Empty)
-            errors.Add(Errors.SharedErrors.IsRequired("DepartmentId", "departments.validation.error"));
+            errors.Add(SharedErrors.IsRequired("DepartmentId", "departments.validation.error"));
 
         if (command.LocationId == Guid.Empty)
-            errors.Add(Errors.SharedErrors.IsRequired("LocationId", "departments.validation.error"));
+            errors.Add(SharedErrors.IsRequired("LocationId", "departments.validation.error"));
 
 
         if (errors.Count > 0)

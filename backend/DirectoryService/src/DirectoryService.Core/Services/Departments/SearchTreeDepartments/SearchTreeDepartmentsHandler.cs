@@ -5,10 +5,8 @@ using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Abstractions.Database;
 using DirectoryService.Core.Services.Departments.SearchDepartments;
 using DirectoryService.Core.Validation;
-using DirectoryService.Domain.ValueObjects;
 using FluentValidation;
 using Shared;
-using Path = DirectoryService.Domain.ValueObjects.Path;
 
 namespace DirectoryService.Core.Services.Departments.SearchTreeDepartments;
 

@@ -2,10 +2,10 @@
 using DirectoryService.Contracts.Departments;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Abstractions.Database;
-using DirectoryService.Core.Fails;
 using DirectoryService.Core.Services.Departments.GetDepartmentsTree;
 using DirectoryService.Core.Validation;
 using DirectoryService.Domain.Entities;
+using DirectoryService.Domain.Errors;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Shared;
@@ -39,14 +39,14 @@ internal class GetDepartmentsTreeHandler : IQueryHandler<PageResult<DepartmentTr
             maxPageNumber++;
 
         if (query.Page > maxPageNumber && maxPageNumber != 0)
-            return Errors.DepartmentErrors.ValidationError($"Номер страницы превысил максимальное значение (макс. {maxPageNumber})",
+            return DepartmentErrors.ValidationError($"Номер страницы превысил максимальное значение (макс. {maxPageNumber})",
                 nameof(query.Page)).ToFailure();
 
         var isAscending = string.Equals(query.SortDir, "asc", StringComparison.OrdinalIgnoreCase);
         var isDescending = string.Equals(query.SortDir, "desc", StringComparison.OrdinalIgnoreCase);
 
         if (!isAscending && !isDescending)
-            return Errors.DepartmentErrors.ValidationError("Значениями SortOrder могут быть только \"asc\" и \"desc\"",
+            return DepartmentErrors.ValidationError("Значениями SortOrder могут быть только \"asc\" и \"desc\"",
                 nameof(query.SortDir)).ToFailure();
 
         Expression<Func<Department, object>>? keySelector = query.SortBy switch
@@ -61,7 +61,7 @@ internal class GetDepartmentsTreeHandler : IQueryHandler<PageResult<DepartmentTr
 
 #pragma warning disable CA1508 // Предотвращение появления неиспользуемого условного кода
         if (keySelector == null)
-            return Errors.DepartmentErrors.ValidationError("Некорректное поле сортировки", nameof(query.SortBy)).ToFailure();
+            return DepartmentErrors.ValidationError("Некорректное поле сортировки", nameof(query.SortBy)).ToFailure();
 #pragma warning restore CA1508 // Предотвращение появления неиспользуемого условного кода
 
         departmentsQuery = isAscending

@@ -2,9 +2,9 @@
 
 namespace DirectoryService.Core.Services.Departments.ChangeParent;
 
-public class ChangeDepartmentParentValidator : AbstractValidator<ChangeDepartmentParentCommand>
+public class MoveDepartmentValidator : AbstractValidator<MoveDepartmentCommand>
 {
-    public ChangeDepartmentParentValidator()
+    public MoveDepartmentValidator()
     {
         RuleFor(d => d.Id)
             .Must((command, id) => id != command.Request.ParentId)

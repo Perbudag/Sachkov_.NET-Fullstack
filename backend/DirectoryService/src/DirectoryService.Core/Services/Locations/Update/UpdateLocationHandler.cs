@@ -3,8 +3,8 @@ using DirectoryService.Contracts.Locations;
 using DirectoryService.Contracts.SharedDto;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Abstractions.Database;
-using DirectoryService.Core.Fails;
 using DirectoryService.Core.Validation;
+using DirectoryService.Domain.Errors;
 using DirectoryService.Domain.ValueObjects;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
@@ -52,7 +52,7 @@ internal class UpdateLocationHandler : ICommandHandler<LocationDto, UpdateLocati
 
             if ((await _repository.GetByAsync(l => l.Name == name.Value, true, cancellationToken)).IsSuccess)
             {
-                return Errors.LocationErrors.ConflictName(name.ToString()).ToFailure();
+                return LocationErrors.ConflictName(name.ToString()).ToFailure();
             }
 
             locationResult.Value.SetName(name.Value);

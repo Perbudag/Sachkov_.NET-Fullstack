@@ -2,7 +2,7 @@
 using DirectoryService.Contracts.Positions;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Abstractions.Database;
-using DirectoryService.Core.Fails;
+using DirectoryService.Domain.Errors;
 using Microsoft.EntityFrameworkCore;
 using Shared;
 
@@ -20,7 +20,7 @@ internal class GetByIdPositionsHandler : IQueryHandler<PositionDto, GetByIdPosit
     public async Task<Result<PositionDto, Failure>> HandleAsync(GetByIdPositionsQuery query, CancellationToken cancellationToken)
     {
         if (query.Id == Guid.Empty)
-            return Errors.SharedErrors.IsRequired("Id", "positions.validation.error").ToFailure();
+            return SharedErrors.IsRequired("Id", "positions.validation.error").ToFailure();
 
         var response = await _context.PositionsRead
             .Where(p => p.Id == query.Id)
@@ -31,7 +31,7 @@ internal class GetByIdPositionsHandler : IQueryHandler<PositionDto, GetByIdPosit
             .FirstOrDefaultAsync(cancellationToken);
 
         if (response == null)
-            return Errors.PositionsErrors.NotFoud().ToFailure();
+            return PositionsErrors.NotFoud().ToFailure();
 
         return response;
     }

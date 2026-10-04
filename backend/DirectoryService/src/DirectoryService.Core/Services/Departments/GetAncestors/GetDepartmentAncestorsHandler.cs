@@ -3,8 +3,8 @@ using Dapper;
 using DirectoryService.Contracts.Departments;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Abstractions.Database;
-using DirectoryService.Core.Fails;
 using DirectoryService.Core.Validation;
+using DirectoryService.Domain.Errors;
 using FluentValidation;
 using Shared;
 
@@ -77,7 +77,7 @@ namespace DirectoryService.Core.Services.Departments.GetAncestors
 
             if (SordBy == null)
             {
-                return Errors.DepartmentErrors.ValidationError("Некорректное поле сортировки", nameof(query.SortBy)).ToFailure();
+                return DepartmentErrors.ValidationError("Некорректное поле сортировки", nameof(query.SortBy)).ToFailure();
             }
 
             if (string.Equals(query.SortDir, "asc", StringComparison.OrdinalIgnoreCase))
@@ -90,7 +90,7 @@ namespace DirectoryService.Core.Services.Departments.GetAncestors
             }
             else
             {
-                return Errors.DepartmentErrors.ValidationError("Значениями SortDir могут быть только \"asc\" и \"desc\"",
+                return DepartmentErrors.ValidationError("Значениями SortDir могут быть только \"asc\" и \"desc\"",
                     nameof(query.SortDir)).ToFailure();
             }
 
@@ -105,7 +105,7 @@ namespace DirectoryService.Core.Services.Departments.GetAncestors
             splitOn: "TotalCount");
 
             if (query.Page > 1 && totalCount == 0)
-                return Errors.DepartmentErrors.ValidationError($"Номер страницы превысил максимальное значение",
+                return DepartmentErrors.ValidationError($"Номер страницы превысил максимальное значение",
                     nameof(query.Page)).ToFailure();
 
             return new PageResult<DepartmentTreeNodeDto[]>(result.ToArray(), totalCount, query.Page, query.PageSize);

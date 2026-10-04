@@ -2,10 +2,10 @@
 using DirectoryService.Contracts.Departments;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Abstractions.Database;
-using DirectoryService.Core.Fails;
 using DirectoryService.Core.Services.Locations;
 using DirectoryService.Core.Validation;
 using DirectoryService.Domain.Entities;
+using DirectoryService.Domain.Errors;
 using DirectoryService.Domain.ValueObjects;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
@@ -51,7 +51,7 @@ internal class CreateDepartmentHandler : ICommandHandler<Guid, CreateDepartmentC
 
             if (parentResult.IsFailure)
             {
-                return Errors.DepartmentErrors.NotFoudParent().ToFailure();
+                return DepartmentErrors.NotFoudParent().ToFailure();
             }
 
             parent = parentResult.Value;
@@ -67,7 +67,7 @@ internal class CreateDepartmentHandler : ICommandHandler<Guid, CreateDepartmentC
                 .Where(lId => !locations
                 .Select(l => l.Id)
                 .Contains(lId))
-                .Select(lId => Errors.LocationErrors.NotFoud(lId));
+                .Select(lId => LocationErrors.NotFoud(lId));
 
             if (errors.Any())
             {

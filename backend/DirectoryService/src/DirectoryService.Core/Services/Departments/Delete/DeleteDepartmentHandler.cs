@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Abstractions.Database;
-using DirectoryService.Core.Fails;
+using DirectoryService.Domain.Errors;
 using Shared;
 
 namespace DirectoryService.Core.Services.Departments.Delete;
@@ -21,7 +21,7 @@ internal class DeleteDepartmentHandler : ICommandHandler<DeleteDepartmentCommand
     {
         if (command.Id == Guid.Empty)
         {
-            return Errors.SharedErrors.IsRequired("Id", "departments.validation.error").ToFailure();
+            return SharedErrors.IsRequired("Id", "departments.validation.error").ToFailure();
         }
 
         var departmentResult = await _repository.GetByAsync(d => d.Id == command.Id, cancellationToken);
@@ -33,7 +33,7 @@ internal class DeleteDepartmentHandler : ICommandHandler<DeleteDepartmentCommand
 
         if((await _repository.CountByAsync(d => d.ParentId == command.Id, true, cancellationToken)) > 0)
         {
-            return Errors.DepartmentErrors.ConflictHasChildren().ToFailure();
+            return DepartmentErrors.ConflictHasChildren().ToFailure();
         }
 
         departmentResult.Value.SoftDelete();

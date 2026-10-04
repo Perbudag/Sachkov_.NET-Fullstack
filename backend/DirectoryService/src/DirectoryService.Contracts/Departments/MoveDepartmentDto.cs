@@ -4,7 +4,7 @@ using System.Text;
 
 namespace DirectoryService.Contracts.Departments;
 
-public record PutDepartmentParentDto(Guid Id,
+public record MoveDepartmentDto(Guid Id,
                                          Guid? ParentId,
                                          string Path,
                                          int Depth,

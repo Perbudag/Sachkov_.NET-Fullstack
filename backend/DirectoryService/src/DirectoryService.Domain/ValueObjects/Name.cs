@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryService.Domain.Errors;
 using Shared;
 
 namespace DirectoryService.Domain.ValueObjects;
@@ -14,13 +15,15 @@ public record Name
 
     public static Result<Name, Failure> Create(string value)
     {
-        if(string.IsNullOrWhiteSpace(value))
+        if (string.IsNullOrWhiteSpace(value))
         {
-            return Error.Validation("name не может быть пустым", "name.validation.error").ToFailure();
+            return SharedErrors.IsRequired("Name", "name.validation.error").ToFailure();
         }
 
         if (value.Length < MIN_LENGTH || value.Length > MAX_LENGTH)
-            return Error.Validation($"name (от {MIN_LENGTH} до {MAX_LENGTH} символов)", "name.validation.error").ToFailure();
+        {
+            return SharedErrors.InvalidLength("Name", MIN_LENGTH, MAX_LENGTH, "name.validation.error").ToFailure();
+        }
 
         return new Name(value);
     }

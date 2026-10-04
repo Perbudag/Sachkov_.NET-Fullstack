@@ -2,9 +2,9 @@
 using DirectoryService.Contracts.Departments;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Abstractions.Database;
-using DirectoryService.Core.Fails;
 using DirectoryService.Core.Validation;
 using DirectoryService.Domain.Entities;
+using DirectoryService.Domain.Errors;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Shared;
@@ -44,7 +44,7 @@ internal class GetAllDepartmentsHandler : IQueryHandler<PageResult<DepartmentLis
             maxPageNumber++;
 
         if (query.Page > maxPageNumber && maxPageNumber != 0)
-            return Errors.DepartmentErrors.ValidationError($"Номер страницы превысил максимальное значение (макс. {maxPageNumber})",
+            return DepartmentErrors.ValidationError($"Номер страницы превысил максимальное значение (макс. {maxPageNumber})",
                 nameof(query.Page)).ToFailure();
 
 
@@ -52,7 +52,7 @@ internal class GetAllDepartmentsHandler : IQueryHandler<PageResult<DepartmentLis
         var isDescending = string.Equals(query.SortDir, "desc", StringComparison.OrdinalIgnoreCase);
 
         if (!isAscending && !isDescending)
-            return Errors.DepartmentErrors.ValidationError("Значениями SortOrder могут быть только \"asc\" и \"desc\"",
+            return DepartmentErrors.ValidationError("Значениями SortOrder могут быть только \"asc\" и \"desc\"",
                 nameof(query.SortDir)).ToFailure();
 
         Expression<Func<Department, object>>? keySelector = query.SortBy switch
@@ -66,7 +66,7 @@ internal class GetAllDepartmentsHandler : IQueryHandler<PageResult<DepartmentLis
 
 #pragma warning disable CA1508 // Предотвращение появления неиспользуемого условного кода
         if (keySelector == null)
-            return Errors.DepartmentErrors.ValidationError("Некорректное поле сортировки", nameof(query.SortBy)).ToFailure();
+            return DepartmentErrors.ValidationError("Некорректное поле сортировки", nameof(query.SortBy)).ToFailure();
 #pragma warning restore CA1508 // Предотвращение появления неиспользуемого условного кода
 
         departmentQuery = isAscending

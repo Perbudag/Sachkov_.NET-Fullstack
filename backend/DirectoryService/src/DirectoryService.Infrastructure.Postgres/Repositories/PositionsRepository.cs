@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
-using DirectoryService.Core.Fails;
 using DirectoryService.Core.Services.Positions;
 using DirectoryService.Domain.Entities;
+using DirectoryService.Domain.Errors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared;
@@ -26,7 +26,7 @@ internal class PositionsRepository : IPositionsRepository
         {
             _logger.LogError("Failed to create position with id: {Id}", position.Id);
 
-            return Errors.PositionsErrors.ConflictName(position.Name.ToString()).ToFailure();
+            return PositionsErrors.ConflictName(position.Name.ToString()).ToFailure();
         }
 
         await _context.Positions.AddAsync(position, cancellationToken);
@@ -46,7 +46,7 @@ internal class PositionsRepository : IPositionsRepository
         var position = await query.FirstOrDefaultAsync(predicate, cancellationToken);
 
         if (position == null)
-            return Errors.PositionsErrors.NotFoud().ToFailure();
+            return PositionsErrors.NotFoud().ToFailure();
 
         return position;
     }

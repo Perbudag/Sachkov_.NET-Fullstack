@@ -103,13 +103,13 @@ public class DepartmentsController : ControllerBase
     }
 
     [HttpPut("/departments/{id:guid}/parent")]
-    public async Task<EndpointResult<PutDepartmentParentDto>> PutParent(
+    public async Task<EndpointResult<MoveDepartmentDto>> Move(
         [FromServices] ISender sender,
         [FromRoute] Guid id,
-        [FromBody] PutDepartmentParentRequest request,
+        [FromBody] MoveDepartmentRequest request,
         CancellationToken cancellationToken = default)
     {
-        return await sender.SendAsync((ChangeDepartmentParentCommand)(id, request), cancellationToken);
+        return await sender.SendAsync((MoveDepartmentCommand)(id, request), cancellationToken);
     }
 
 

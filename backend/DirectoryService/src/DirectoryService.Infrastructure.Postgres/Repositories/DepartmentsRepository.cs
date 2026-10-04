@@ -1,12 +1,11 @@
 ﻿using CSharpFunctionalExtensions;
-using DirectoryService.Core.Fails;
 using DirectoryService.Core.Services.Departments;
 using DirectoryService.Domain.Entities;
+using DirectoryService.Domain.Errors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared;
 using System.Linq.Expressions;
-using Path = DirectoryService.Domain.ValueObjects.Path;
 
 namespace DirectoryService.Infrastructure.Postgres.Repositories;
 
@@ -29,14 +28,14 @@ internal class DepartmentsRepository : IDepartmentsRepository
             .IgnoreQueryFilters()
             .AnyAsync(d => d.Name == department.Name, cancellationToken))
         {
-            errors.Add(Errors.DepartmentErrors.Conflict(department.Name.ToString()));
+            errors.Add(DepartmentErrors.Conflict(department.Name.ToString()));
         }
 
         if (department.ParentId != null && await _context.Departments
             .IgnoreQueryFilters()
             .AnyAsync(d => d.ParentId == department.ParentId && d.Slug == department.Slug, cancellationToken))
         {
-            errors.Add(Errors.DepartmentErrors.SlugConflict(department.ParentId.Value, department.Slug.ToString()));
+            errors.Add(DepartmentErrors.SlugConflict(department.ParentId.Value, department.Slug.ToString()));
         }
 
         if (errors.Count > 0)
@@ -51,54 +50,21 @@ internal class DepartmentsRepository : IDepartmentsRepository
         return UnitResult.Success<Failure>();
     }
 
-    public async Task<Result<Department, Failure>> UpdateParentAsync(Guid id, Guid? ParentId, CancellationToken cancellationToken)
+    public async Task<UnitResult<Failure>> MoveAsync(Department department, Department? newParent, CancellationToken cancellationToken)
     {
-        var errors = new List<Error>();
-
-
-        var department = await _context.Departments.FirstOrDefaultAsync(d => d.Id == id, cancellationToken);
-
-        if (department == null)
+        if (newParent != null && department.ParentId == newParent.Id)
         {
-            errors.Add(Errors.DepartmentErrors.NotFoud());
-        }
-        else if (department.ParentId == ParentId)
-            return department;
-
-        Department? newParent = null;
-
-        if (ParentId != null)
-        {
-            newParent = await _context.Departments
-                .IgnoreQueryFilters().FirstOrDefaultAsync(d => d.Id == ParentId, cancellationToken);
-
-            if (newParent == null)
-            {
-                errors.Add(Errors.DepartmentErrors.NotFoudParent());
-            }
-            else if (newParent.IsDeleted)
-            {
-                errors.Add(Errors.DepartmentErrors.MoveParentIsDeleted());
-            }
+            return UnitResult.Success<Failure>();
         }
 
+        var id = department.Id;
 
-        if (errors.Count > 0)
-            return new Failure(errors);
-
-
-        if (newParent?.Path.IsChildren(department!.Path) ?? false)
-        {
-            return Errors.DepartmentErrors.Cycle().ToFailure();
-        }
-
-        var oldPathStr = department!.Path.ToString();
+        var oldPathStr = department.Path.ToString();
         var oldDepth = department.Depth;
 
         var validationResult = department.SetParent(newParent);
         if (validationResult.IsFailure)
             return validationResult.Error;
-
 
         var newPathStr = department.Path.ToString();
         int depthDelta = department.Depth - oldDepth;
@@ -108,12 +74,12 @@ internal class DepartmentsRepository : IDepartmentsRepository
             SET 
                 ""path"" = {newPathStr}::ltree || subpath(""path"", nlevel({oldPathStr}::ltree)),
                 ""depth"" = ""depth"" + {depthDelta},
-                ""updated_at"" = {DateTime.UtcNow}
+                ""updated_at"" = now()
             WHERE ""path"" <@ {oldPathStr}::ltree
                 AND ""department_id"" != {id}",
             cancellationToken);
 
-        return department;
+        return UnitResult.Success<Failure>();
     }
 
     public async Task<Result<Department, Failure>> GetByAsync(Expression<Func<Department, bool>> predicate, bool ignoreQueryFilters, CancellationToken cancellationToken)
@@ -128,7 +94,7 @@ internal class DepartmentsRepository : IDepartmentsRepository
         var department = await query.FirstOrDefaultAsync(predicate, cancellationToken);
 
         if (department == null)
-            return Errors.DepartmentErrors.NotFoud().ToFailure();
+            return DepartmentErrors.NotFoud().ToFailure();
 
         return department;
     }
@@ -160,7 +126,7 @@ internal class DepartmentsRepository : IDepartmentsRepository
         if (await _context.DepartmentLocations.AnyAsync(dl =>
             dl.DepartmentId == department.Id && locations.Select(l => l.Id).Contains(dl.LocationId), cancellationToken))
         {
-            return Errors.DepartmentErrors.LocationConflict().ToFailure();
+            return DepartmentErrors.LocationConflict().ToFailure();
         }
 
         await _context.DepartmentLocations.AddRangeAsync(departmentLocations, cancellationToken);
@@ -177,7 +143,7 @@ internal class DepartmentsRepository : IDepartmentsRepository
         if (!await _context.DepartmentLocations.AnyAsync(dl =>
            dl.DepartmentId == department.Id && locations.Select(l => l.Id).Contains(dl.LocationId), cancellationToken))
         {
-            return Errors.DepartmentErrors.LocationNotFound().ToFailure();
+            return DepartmentErrors.LocationNotFound().ToFailure();
         }
 
         _context.DepartmentLocations.RemoveRange(departmentLocations);
@@ -197,7 +163,7 @@ internal class DepartmentsRepository : IDepartmentsRepository
         if (await _context.DepartmentsPositions.AnyAsync(dp =>
             dp.DepartmentId == department.Id && positions.Select(p => p.Id).Contains(dp.PositionId), cancellationToken))
         {
-            return Errors.DepartmentErrors.PositionConflict().ToFailure();
+            return DepartmentErrors.PositionConflict().ToFailure();
         }
 
         await _context.DepartmentsPositions.AddRangeAsync(departmentPositions, cancellationToken);
@@ -214,7 +180,7 @@ internal class DepartmentsRepository : IDepartmentsRepository
         if (!await _context.DepartmentsPositions.AnyAsync(dp =>
            dp.DepartmentId == department.Id && positions.Select(p => p.Id).Contains(dp.PositionId), cancellationToken))
         {
-            return Errors.DepartmentErrors.PositionNotFound().ToFailure();
+            return DepartmentErrors.PositionNotFound().ToFailure();
         }
 
         _context.DepartmentsPositions.RemoveRange(departmentPositions);

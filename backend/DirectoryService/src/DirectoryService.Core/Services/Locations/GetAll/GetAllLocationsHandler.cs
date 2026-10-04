@@ -1,19 +1,13 @@
 ﻿using CSharpFunctionalExtensions;
-using DirectoryService.Contracts.Departments;
 using DirectoryService.Contracts.Locations;
 using DirectoryService.Contracts.SharedDto;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Abstractions.Database;
-using DirectoryService.Core.Fails;
 using DirectoryService.Core.Validation;
-using DirectoryService.Domain.Entities;
-using DirectoryService.Domain.ValueObjects;
+using DirectoryService.Domain.Errors;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Shared;
-using System.Data.Common;
-using System.Globalization;
-using System.Linq.Expressions;
 
 namespace DirectoryService.Core.Services.Locations.GetAll;
 
@@ -40,7 +34,7 @@ internal class GetAllLocationsHandler : IQueryHandler<PageResult<LocationListIte
         var isDescending = string.Equals(query.SortDir, "desc", StringComparison.OrdinalIgnoreCase);
 
         if (!isAscending && !isDescending)
-            return Errors.DepartmentErrors.ValidationError("Значениями SortOrder могут быть только \"asc\" и \"desc\"",
+            return DepartmentErrors.ValidationError("Значениями SortOrder могут быть только \"asc\" и \"desc\"",
                 nameof(query.SortDir)).ToFailure();
 
         var locationQuery = from l in _context.LocationsRead
@@ -71,7 +65,7 @@ internal class GetAllLocationsHandler : IQueryHandler<PageResult<LocationListIte
         if (maxPageNumber == 0) maxPageNumber = 1;
 
         if (query.Page > maxPageNumber)
-            return Errors.LocationErrors.ValidationError($"Номер страницы превысил максимальное значение (макс. {maxPageNumber})",
+            return LocationErrors.ValidationError($"Номер страницы превысил максимальное значение (макс. {maxPageNumber})",
                 nameof(query.Page)).ToFailure();
 
         locationQuery = query.SortBy switch
@@ -95,7 +89,7 @@ internal class GetAllLocationsHandler : IQueryHandler<PageResult<LocationListIte
         };
 
         if (locationQuery == null)
-            return Errors.LocationErrors.ValidationError("Некорректное поле сортировки", nameof(query.SortBy)).ToFailure();
+            return LocationErrors.ValidationError("Некорректное поле сортировки", nameof(query.SortBy)).ToFailure();
 
         var responses = await locationQuery
         .Skip((query.Page - 1) * query.PageSize)

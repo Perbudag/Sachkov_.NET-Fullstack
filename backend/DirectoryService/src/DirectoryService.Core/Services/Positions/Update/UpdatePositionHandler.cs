@@ -2,8 +2,8 @@
 using DirectoryService.Contracts.Positions;
 using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Abstractions.Database;
-using DirectoryService.Core.Fails;
 using DirectoryService.Core.Validation;
+using DirectoryService.Domain.Errors;
 using DirectoryService.Domain.ValueObjects;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
@@ -52,7 +52,7 @@ internal class UpdatePositionHandler : ICommandHandler<PositionDto, UpdatePositi
 
             if (checkNameResult.IsSuccess && checkNameResult.Value.Id != command.Id)
             {
-                return Errors.PositionsErrors.ConflictName(name.ToString()).ToFailure();
+                return PositionsErrors.ConflictName(name.ToString()).ToFailure();
             }
 
             positionResult.Value.SetName(name);

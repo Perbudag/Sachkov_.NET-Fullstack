@@ -45,7 +45,6 @@ internal class TransactionScope : ITransactionScope
 
     public void Dispose()
     {
-        Rollback();
         _transaction.Dispose();
     }
 }

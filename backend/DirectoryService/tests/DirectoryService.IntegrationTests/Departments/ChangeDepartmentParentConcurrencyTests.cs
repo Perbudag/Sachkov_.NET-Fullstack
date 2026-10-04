@@ -130,7 +130,7 @@ public class ChangeDepartmentParentConcurrencyTests : DirectoryBaseTests
     }
 
     [Fact]
-    public async Task Change_department_parent_Concurrently_into_each_other_Should_allow_one_move_and_reject_the_other_as_cycle()
+    public async Task Change_department_parent_Concurrently_into_each_other_Should_allow_one_move_and_fail_the_other_on_database_lock()
     {
         // arrange
         var cancellationToken = TestContext.Current.CancellationToken;

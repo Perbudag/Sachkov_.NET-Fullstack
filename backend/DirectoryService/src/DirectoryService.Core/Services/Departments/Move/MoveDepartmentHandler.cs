@@ -33,7 +33,16 @@ internal class MoveDepartmentHandler : ICommandHandler<MoveDepartmentDto, MoveDe
             return validateResult.ToErrors();
         }
 
-        var getDepartmentResult = await _departmentsRepository.GetByAsync(d => d.Id == command.Id, cancellationToken);
+
+        var beginTransactionResult = await _transactionManager.BeginTransactionAsync(cancellationToken);
+
+        if (beginTransactionResult.IsFailure)
+            return beginTransactionResult.Error.ToFailure();
+
+        var transaction = beginTransactionResult.Value;
+
+
+        var getDepartmentResult = await _departmentsRepository.GetWithLockByAsync(d => d.Id == command.Id, cancellationToken);
 
         if (getDepartmentResult.IsFailure)
         {
@@ -51,13 +60,14 @@ internal class MoveDepartmentHandler : ICommandHandler<MoveDepartmentDto, MoveDe
             {
                 return DepartmentErrors.NotFoudParent().ToFailure();
             }
-            else if(getParentResult.Value.IsDeleted)
+            else if (getParentResult.Value.IsDeleted)
             {
                 return DepartmentErrors.MoveParentIsDeleted().ToFailure();
             }
-            
+
             parent = getParentResult.Value;
         }
+
 
         var updateResult = await _departmentsRepository.MoveAsync(department, parent, cancellationToken);
 
@@ -65,10 +75,30 @@ internal class MoveDepartmentHandler : ICommandHandler<MoveDepartmentDto, MoveDe
         if (updateResult.IsFailure)
             return updateResult.Error;
 
+
         var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
 
-        if (saveResult.IsFailure)
+        if (saveResult.IsFailure && string.Equals(saveResult.Error.Code, "database.lock", StringComparison.Ordinal))
+        {
+            return DepartmentErrors.Cycle().ToFailure();
+        }
+        else if (saveResult.IsFailure)
+        {
             return saveResult.Error.ToFailure();
+        }
+
+
+        var commitResult = transaction.Commit();
+
+        if (commitResult.IsFailure && string.Equals(commitResult.Error.Code, "database.lock", StringComparison.Ordinal))
+        {
+            return DepartmentErrors.Cycle().ToFailure();
+        }
+        else if (commitResult.IsFailure)
+        {
+            return commitResult.Error.ToFailure();
+        }
+
 
         return new MoveDepartmentDto(department.Id,
                                           department.ParentId,

@@ -2,6 +2,7 @@
 using DirectoryService.Core.Services.Departments;
 using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.Errors;
+using EntityFrameworkCore.Locking;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared;
@@ -101,6 +102,30 @@ internal class DepartmentsRepository : IDepartmentsRepository
 
     public Task<Result<Department, Failure>> GetByAsync(Expression<Func<Department, bool>> predicate, CancellationToken cancellationToken) =>
         GetByAsync(predicate, false, cancellationToken);
+
+    public async Task<Result<Department, Failure>> GetWithLockByAsync(Expression<Func<Department, bool>> predicate, bool ignoreQueryFilters, CancellationToken cancellationToken)
+    {
+        var query = _context.Departments.AsQueryable();
+
+        if (ignoreQueryFilters)
+        {
+            query = query.IgnoreQueryFilters();
+        }
+
+        var department = await query
+            .Where(predicate)
+            .OrderBy(d => d.Id)
+            .ForUpdate()
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (department == null)
+            return DepartmentErrors.NotFoud().ToFailure();
+
+        return department;
+    }
+
+    public Task<Result<Department, Failure>> GetWithLockByAsync(Expression<Func<Department, bool>> predicate, CancellationToken cancellationToken) =>
+        GetWithLockByAsync(predicate, false, cancellationToken);
 
     public IAsyncEnumerable<Department> GetByAsyncEnum(Expression<Func<Department, bool>> predicate, bool ignoreQueryFilters = false)
     {

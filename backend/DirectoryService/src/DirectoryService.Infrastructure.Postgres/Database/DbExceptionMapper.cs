@@ -18,12 +18,15 @@ internal static class DbExceptionMapper
             case DbUpdateException { InnerException: PostgresException postgresException }:
                 return MapPostgresException(postgresException, logger, defaultMessage);
 
+            case DbUpdateException { InnerException.InnerException: PostgresException postgresException }:
+                return MapPostgresException(postgresException, logger, defaultMessage);
+
             case PostgresException postgresException:
                 return MapPostgresException(postgresException, logger, defaultMessage);
 
             default:
                 logger.LogError(exception, "{Message}", defaultMessage);
-                return Error.Failure("database.failure", defaultMessage);
+                return Error.Failure(defaultMessage, "database.failure");
         }
     }
 
@@ -33,15 +36,19 @@ internal static class DbExceptionMapper
         {
             case PostgresErrorCodes.UniqueViolation:
                 logger.LogWarning(exception, "Uniqueness violation during save. Constraint: {Constraint}", exception.ConstraintName);
-                return Error.Conflict("database.unique", "A record with this data already exists.");
+                return Error.Conflict("A record with this data already exists.", "database.unique");
 
             case PostgresErrorCodes.ForeignKeyViolation:
                 logger.LogWarning(exception, "Foreign key violation during save. Constraint: {Constraint}", exception.ConstraintName);
-                return Error.Conflict("database.foreign.key", "The operation is not possible due to related records.");
+                return Error.Conflict("The operation is not possible due to related records.", "database.foreign.key");
+
+            case PostgresErrorCodes.DeadlockDetected:
+                logger.LogWarning(exception, "Deadlock detected during database operation. Constraint: {Constraint}", exception.ConstraintName);
+                return Error.Conflict("The resource is locked by another transaction. Try again later.", "database.lock");
 
             default:
                 logger.LogError(exception, "{Message}. SqlState: {SqlState}", defaultMessage, exception.SqlState);
-                return Error.Failure("database.failure", defaultMessage);
+                return Error.Failure(defaultMessage, "database.failure");
         }
     }
 }

@@ -11,6 +11,8 @@ public interface IDepartmentsRepository
     Task<UnitResult<Failure>> MoveAsync(Department department, Department? newParent, CancellationToken cancellationToken);
     Task<Result<Department, Failure>> GetByAsync(Expression<Func<Department, bool>> predicate, bool ignoreQueryFilters, CancellationToken cancellationToken);
     Task<Result<Department, Failure>> GetByAsync(Expression<Func<Department, bool>> predicate, CancellationToken cancellationToken);
+    Task<Result<Department, Failure>> GetWithLockByAsync(Expression<Func<Department, bool>> predicate, bool ignoreQueryFilters, CancellationToken cancellationToken);
+    Task<Result<Department, Failure>> GetWithLockByAsync(Expression<Func<Department, bool>> predicate, CancellationToken cancellationToken);
     IAsyncEnumerable<Department> GetByAsyncEnum(Expression<Func<Department, bool>> predicate, bool ignoreQueryFilters = false);
     Task<UnitResult<Failure>> AddLocationsAsync(Department department, IEnumerable<Location> locations, CancellationToken cancellationToken);
     Task<UnitResult<Failure>> RemoveLocationsAsync(Department department, IEnumerable<Location> locations, CancellationToken cancellationToken);

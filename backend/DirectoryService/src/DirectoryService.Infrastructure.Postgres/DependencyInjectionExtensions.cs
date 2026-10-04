@@ -5,6 +5,7 @@ using DirectoryService.Core.Services.Locations;
 using DirectoryService.Core.Services.Positions;
 using DirectoryService.Infrastructure.Postgres.Database;
 using DirectoryService.Infrastructure.Postgres.Repositories;
+using EntityFrameworkCore.Locking.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,11 +29,12 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IReadDbContext>(sp => sp.GetRequiredService<AppDbContext>());
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(configurations.GetConnectionString("Postgresql"))
-                                    .UseLoggerFactory(LoggerFactory.Create(builder =>
-                                    {
-                                        builder.AddConfiguration(configurations);
-                                        builder.AddConsole();
-                                    })));
+                   .UseLocking()
+                   .UseLoggerFactory(LoggerFactory.Create(builder =>
+                   {
+                       builder.AddConfiguration(configurations);
+                       builder.AddConsole();
+                   })));
 
         return services;
     }

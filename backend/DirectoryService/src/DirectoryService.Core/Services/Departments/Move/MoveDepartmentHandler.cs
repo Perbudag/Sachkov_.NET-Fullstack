@@ -33,7 +33,16 @@ internal class MoveDepartmentHandler : ICommandHandler<MoveDepartmentDto, MoveDe
             return validateResult.ToErrors();
         }
 
-        var getDepartmentResult = await _departmentsRepository.GetByAsync(d => d.Id == command.Id, cancellationToken);
+
+        var beginTransactionResult = await _transactionManager.BeginTransactionAsync(cancellationToken);
+
+        if (beginTransactionResult.IsFailure)
+            return beginTransactionResult.Error.ToFailure();
+
+        using var transaction = beginTransactionResult.Value;
+
+
+        var getDepartmentResult = await _departmentsRepository.GetWithLockByAsync(d => d.Id == command.Id, cancellationToken);
 
         if (getDepartmentResult.IsFailure)
         {
@@ -45,19 +54,25 @@ internal class MoveDepartmentHandler : ICommandHandler<MoveDepartmentDto, MoveDe
 
         if (command.Request.ParentId != null)
         {
-            var getParentResult = await _departmentsRepository.GetByAsync(d => d.Id == command.Request.ParentId, true, cancellationToken);
+            var getParentResult = await _departmentsRepository.GetWithLockByAsync(d => d.Id == command.Request.ParentId, true, cancellationToken);
 
-            if (getParentResult.IsFailure)
+
+            if (getParentResult.IsFailure && getParentResult.Error[0].Type == ErrorType.NOT_FOUND)
             {
                 return DepartmentErrors.NotFoudParent().ToFailure();
             }
-            else if(getParentResult.Value.IsDeleted)
+            else if (getParentResult.IsFailure)
+            {
+                return getParentResult.Error;
+            }
+            else if (getParentResult.Value.IsDeleted)
             {
                 return DepartmentErrors.MoveParentIsDeleted().ToFailure();
             }
-            
+
             parent = getParentResult.Value;
         }
+
 
         var updateResult = await _departmentsRepository.MoveAsync(department, parent, cancellationToken);
 
@@ -65,10 +80,22 @@ internal class MoveDepartmentHandler : ICommandHandler<MoveDepartmentDto, MoveDe
         if (updateResult.IsFailure)
             return updateResult.Error;
 
+
         var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
 
         if (saveResult.IsFailure)
+        {
             return saveResult.Error.ToFailure();
+        }
+
+
+        var commitResult = transaction.Commit();
+
+        if (commitResult.IsFailure)
+        {
+            return commitResult.Error.ToFailure();
+        }
+
 
         return new MoveDepartmentDto(department.Id,
                                           department.ParentId,

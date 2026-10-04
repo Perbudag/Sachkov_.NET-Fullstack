@@ -54,7 +54,7 @@ internal class MoveDepartmentHandler : ICommandHandler<MoveDepartmentDto, MoveDe
 
         if (command.Request.ParentId != null)
         {
-            var getParentResult = await _departmentsRepository.GetByAsync(d => d.Id == command.Request.ParentId, true, cancellationToken);
+            var getParentResult = await _departmentsRepository.GetWithLockByAsync(d => d.Id == command.Request.ParentId, true, cancellationToken);
 
             if (getParentResult.IsFailure)
             {

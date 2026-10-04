@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EntityFrameworkCore.Locking.Exceptions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 using Shared;
@@ -19,6 +20,9 @@ internal static class DbExceptionMapper
                 return MapPostgresException(postgresException, logger, defaultMessage);
 
             case DbUpdateException { InnerException.InnerException: PostgresException postgresException }:
+                return MapPostgresException(postgresException, logger, defaultMessage);
+
+            case DeadlockException { InnerException: PostgresException postgresException }:
                 return MapPostgresException(postgresException, logger, defaultMessage);
 
             case PostgresException postgresException:

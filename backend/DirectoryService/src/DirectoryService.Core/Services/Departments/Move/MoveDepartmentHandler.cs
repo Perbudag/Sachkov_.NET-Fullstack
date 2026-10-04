@@ -39,7 +39,7 @@ internal class MoveDepartmentHandler : ICommandHandler<MoveDepartmentDto, MoveDe
         if (beginTransactionResult.IsFailure)
             return beginTransactionResult.Error.ToFailure();
 
-        var transaction = beginTransactionResult.Value;
+        using var transaction = beginTransactionResult.Value;
 
 
         var getDepartmentResult = await _departmentsRepository.GetWithLockByAsync(d => d.Id == command.Id, cancellationToken);
@@ -56,9 +56,14 @@ internal class MoveDepartmentHandler : ICommandHandler<MoveDepartmentDto, MoveDe
         {
             var getParentResult = await _departmentsRepository.GetWithLockByAsync(d => d.Id == command.Request.ParentId, true, cancellationToken);
 
-            if (getParentResult.IsFailure)
+
+            if (getParentResult.IsFailure && getParentResult.Error[0].Type == ErrorType.NOT_FOUND)
             {
                 return DepartmentErrors.NotFoudParent().ToFailure();
+            }
+            else if (getParentResult.IsFailure)
+            {
+                return getParentResult.Error;
             }
             else if (getParentResult.Value.IsDeleted)
             {
@@ -78,11 +83,7 @@ internal class MoveDepartmentHandler : ICommandHandler<MoveDepartmentDto, MoveDe
 
         var saveResult = await _transactionManager.SaveChangesAsync(cancellationToken);
 
-        if (saveResult.IsFailure && string.Equals(saveResult.Error.Code, "database.lock", StringComparison.Ordinal))
-        {
-            return DepartmentErrors.Cycle().ToFailure();
-        }
-        else if (saveResult.IsFailure)
+        if (saveResult.IsFailure)
         {
             return saveResult.Error.ToFailure();
         }
@@ -90,11 +91,7 @@ internal class MoveDepartmentHandler : ICommandHandler<MoveDepartmentDto, MoveDe
 
         var commitResult = transaction.Commit();
 
-        if (commitResult.IsFailure && string.Equals(commitResult.Error.Code, "database.lock", StringComparison.Ordinal))
-        {
-            return DepartmentErrors.Cycle().ToFailure();
-        }
-        else if (commitResult.IsFailure)
+        if (commitResult.IsFailure)
         {
             return commitResult.Error.ToFailure();
         }

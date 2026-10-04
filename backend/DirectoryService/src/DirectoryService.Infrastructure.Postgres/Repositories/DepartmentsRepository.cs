@@ -2,6 +2,7 @@
 using DirectoryService.Core.Services.Departments;
 using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.Errors;
+using DirectoryService.Infrastructure.Postgres.Database;
 using EntityFrameworkCore.Locking;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -105,23 +106,30 @@ internal class DepartmentsRepository : IDepartmentsRepository
 
     public async Task<Result<Department, Failure>> GetWithLockByAsync(Expression<Func<Department, bool>> predicate, bool ignoreQueryFilters, CancellationToken cancellationToken)
     {
-        var query = _context.Departments.AsQueryable();
-
-        if (ignoreQueryFilters)
+        try
         {
-            query = query.IgnoreQueryFilters();
+            var query = _context.Departments.AsQueryable();
+
+            if (ignoreQueryFilters)
+            {
+                query = query.IgnoreQueryFilters();
+            }
+
+            var department = await query
+                .Where(predicate)
+                .OrderBy(d => d.Id)
+                .ForUpdate()
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (department == null)
+                return DepartmentErrors.NotFoud().ToFailure();
+
+            return department;
         }
-
-        var department = await query
-            .Where(predicate)
-            .OrderBy(d => d.Id)
-            .ForUpdate()
-            .FirstOrDefaultAsync(cancellationToken);
-
-        if (department == null)
-            return DepartmentErrors.NotFoud().ToFailure();
-
-        return department;
+        catch (Exception ex)
+        {
+            return DbExceptionMapper.Map(ex, _logger, "Failed to begin transaction").ToFailure();
+        }
     }
 
     public Task<Result<Department, Failure>> GetWithLockByAsync(Expression<Func<Department, bool>> predicate, CancellationToken cancellationToken) =>

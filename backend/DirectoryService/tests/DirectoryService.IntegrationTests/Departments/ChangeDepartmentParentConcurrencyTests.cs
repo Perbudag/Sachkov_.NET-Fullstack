@@ -196,7 +196,7 @@ public class ChangeDepartmentParentConcurrencyTests : DirectoryBaseTests
         var cycleEnvelope = Assert.Single(envelopes, envelope => envelope?.IsError == true);
 
         Assert.Contains(cycleEnvelope!.Errors!, error =>
-            string.Equals(error.Code, "department.move.cycle", StringComparison.Ordinal));
+            string.Equals(error.Code, "database.lock", StringComparison.Ordinal));
 
         var departmentA = Assert.Single(state, d => d.Id == departmentAId);
         var departmentB = Assert.Single(state, d => d.Id == departmentBId);

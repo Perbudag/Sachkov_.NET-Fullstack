@@ -1,10 +1,6 @@
-using DirectoryService.Contracts.Departments;
-using DirectoryService.Contracts.Locations;
-using DirectoryService.Contracts.Positions;
-using DirectoryService.Contracts.SharedDto;
 using DirectoryService.IntegrationTests.TestData;
 using Microsoft.EntityFrameworkCore;
-using Shared;
+using Shared.Framework.Endpoints;
 using System.Net;
 using System.Net.Http.Json;
 

@@ -2,7 +2,7 @@
 using DirectoryService.Domain.Abstracts;
 using DirectoryService.Domain.Errors;
 using DirectoryService.Domain.ValueObjects;
-using Shared;
+using Shared.Kernel;
 using Path = DirectoryService.Domain.ValueObjects.Path;
 
 namespace DirectoryService.Domain.Entities;

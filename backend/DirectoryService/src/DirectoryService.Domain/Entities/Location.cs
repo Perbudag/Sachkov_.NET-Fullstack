@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Domain.Abstracts;
 using DirectoryService.Domain.ValueObjects;
-using Shared;
+using Shared.Kernel;
 
 namespace DirectoryService.Domain.Entities;
 

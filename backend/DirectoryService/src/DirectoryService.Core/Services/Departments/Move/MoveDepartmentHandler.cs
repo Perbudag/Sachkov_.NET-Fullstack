@@ -1,12 +1,12 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Departments;
-using DirectoryService.Core.Abstractions;
-using DirectoryService.Core.Abstractions.Database;
 using DirectoryService.Core.Validation;
 using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.Errors;
 using FluentValidation;
-using Shared;
+using Shared.Core.CQRS;
+using Shared.Core.Database;
+using Shared.Kernel;
 
 namespace DirectoryService.Core.Services.Departments.ChangeParent;
 

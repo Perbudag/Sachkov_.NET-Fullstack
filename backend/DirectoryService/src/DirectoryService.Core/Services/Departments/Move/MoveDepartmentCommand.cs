@@ -1,8 +1,5 @@
 ﻿using DirectoryService.Contracts.Departments;
-using DirectoryService.Core.Abstractions;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Shared.Core.CQRS;
 
 namespace DirectoryService.Core.Services.Departments.ChangeParent;
 

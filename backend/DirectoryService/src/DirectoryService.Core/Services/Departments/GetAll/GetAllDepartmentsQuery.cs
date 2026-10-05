@@ -1,6 +1,6 @@
 ﻿using DirectoryService.Contracts.Departments;
-using DirectoryService.Core.Abstractions;
-using Shared;
+using Shared.Core.CQRS;
+using Shared.Framework.Endpoints;
 
 namespace DirectoryService.Core.Services.Departments.GetAll;
 

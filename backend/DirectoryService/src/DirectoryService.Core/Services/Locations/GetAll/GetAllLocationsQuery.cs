@@ -1,6 +1,6 @@
 ﻿using DirectoryService.Contracts.Locations;
-using DirectoryService.Core.Abstractions;
-using Shared;
+using Shared.Core.CQRS;
+using Shared.Framework.Endpoints;
 
 namespace DirectoryService.Core.Services.Locations.GetAll;
 

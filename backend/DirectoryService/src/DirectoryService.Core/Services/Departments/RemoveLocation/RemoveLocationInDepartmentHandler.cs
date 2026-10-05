@@ -1,11 +1,10 @@
 ﻿using CSharpFunctionalExtensions;
-using DirectoryService.Core.Abstractions;
-using DirectoryService.Core.Abstractions.Database;
 using DirectoryService.Core.Services.Locations;
-using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.Errors;
 using Microsoft.Extensions.Logging;
-using Shared;
+using Shared.Core.CQRS;
+using Shared.Core.Database;
+using Shared.Kernel;
 
 namespace DirectoryService.Core.Services.Departments.RemoveLocation;
 

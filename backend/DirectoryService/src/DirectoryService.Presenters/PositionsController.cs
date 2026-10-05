@@ -1,12 +1,12 @@
 ﻿using DirectoryService.Contracts.Positions;
-using DirectoryService.Core;
 using DirectoryService.Core.Services.Positions.Create;
 using DirectoryService.Core.Services.Positions.Delete;
 using DirectoryService.Core.Services.Positions.GetAll;
 using DirectoryService.Core.Services.Positions.GetById;
 using DirectoryService.Core.Services.Positions.Update;
-using DirectoryService.Presenters.Results;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Core.CQRS;
+using Shared.Framework.Endpoints;
 
 namespace DirectoryService.Presenters;
 

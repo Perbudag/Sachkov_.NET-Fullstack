@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<PackageId>Sachkov_.NET-Fullstack.Shared.Kernel</PackageId>
+		<Version>0.0.1</Version>
+		<PackageDescription>Shared.Kernel for repository Sachkov_.NET-Fullstack</PackageDescription>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="CSharpFunctionalExtensions" />
+	</ItemGroup>
+
+</Project>

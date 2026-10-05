@@ -1,12 +1,12 @@
 ﻿using CSharpFunctionalExtensions;
 using Dapper;
 using DirectoryService.Contracts.Departments;
-using DirectoryService.Core.Abstractions;
-using DirectoryService.Core.Abstractions.Database;
 using DirectoryService.Core.Services.Departments.SearchDepartments;
 using DirectoryService.Core.Validation;
 using FluentValidation;
-using Shared;
+using Shared.Core.CQRS;
+using Shared.Core.Database;
+using Shared.Kernel;
 
 namespace DirectoryService.Core.Services.Departments.SearchTreeDepartments;
 

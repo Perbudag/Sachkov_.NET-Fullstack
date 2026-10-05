@@ -1,4 +1,10 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+    <File Path=".globalconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/DirectoryService.Contracts/DirectoryService.Contracts.csproj" />
     <Project Path="src/DirectoryService.Core/DirectoryService.Core.csproj" />
@@ -10,5 +16,4 @@
   <Folder Name="/tests/">
     <Project Path="tests/DirectoryService.IntegrationTests/DirectoryService.IntegrationTests.csproj" Id="6384273b-2909-4196-8da8-f3ed7287a45a" />
   </Folder>
-  <Project Path="../Shared/Shared.csproj" />
 </Solution>

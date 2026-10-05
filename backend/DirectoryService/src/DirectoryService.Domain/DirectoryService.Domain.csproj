@@ -1,8 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <PackageReference Include="CSharpFunctionalExtensions" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Shared\Shared.csproj" />
+    <PackageReference Include="Sachkov_.NET-Fullstack.Shared.Kernel" />
   </ItemGroup>
 </Project>

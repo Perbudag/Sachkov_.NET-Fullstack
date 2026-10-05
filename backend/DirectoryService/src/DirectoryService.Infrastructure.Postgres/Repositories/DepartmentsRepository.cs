@@ -6,7 +6,7 @@ using DirectoryService.Infrastructure.Postgres.Database;
 using EntityFrameworkCore.Locking;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Shared;
+using Shared.Kernel;
 using System.Linq.Expressions;
 
 namespace DirectoryService.Infrastructure.Postgres.Repositories;

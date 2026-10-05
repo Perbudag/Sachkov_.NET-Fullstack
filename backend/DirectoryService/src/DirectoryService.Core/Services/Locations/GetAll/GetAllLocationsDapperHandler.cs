@@ -1,12 +1,13 @@
 ﻿using CSharpFunctionalExtensions;
 using Dapper;
 using DirectoryService.Contracts.Locations;
-using DirectoryService.Core.Abstractions;
-using DirectoryService.Core.Abstractions.Database;
 using DirectoryService.Core.Validation;
 using DirectoryService.Domain.Errors;
 using FluentValidation;
-using Shared;
+using Shared.Core.CQRS;
+using Shared.Core.Database;
+using Shared.Framework.Endpoints;
+using Shared.Kernel;
 
 namespace DirectoryService.Core.Services.Locations.GetAll;
 

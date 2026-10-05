@@ -2,10 +2,10 @@
 using DirectoryService.Core.Services.Locations;
 using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.Errors;
-using DirectoryService.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared;
+using Shared.Kernel;
 using System.Linq.Expressions;
 
 namespace DirectoryService.Infrastructure.Postgres.Repositories;

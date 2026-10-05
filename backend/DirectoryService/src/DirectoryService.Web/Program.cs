@@ -1,9 +1,10 @@
 using DirectoryService.Core;
 using DirectoryService.Infrastructure.Postgres;
 using DirectoryService.Web.BackgroundServices.DatabaseCleaner;
-using DirectoryService.Web.Middlewares;
 using Scalar.AspNetCore;
 using Serilog;
+using Shared.Framework.Logging;
+using Shared.Framework.Middlewares;
 using System.Globalization;
 
 Log.Logger = new LoggerConfiguration()
@@ -27,10 +28,7 @@ try
 
     builder.Services.AddScoped<ExceptionMiddleware>();
 
-    builder.Services.AddSerilog((services, lc) => lc
-        .ReadFrom.Configuration(builder.Configuration)
-        .ReadFrom.Services(services)
-        .Enrich.WithProperty("ServiceName", "DirectoryService"));
+    builder.Services.AddSerilogLogging(builder.Configuration, "DirectoryService");
 
     builder.Services.AddHostedService<DatabaseCleanerBackgroundService>();
 

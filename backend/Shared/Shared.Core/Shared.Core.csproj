@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<PackageId>Sachkov_.NET-Fullstack.Shared.Core</PackageId>
-		<Version>0.0.1</Version>
+		<Version>0.0.2</Version>
 		<PackageDescription>Shared.Core for repository Sachkov_.NET-Fullstack</PackageDescription>
 	</PropertyGroup>
 

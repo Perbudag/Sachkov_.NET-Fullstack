@@ -6,7 +6,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" />
-		<PackageReference Include="Sachkov_.NET-Fullstack.Shared.Framework" />
 	</ItemGroup>
 
 	<ItemGroup>

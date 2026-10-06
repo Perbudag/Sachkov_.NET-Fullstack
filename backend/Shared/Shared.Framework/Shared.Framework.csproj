@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<PackageId>Sachkov_.NET-Fullstack.Shared.Framework</PackageId>
-		<Version>0.0.2</Version>
+		<Version>0.0.3</Version>
 		<PackageDescription>Shared.Framework for repository Sachkov_.NET-Fullstack</PackageDescription>
 	</PropertyGroup>
 

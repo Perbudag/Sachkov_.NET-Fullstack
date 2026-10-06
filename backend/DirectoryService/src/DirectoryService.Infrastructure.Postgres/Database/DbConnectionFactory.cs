@@ -1,5 +1,5 @@
-﻿using DirectoryService.Core.Abstractions.Database;
-using Npgsql;
+﻿using Npgsql;
+using Shared.Core.Database;
 using System.Data;
 
 namespace DirectoryService.Infrastructure.Postgres.Database;

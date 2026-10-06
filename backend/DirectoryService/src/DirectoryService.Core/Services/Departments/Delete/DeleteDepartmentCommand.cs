@@ -1,4 +1,4 @@
-﻿using DirectoryService.Core.Abstractions;
+﻿using Shared.Core.CQRS;
 
 namespace DirectoryService.Core.Services.Departments.Delete;
 

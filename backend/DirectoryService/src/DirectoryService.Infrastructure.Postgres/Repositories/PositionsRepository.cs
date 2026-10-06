@@ -4,7 +4,7 @@ using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.Errors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Shared;
+using Shared.Kernel;
 using System.Linq.Expressions;
 
 namespace DirectoryService.Infrastructure.Postgres.Repositories;

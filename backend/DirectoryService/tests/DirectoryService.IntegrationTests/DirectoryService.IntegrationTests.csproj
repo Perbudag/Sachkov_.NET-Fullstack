@@ -24,7 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Shared\Shared.csproj" />
     <ProjectReference Include="..\..\src\DirectoryService.Contracts\DirectoryService.Contracts.csproj" />
     <ProjectReference Include="..\..\src\DirectoryService.Web\DirectoryService.Web.csproj" />
   </ItemGroup>

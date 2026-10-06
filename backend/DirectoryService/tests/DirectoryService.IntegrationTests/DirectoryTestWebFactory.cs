@@ -1,4 +1,3 @@
-using DirectoryService.Core.Abstractions.Database;
 using DirectoryService.Infrastructure.Postgres;
 using DirectoryService.Infrastructure.Postgres.Database;
 using DirectoryService.Web.BackgroundServices.DatabaseCleaner;
@@ -10,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Npgsql;
 using Respawn;
+using Shared.Core.Database;
 using System.Data.Common;
 using Testcontainers.PostgreSql;
 

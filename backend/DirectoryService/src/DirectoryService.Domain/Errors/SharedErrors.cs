@@ -1,4 +1,4 @@
-﻿using Shared;
+﻿using Shared.Kernel;
 
 namespace DirectoryService.Domain.Errors;
 

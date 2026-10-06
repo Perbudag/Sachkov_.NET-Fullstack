@@ -1,7 +1,6 @@
 ﻿using DirectoryService.Contracts.Departments;
-using DirectoryService.Core.Abstractions;
-using DirectoryService.Core.Services.Departments.GetChildren;
-using Shared;
+using Shared.Core.CQRS;
+using Shared.Framework.Endpoints;
 
 namespace DirectoryService.Core.Services.Departments.GetAncestors;
 

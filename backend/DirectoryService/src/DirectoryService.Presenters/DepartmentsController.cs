@@ -1,5 +1,4 @@
 ﻿using DirectoryService.Contracts.Departments;
-using DirectoryService.Core;
 using DirectoryService.Core.Services.Departments.AddLocation;
 using DirectoryService.Core.Services.Departments.AddPosition;
 using DirectoryService.Core.Services.Departments.ChangeParent;
@@ -14,9 +13,9 @@ using DirectoryService.Core.Services.Departments.RemoveLocation;
 using DirectoryService.Core.Services.Departments.RemovePosition;
 using DirectoryService.Core.Services.Departments.SearchDepartments;
 using DirectoryService.Core.Services.Departments.Update;
-using DirectoryService.Presenters.Results;
 using Microsoft.AspNetCore.Mvc;
-using Shared;
+using Shared.Core.CQRS;
+using Shared.Framework.Endpoints;
 
 namespace DirectoryService.Presenters;
 

@@ -1,13 +1,13 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Positions;
-using DirectoryService.Core.Abstractions;
-using DirectoryService.Core.Abstractions.Database;
 using DirectoryService.Core.Validation;
 using DirectoryService.Domain.Errors;
 using DirectoryService.Domain.ValueObjects;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
-using Shared;
+using Shared.Core.CQRS;
+using Shared.Core.Database;
+using Shared.Kernel;
 
 namespace DirectoryService.Core.Services.Positions.Update;
 

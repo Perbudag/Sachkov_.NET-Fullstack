@@ -1,9 +1,8 @@
 ﻿using CSharpFunctionalExtensions;
-using DirectoryService.Core.Abstractions.Database;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
-using Shared;
+using Shared.Core.Database;
+using Shared.Kernel;
 
 namespace DirectoryService.Infrastructure.Postgres.Database;
 

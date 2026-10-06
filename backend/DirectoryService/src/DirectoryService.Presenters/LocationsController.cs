@@ -1,16 +1,13 @@
-﻿using CSharpFunctionalExtensions;
-using DirectoryService.Contracts.Locations;
-using DirectoryService.Contracts.SharedDto;
-using DirectoryService.Core;
+﻿using DirectoryService.Contracts.Locations;
 using DirectoryService.Core.Services.Locations.Create;
 using DirectoryService.Core.Services.Locations.Delete;
 using DirectoryService.Core.Services.Locations.GetAll;
 using DirectoryService.Core.Services.Locations.GetById;
 using DirectoryService.Core.Services.Locations.GetTop;
 using DirectoryService.Core.Services.Locations.Update;
-using DirectoryService.Presenters.Results;
 using Microsoft.AspNetCore.Mvc;
-using Shared;
+using Shared.Core.CQRS;
+using Shared.Framework.Endpoints;
 
 namespace DirectoryService.Presenters;
 

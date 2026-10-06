@@ -1,6 +1,6 @@
 using DirectoryService.Contracts.Departments;
 using DirectoryService.IntegrationTests.TestData;
-using Shared;
+using Shared.Framework.Endpoints;
 using System.Net;
 using System.Net.Http.Json;
 

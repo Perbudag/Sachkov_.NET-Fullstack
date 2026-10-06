@@ -1,11 +1,11 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Locations;
 using DirectoryService.Contracts.SharedDto;
-using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Abstractions.Database;
 using DirectoryService.Domain.Errors;
 using Microsoft.EntityFrameworkCore;
-using Shared;
+using Shared.Core.CQRS;
+using Shared.Kernel;
 
 namespace DirectoryService.Core.Services.Locations.GetById;
 

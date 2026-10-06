@@ -1,6 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Departments;
-using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Abstractions.Database;
 using DirectoryService.Core.Services.Departments.GetDepartmentsTree;
 using DirectoryService.Core.Validation;
@@ -8,7 +7,9 @@ using DirectoryService.Domain.Entities;
 using DirectoryService.Domain.Errors;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using Shared;
+using Shared.Core.CQRS;
+using Shared.Framework.Endpoints;
+using Shared.Kernel;
 using System.Linq.Expressions;
 
 namespace DirectoryService.Core.Services.Departments.GetTree;

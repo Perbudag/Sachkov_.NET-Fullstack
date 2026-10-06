@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<PackageId>Sachkov_.NET-Fullstack.Shared.Framework</PackageId>
+		<Version>0.0.3</Version>
+		<PackageDescription>Shared.Framework for repository Sachkov_.NET-Fullstack</PackageDescription>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Serilog" />
+	  <PackageReference Include="Serilog.AspNetCore" />
+	  <PackageReference Include="Serilog.Enrichers.Environment" />
+	  <PackageReference Include="Serilog.Enrichers.Thread" />
+	  <PackageReference Include="Serilog.Exceptions" />
+	  <PackageReference Include="Serilog.Exceptions.EntityFrameworkCore" />
+	  <PackageReference Include="Serilog.Extensions.Logging" />
+	  <PackageReference Include="Serilog.Settings.Configuration" />
+	  <PackageReference Include="Serilog.Sinks.Async" />
+	  <PackageReference Include="Serilog.Sinks.Console" />
+	  <PackageReference Include="Serilog.Sinks.Debug" />
+	  <PackageReference Include="Serilog.Sinks.Seq" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Shared.Kernal\Shared.Kernel.csproj" />
+	</ItemGroup>
+
+</Project>

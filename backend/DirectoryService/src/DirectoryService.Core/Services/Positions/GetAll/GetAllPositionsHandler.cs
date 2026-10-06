@@ -1,9 +1,10 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Positions;
-using DirectoryService.Core.Abstractions;
 using DirectoryService.Core.Abstractions.Database;
 using Microsoft.EntityFrameworkCore;
 using Shared;
+using Shared.Core.CQRS;
+using Shared.Kernel;
 
 namespace DirectoryService.Core.Services.Positions.GetAll;
 

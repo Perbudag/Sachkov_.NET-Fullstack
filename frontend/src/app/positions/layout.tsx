@@ -1,9 +1,12 @@
 import { Metadata } from "next";
+import { routes } from "../routers";
 
 export const metadata: Metadata = {
-  title: "Позиции",
+  title: routes.directoryService.positions.title,
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+type route = typeof routes.directoryService.positions.url;
+
+export default function RootLayout({ children }: LayoutProps<route>) {
   return <>{children}</>;
 }

@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { routes } from "../routers";
+import { routes } from "../../shared/routers";
 
 export const metadata: Metadata = {
   title: routes.directoryService.positions.title,

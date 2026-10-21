@@ -9,11 +9,11 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuSub,
-} from "./sidebar";
+} from "@/shared/components/ui/sidebar";
 import { usePathname, useRouter } from "next/navigation";
-import { routes } from "@/app/routers";
+import { routes } from "@/shared/routers";
 
-const services = [
+const navRoutes = [
   {
     title: "Directory Service",
     url: "/",
@@ -27,7 +27,7 @@ export const AppSidebar = ({
   const pathname = usePathname();
   const router = useRouter();
 
-  const updatedServices = services.map((service) => ({
+  const navItems = navRoutes.map((service) => ({
     ...service,
     isActive: service.url === pathname,
     pages: service.pages.map((page) => ({
@@ -41,7 +41,7 @@ export const AppSidebar = ({
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            {updatedServices.map((s) => (
+            {navItems.map((s) => (
               <SidebarMenu key={s.url}>
                 <SidebarMenuButton
                   onClick={() => router.push(s.url)}

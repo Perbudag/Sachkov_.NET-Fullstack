@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/components/ui/button";
 import { useRouter } from "next/navigation";
-import { routes } from "./routers";
+import { routes } from "../shared/routers";
 
 export default function Home() {
   const router = useRouter();

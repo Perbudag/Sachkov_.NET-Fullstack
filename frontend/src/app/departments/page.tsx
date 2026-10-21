@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { routes } from "../routers";
+import { routes } from "../../shared/routers";
 
 export default function departments() {
   return (

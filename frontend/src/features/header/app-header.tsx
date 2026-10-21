@@ -1,5 +1,4 @@
-import { Separator } from "./separator";
-import { SidebarTrigger } from "./sidebar";
+import { SidebarTrigger } from "@/shared/components/ui/sidebar";
 
 export const AppHeader = () => {
   return (

@@ -38,6 +38,8 @@ export default function locations() {
   React.useEffect((): any => {
     const controller = new AbortController();
 
+    setPaginationItems([]);
+
     locationsApi
       .getLocationsPage({ page: page, pageSize: PAGE_SIZE }, controller.signal)
       .then((page) => {
@@ -53,13 +55,13 @@ export default function locations() {
         setPaginationItems(pagesArray);
       })
       .catch((error) => {
-        setError(error);
+        setError(error?.message || "Произошла ошибка при загрузке данных");
       })
       .finally(() => {
         setIsLoading(false);
       });
 
-    return () => controller.abort;
+    return () => controller.abort();
   }, [page]);
 
   const addressToString = (address: Address) =>
@@ -76,14 +78,6 @@ export default function locations() {
     address.house +
     ", кв. " +
     (address.apartment ?? "");
-
-  if (error != null) {
-    return (
-      <div className="self-center">
-        <h1>{error.toString()}</h1>
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-col p-5">
@@ -112,25 +106,23 @@ export default function locations() {
             ))}
           </TableBody>
         </Table>
-        {isLoading ? (
+        {(isLoading || locationItems.length === 0) && (
           <div className="flex flex-col items-center justify-center h-50">
             <div className="flex flex-row justify-center items-center text-2xl font-semibold">
-              <Spinner className="size-10" />
+              {isLoading ? (
+                <Spinner className="size-10" />
+              ) : error != null ? (
+                <h1>{error}</h1>
+              ) : (
+                locationItems.length === 0 && <>Список пуст</>
+              )}
             </div>
           </div>
-        ) : (
-          locationItems.length === 0 && (
-            <div className="flex flex-col items-center justify-center h-50">
-              <div className="flex flex-row justify-center items-center text-2xl font-semibold">
-                Список пуст
-              </div>
-            </div>
-          )
         )}
       </div>
       <Pagination className="mt-5">
         <PaginationContent>
-          {page > 1 && (
+          {page > 1 && page < paginationItems.length && (
             <PaginationItem>
               <PaginationPrevious href={`?page=${page - 1}`} text="Назад" />
             </PaginationItem>

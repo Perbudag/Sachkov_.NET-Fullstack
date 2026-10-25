@@ -1,7 +1,7 @@
-import { Error } from "./error.type";
+import { ApiError } from "./error.type";
 
-export type Envelope<T> = {
+export type Envelope<T = unknown> = {
   result: T | null;
-  errors: Error[] | null;
+  errors: ApiError[] | null;
   timeGenerated: Date;
 };

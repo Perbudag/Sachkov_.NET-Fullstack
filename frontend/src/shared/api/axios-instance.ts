@@ -11,11 +11,12 @@ export const apiClient = axios.create({
 apiClient.interceptors.response.use(
   (response) => {
     const envelope = response.data as Envelope;
-    response.data = envelope.result;
 
     if (envelope && envelope.errors && envelope.errors.length > 0) {
       throw AxiosError.from({ response: response });
     }
+
+    response.data = envelope.result;
 
     return response;
   },

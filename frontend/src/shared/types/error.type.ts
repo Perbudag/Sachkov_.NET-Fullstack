@@ -1,8 +1,8 @@
 import { ErrorType } from "./error-type.type";
 
-export type Error = {
+export type ApiError = {
   code: string;
   message: string;
   type: ErrorType;
-  invalidField: string | null;
+  invalidField?: string | null;
 };

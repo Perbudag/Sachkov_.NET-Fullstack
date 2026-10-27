@@ -3,7 +3,7 @@ import { Envelope } from "@/shared/types/envelope.type";
 import { PageResult } from "@/shared/types/page-result.type";
 import { LocationListItem } from "./types";
 
-export type GetAllLocationsPageRequest = {
+export type GetLocationsListPageRequest = {
   Search?: string;
   MinDepartmentCount?: number;
   SortBy?: string;
@@ -13,14 +13,18 @@ export type GetAllLocationsPageRequest = {
 };
 
 export const locationsApi = {
-  getLocationsPage: async (
-    request: GetAllLocationsPageRequest,
+  getLocationsListPage: async (
+    request: GetLocationsListPageRequest,
     signal?: AbortSignal,
-  ): Promise<PageResult<LocationListItem[]> | null> => {
-    const response = await apiClient.get<
-      Envelope<PageResult<LocationListItem[]>>
-    >("/locations", { params: request, signal: signal });
+  ) => {
+    const response = await apiClient.get<PageResult<LocationListItem[]>>(
+      "/locations",
+      {
+        params: request,
+        signal: signal,
+      },
+    );
 
-    return response.data.result || null;
+    return response.data;
   },
 };

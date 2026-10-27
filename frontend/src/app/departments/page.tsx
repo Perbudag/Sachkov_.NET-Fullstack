@@ -1,14 +1,10 @@
-"use client";
+import { DepartmentsList } from "@/widgets/departments-list";
 
-import React from "react";
-import { routes } from "../../shared/routers";
+export default async function DepartmentsRoute({
+  searchParams,
+}: PageProps<"/departments">) {
+  const { page: pageParam } = await searchParams;
+  const page = Number(Array.isArray(pageParam) ? pageParam[0] : pageParam) || 1;
 
-export default function departments() {
-  return (
-    <div className="flex justify-center">
-      <h1 className="text-4xl font-bold tracking-tight">
-        {routes.directoryService.departments.title}
-      </h1>
-    </div>
-  );
+  return <DepartmentsList page={page} />;
 }

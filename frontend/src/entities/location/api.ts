@@ -1,7 +1,7 @@
 import { apiClient } from "@/shared/api/axios-instance";
-import { Envelope } from "@/shared/types/envelope.type";
 import { PageResult } from "@/shared/types/page-result.type";
 import { LocationListItem } from "./types";
+import type { Address } from "@/shared/types/dto/address.type";
 
 export type GetLocationsListPageRequest = {
   Search?: string;
@@ -12,8 +12,13 @@ export type GetLocationsListPageRequest = {
   pageSize: number;
 };
 
+export type CreateLocationRequest = {
+  name: string;
+  address: Address;
+};
+
 export const locationsApi = {
-  getLocationsListPage: async (
+  getListPage: async (
     request: GetLocationsListPageRequest,
     signal?: AbortSignal,
   ) => {
@@ -24,6 +29,12 @@ export const locationsApi = {
         signal: signal,
       },
     );
+
+    return response.data;
+  },
+
+  create: async (request: CreateLocationRequest) => {
+    const response = await apiClient.post<string>("/locations", request);
 
     return response.data;
   },

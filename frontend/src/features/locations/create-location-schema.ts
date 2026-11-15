@@ -4,7 +4,7 @@ const requiredText = (label: string) =>
   z.string().trim().min(1, `Поле "${label}" обязательно для заполнения`);
 
 const postalCodePattern = /^[0-9|A-Z| |-]{4,8}$/;
-const namePattern = /^[а-я|А-Я|a-z|A-Z| ]+$/;
+const namePattern = /^[а-я|А-Я|a-z|A-Z|ё|\- ]+$/;
 const numberPattern = /^[0-9|а-я|a-z]+$/;
 
 export const createLocationSchema = z.object({

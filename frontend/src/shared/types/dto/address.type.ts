@@ -5,5 +5,5 @@ export type Address = {
   city: string;
   street: string;
   house: string;
-  apartment: string | null;
+  apartment?: string | null;
 };

@@ -1,5 +1,4 @@
 import { locationsApi } from "@/entities/location";
-import { isEnvelopeError } from "@/shared/api/axios-instance";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -13,15 +12,6 @@ export function useCreateLocation() {
     },
     onSuccess: () => {
       toast.success("Локация создана");
-    },
-    onError: (error) => {
-      if (isEnvelopeError(error)) {
-        error.apiErrors.map((err) => {
-          toast.error(err.message);
-        });
-      } else {
-        toast.error(error.message);
-      }
     },
   });
 

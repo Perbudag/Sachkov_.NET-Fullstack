@@ -30,6 +30,9 @@ import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import React from "react";
 import { useCreateLocation } from "../use-create-location";
+import { isEnvelopeError } from "@/shared/api/axios-instance";
+import { mapCreateLocationErrorsToForm } from "../map-create-location-errors";
+import { toast } from "sonner";
 
 const defaultValues: CreateLocationFormValues = {
   name: "",
@@ -65,6 +68,17 @@ export function CreateLocationDialog({ open, onOpenChange }: Props) {
       onSuccess: () => {
         onOpenChange(false);
         form.reset(defaultValues);
+      },
+      onError: (error) => {
+        if (isEnvelopeError(error)) {
+          const unhandledErrors = mapCreateLocationErrorsToForm(
+            error.apiErrors,
+            form.setError,
+          );
+          unhandledErrors.forEach((apiError) => toast.error(apiError.message));
+        } else {
+          toast.error(error.message);
+        }
       },
     });
   };

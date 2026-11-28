@@ -1,6 +1,6 @@
 import { apiClient } from "@/shared/api/axios-instance";
 import { PageResult } from "@/shared/types/page-result.type";
-import { DepartmentListItem } from "./types";
+import { DepartmentTableItem } from "./types";
 
 export type GetDepartmentsListPageRequest = {
   search?: string;
@@ -15,7 +15,7 @@ export const departmentsApi = {
     request: GetDepartmentsListPageRequest,
     signal?: AbortSignal,
   ) => {
-    const response = await apiClient.get<PageResult<DepartmentListItem[]>>(
+    const response = await apiClient.get<PageResult<DepartmentTableItem[]>>(
       "/departments",
       {
         params: request,

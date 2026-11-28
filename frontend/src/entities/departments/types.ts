@@ -1,4 +1,4 @@
-export type DepartmentListItem = {
+export type DepartmentTableItem = {
   id: string;
   name: string;
   slug: string;

@@ -1,6 +1,6 @@
 import { Address } from "@/shared/types/dto/address.type";
 
-export type LocationListItem = {
+export type LocationTableItem = {
   id: string;
   name: string;
   address: Address;

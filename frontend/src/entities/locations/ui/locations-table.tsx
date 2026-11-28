@@ -6,11 +6,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/components/ui/table";
-import { LocationListItem } from "../types";
+import { LocationTableItem } from "../types";
 import { addressToString } from "../lib/address-to-string";
 
 type LocationsTableProps = {
-  locations: LocationListItem[];
+  locations: LocationTableItem[];
 };
 
 export function LocationsTable({ locations }: LocationsTableProps) {
@@ -31,7 +31,9 @@ export function LocationsTable({ locations }: LocationsTableProps) {
             <TableCell>{location.id}</TableCell>
             <TableCell>{location.name}</TableCell>
             <TableCell className="max-w-[420px]">
-              <div className="truncate">{addressToString(location.address)}</div>
+              <div className="truncate">
+                {addressToString(location.address)}
+              </div>
             </TableCell>
             <TableCell>{location.departmentCount}</TableCell>
             <TableCell>

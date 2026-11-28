@@ -1,4 +1,4 @@
-import { locationsApi } from "@/entities/location";
+import { locationsApi } from "@/entities/locations";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 

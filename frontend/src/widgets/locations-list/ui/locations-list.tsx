@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { locationsApi, LocationsTable } from "@/entities/location";
+import { locationsApi, LocationsTable } from "@/entities/locations";
 import { PagePagination } from "@/features/pagination";
 import { QueryState } from "@/shared/components/query-state";
 import { Button } from "@/shared/components/ui/button";

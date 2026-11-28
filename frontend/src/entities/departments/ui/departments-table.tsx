@@ -6,10 +6,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/components/ui/table";
-import { DepartmentListItem } from "../types";
+import { DepartmentTableItem } from "../types";
 
 type DepartmentsTableProps = {
-  departments: DepartmentListItem[];
+  departments: DepartmentTableItem[];
 };
 
 export function DepartmentsTable({ departments }: DepartmentsTableProps) {
